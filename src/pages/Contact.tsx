@@ -5,9 +5,9 @@ import RevealText from "@/components/RevealText";
 import MagneticButton from "@/components/MagneticButton";
 import SectionDivider from "@/components/SectionDivider";
 import { toast } from "@/components/ui/sonner";
-import { CONTACT, socialLinks } from "@/lib/contact";
+import { CONTACT, FORMSPREE_FORM_URL, socialLinks } from "@/lib/contact";
 
-const FORMSPREE_URL = import.meta.env.VITE_FORMSPREE_URL;
+const FORMSPREE_URL = import.meta.env.VITE_FORMSPREE_URL?.trim() || FORMSPREE_FORM_URL;
 
 const Contact = () => {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
@@ -24,10 +24,6 @@ const Contact = () => {
     const message = formData.message.trim();
     if (!name || !email || !message) {
       toast.error("Please fill in every field.");
-      return;
-    }
-    if (!FORMSPREE_URL) {
-      toast.error("Contact form is not configured. Add VITE_FORMSPREE_URL to your .env file.");
       return;
     }
     setSubmitting(true);
