@@ -1,8 +1,10 @@
 # Static Vite/React app: deploy ./dist with SPA fallback for client-side routes (react-router).
 # Must match the Worker name in Cloudflare (Dashboard → Workers → this project).
 name = "personalwebsite"
-compatibility_date = "2025-04-01"
+compatibility_date = "2026-04-04"
 
 [assets]
 directory = "./dist"
+# Default html_handling adds redirects that conflict with SPA not_found_handling (API 10021).
+html_handling = "none"
 not_found_handling = "single-page-application"
