@@ -1,6 +1,6 @@
 # Static Vite/React app: deploy ./dist with SPA fallback for client-side routes (react-router).
-# Set "name" to match your Worker name in the Cloudflare dashboard if it differs.
-name = "stellar-portfolio-studio"
+# Must match the Worker name in Cloudflare (Dashboard → Workers → this project).
+name = "personalwebsite"
 compatibility_date = "2025-04-01"
 
 [assets]
