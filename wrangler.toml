@@ -1,0 +1,8 @@
+# Static Vite/React app: deploy ./dist with SPA fallback for client-side routes (react-router).
+# Set "name" to match your Worker name in the Cloudflare dashboard if it differs.
+name = "stellar-portfolio-studio"
+compatibility_date = "2025-04-01"
+
+[assets]
+directory = "./dist"
+not_found_handling = "single-page-application"
