@@ -31,9 +31,24 @@ const Index = () => {
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
 
   const featuredProjects = [
-    { title: "Lumina Dashboard", category: "UI/UX Design", image: project1, year: "2024" },
-    { title: "Brand Identity System", category: "Branding", image: project2, year: "2024" },
-    { title: "Mobile Experience", category: "App Design", image: project3, year: "2023" },
+    {
+      title: "Lumina Dashboard",
+      category: "UI/UX Design",
+      image: project1,
+      year: "2024",
+    },
+    {
+      title: "Brand Identity System",
+      category: "Branding",
+      image: project2,
+      year: "2024",
+    },
+    {
+      title: "Mobile Experience",
+      category: "App Design",
+      image: project3,
+      year: "2023",
+    },
   ];
 
   const [featuredApi, setFeaturedApi] = useState<CarouselApi>();
@@ -63,12 +78,19 @@ const Index = () => {
     <PageTransition>
       <div className="noise-overlay">
         {/* Hero Section */}
-        <section ref={heroRef} className="relative min-h-screen flex flex-col overflow-hidden">
+        <section
+          ref={heroRef}
+          className="relative min-h-screen flex flex-col overflow-hidden"
+        >
           <motion.div
             style={{ y: heroY, scale: heroScale }}
             className="absolute inset-0"
           >
-            <img src={heroBg} alt="" className="w-full h-full object-cover opacity-20" />
+            <img
+              src={heroBg}
+              alt=""
+              className="w-full h-full object-cover opacity-20"
+            />
             <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/80 to-background" />
           </motion.div>
 
@@ -77,7 +99,10 @@ const Index = () => {
             animate={{ rotate: 360 }}
             transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
             className="absolute top-1/4 right-[10%] w-[400px] h-[400px] organic-blob opacity-[0.04]"
-            style={{ background: "linear-gradient(135deg, hsl(28 80% 52%), hsl(15 85% 45%))" }}
+            style={{
+              background:
+                "linear-gradient(135deg, hsl(28 80% 52%), hsl(15 85% 45%))",
+            }}
           />
 
           <motion.div
@@ -86,85 +111,102 @@ const Index = () => {
           >
             <div className="flex-1 flex items-center pt-28 pb-8 lg:py-0 min-h-0">
               <div className="grid lg:grid-cols-[1fr_auto] gap-12 items-end w-full">
-              <div className="pt-4 lg:pt-0">
+                <div className="pt-4 lg:pt-0">
+                  <motion.div
+                    initial={{ opacity: 0, x: -30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="flex items-center gap-3 mb-8"
+                  >
+                    <div className="glow-dot" />
+                    <span className="text-sm font-detail text-text-subtle tracking-widest uppercase">
+                      Available for projects
+                    </span>
+                  </motion.div>
+
+                  <RevealText>
+                    <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-display font-bold leading-[0.95] tracking-tight">
+                      Creative
+                    </h1>
+                  </RevealText>
+                  <RevealText delay={0.1}>
+                    <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-display font-bold leading-[0.95] tracking-tight text-gradient">
+                      Developer
+                    </h1>
+                  </RevealText>
+                  <RevealText delay={0.2}>
+                    <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-display font-bold leading-[0.95] tracking-tight">
+                      & Designer
+                    </h1>
+                  </RevealText>
+
+                  <motion.p
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6, duration: 0.8 }}
+                    className="mt-8 max-w-md text-text-subtle font-detail text-base leading-relaxed"
+                  >
+                    I craft digital experiences that blend aesthetics with
+                    functionality. Focused on creating meaningful products that
+                    resonate.
+                  </motion.p>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8, duration: 0.8 }}
+                    className="flex gap-4 mt-10"
+                  >
+                    <Link to="/work">
+                      <MagneticButton className="px-8 py-4 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium tracking-wide">
+                        View Work
+                      </MagneticButton>
+                    </Link>
+                    <Link to="/contact">
+                      <MagneticButton className="px-8 py-4 rounded-full border border-border text-foreground font-body text-sm font-medium tracking-wide hover:border-primary/40 transition-colors">
+                        Get in Touch
+                      </MagneticButton>
+                    </Link>
+                  </motion.div>
+                </div>
+
+                {/* Profile image - asymmetric placement */}
                 <motion.div
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
-                  className="flex items-center gap-3 mb-8"
+                  initial={{ opacity: 0, scale: 0.9, rotate: 3 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  transition={{
+                    delay: 0.4,
+                    duration: 1,
+                    ease: [0.23, 1, 0.32, 1],
+                  }}
+                  className="hidden lg:block relative"
                 >
-                  <div className="glow-dot" />
-                  <span className="text-sm font-detail text-text-subtle tracking-widest uppercase">
-                    Available for projects
-                  </span>
-                </motion.div>
-
-                <RevealText>
-                  <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-display font-bold leading-[0.95] tracking-tight">
-                    Creative
-                  </h1>
-                </RevealText>
-                <RevealText delay={0.1}>
-                  <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-display font-bold leading-[0.95] tracking-tight text-gradient">
-                    Developer
-                  </h1>
-                </RevealText>
-                <RevealText delay={0.2}>
-                  <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-display font-bold leading-[0.95] tracking-tight">
-                    & Designer
-                  </h1>
-                </RevealText>
-
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6, duration: 0.8 }}
-                  className="mt-8 max-w-md text-text-subtle font-detail text-base leading-relaxed"
-                >
-                  I craft digital experiences that blend aesthetics with functionality. 
-                  Focused on creating meaningful products that resonate.
-                </motion.p>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8, duration: 0.8 }}
-                  className="flex gap-4 mt-10"
-                >
-                  <Link to="/work">
-                    <MagneticButton className="px-8 py-4 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium tracking-wide">
-                      View Work
-                    </MagneticButton>
-                  </Link>
-                  <Link to="/contact">
-                    <MagneticButton className="px-8 py-4 rounded-full border border-border text-foreground font-body text-sm font-medium tracking-wide hover:border-primary/40 transition-colors">
-                      Get in Touch
-                    </MagneticButton>
-                  </Link>
+                  <div className="w-[320px] h-[400px] rounded-[2rem] overflow-hidden relative">
+                    <img
+                      src={profileImg}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
+                  </div>
+                  <motion.div
+                    animate={{ y: [0, -8, 0] }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                    className="absolute -bottom-6 -left-8 glass-panel px-5 py-3"
+                  >
+                    <span className="text-xs font-detail text-text-subtle">
+                      Based in
+                    </span>
+                    <p className="text-sm font-body text-foreground">
+                      Frisco, TX
+                    </p>
+                  </motion.div>
                 </motion.div>
               </div>
-
-              {/* Profile image - asymmetric placement */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9, rotate: 3 }}
-                animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                transition={{ delay: 0.4, duration: 1, ease: [0.23, 1, 0.32, 1] }}
-                className="hidden lg:block relative"
-              >
-                <div className="w-[320px] h-[400px] rounded-[2rem] overflow-hidden relative">
-                  <img src={profileImg} alt="Profile" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
-                </div>
-                <motion.div
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute -bottom-6 -left-8 glass-panel px-5 py-3"
-                >
-                  <span className="text-xs font-detail text-text-subtle">Based in</span>
-                  <p className="text-sm font-body text-foreground">Frisco, TX</p>
-                </motion.div>
-              </motion.div>
-            </div>
             </div>
 
             {/* Scroll indicator — own row so it never overlaps CTAs */}
@@ -185,7 +227,9 @@ const Index = () => {
                   className="w-1 h-1 rounded-full bg-primary"
                 />
               </motion.div>
-              <span className="text-xs font-detail text-text-dim tracking-widest uppercase">Scroll</span>
+              <span className="text-xs font-detail text-text-dim tracking-widest uppercase">
+                Scroll
+              </span>
             </motion.div>
           </motion.div>
         </section>
@@ -197,11 +241,14 @@ const Index = () => {
             <div className="mt-20 mb-10 md:mb-12 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
               <div>
                 <RevealText>
-                  <span className="text-xs font-detail text-text-dim tracking-widest uppercase">Selected Work</span>
+                  <span className="text-xs font-detail text-text-dim tracking-widest uppercase">
+                    Selected Work
+                  </span>
                 </RevealText>
                 <RevealText delay={0.1}>
                   <h2 className="text-4xl md:text-5xl font-display font-bold mt-4">
-                    Featured<br />
+                    Featured
+                    <br />
                     <span className="text-gradient">Projects</span>
                   </h2>
                 </RevealText>
@@ -271,10 +318,15 @@ const Index = () => {
                             {project.title}
                           </h3>
                           <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/40">
-                            <span className="text-xs font-detail text-text-dim">{project.year}</span>
+                            <span className="text-xs font-detail text-text-dim">
+                              {project.year}
+                            </span>
                             <span className="text-xs font-detail text-text-subtle group-hover:text-primary transition-colors flex items-center gap-1">
                               View case
-                              <span aria-hidden className="inline-block transition-transform group-hover:translate-x-1">
+                              <span
+                                aria-hidden
+                                className="inline-block transition-transform group-hover:translate-x-1"
+                              >
                                 →
                               </span>
                             </span>
@@ -301,7 +353,9 @@ const Index = () => {
                   key={i}
                   type="button"
                   className={`h-1.5 rounded-full transition-all duration-300 ${
-                    featuredSnap === i ? "w-8 bg-primary" : "w-1.5 bg-border hover:bg-text-dim/50"
+                    featuredSnap === i
+                      ? "w-8 bg-primary"
+                      : "w-1.5 bg-border hover:bg-text-dim/50"
                   }`}
                   aria-label={`Go to project ${i + 1}`}
                   onClick={() => featuredApi?.scrollTo(i)}
@@ -320,8 +374,17 @@ const Index = () => {
           >
             {[...Array(3)].map((_, i) => (
               <div key={i} className="flex gap-12 items-center">
-                {["Web Development", "UI/UX Design", "Brand Identity", "Creative Direction", "Motion Design"].map((service) => (
-                  <span key={`${service}-${i}`} className="text-4xl md:text-6xl font-display font-bold text-muted/50 flex items-center gap-12">
+                {[
+                  "Web Development",
+                  "UI/UX Design",
+                  "Brand Identity",
+                  "Creative Direction",
+                  "Motion Design",
+                ].map((service) => (
+                  <span
+                    key={`${service}-${i}`}
+                    className="text-4xl md:text-6xl font-display font-bold text-muted/50 flex items-center gap-12"
+                  >
                     {service}
                     <span className="w-3 h-3 rounded-full bg-primary/30" />
                   </span>
@@ -337,7 +400,8 @@ const Index = () => {
           <div className="mt-20">
             <RevealText>
               <h2 className="text-4xl md:text-6xl font-display font-bold">
-                Let's create<br />
+                Let's create
+                <br />
                 <span className="text-gradient">something great</span>
               </h2>
             </RevealText>
@@ -361,7 +425,9 @@ const Index = () => {
         <footer className="py-12 px-6 md:px-12 lg:px-20 max-w-7xl mx-auto">
           <SectionDivider />
           <div className="mt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <span className="text-sm font-detail text-text-dim">© 2024 · Crafted with intention</span>
+            <span className="text-sm font-detail text-text-dim">
+              © 2024 · Crafted with intention
+            </span>
             <div className="flex flex-wrap gap-6">
               {socialLinks.map((s) => (
                 <a
