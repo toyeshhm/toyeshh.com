@@ -3,13 +3,16 @@ import PageTransition from "@/components/PageTransition";
 import RevealText from "@/components/RevealText";
 import SectionDivider from "@/components/SectionDivider";
 import profileImg from "@/assets/profile.jpg";
+import { CONTACT } from "@/lib/contact";
 
 const infoCards = [
-  { label: "LOCATION", value: "Frisco, Texas" },
+  { label: "LOCATION", value: CONTACT.location },
   { label: "EDUCATION", value: "Turing Scholar — UT Austin '30" },
   { label: "FOCUS", value: "CS, AI/ML & Full-Stack Dev" },
-  { label: "STATUS", value: "Open to Opportunities", highlight: true },
+  { label: "STATUS", value: "Available for work", highlight: true },
 ];
+
+const aboutHeroBadge = { number: "4+", line2: "Years of craft" };
 
 const experience = [
   {
@@ -80,52 +83,95 @@ const volunteering = {
 
 const About = () => (
   <PageTransition>
-    <div className="noise-overlay min-h-screen pt-32 pb-20">
-      <div className="max-w-5xl mx-auto px-6 md:px-12 lg:px-20">
+    <div className="noise-overlay min-h-screen pt-28 md:pt-32 pb-20">
+      <div className="max-w-6xl mx-auto px-6 md:px-10 lg:px-16">
 
-        {/* Hero Intro — inspired by reference image */}
-        <section>
+        {/* Hero — editorial two-column (reference layout) */}
+        <section className="pb-4">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex items-center gap-3 mb-8 md:mb-10"
+          >
+            <span className="h-px w-10 md:w-12 bg-primary shrink-0" aria-hidden />
+            <span className="text-[11px] md:text-xs font-detail text-primary tracking-[0.2em] uppercase">
+              About me
+            </span>
+          </motion.div>
+
           <RevealText>
-            <span className="text-xs font-detail text-text-dim tracking-widest uppercase">About Me</span>
-          </RevealText>
-
-          <RevealText delay={0.1}>
-            <h1 className="text-3xl md:text-5xl lg:text-[3.2rem] font-display font-bold mt-6 leading-[1.25] tracking-tight">
-              I'm Toyeshh, a multidisciplinary developer and researcher based in Texas. I believe in building technology that feels{" "}
-              <span className="text-gradient italic">human</span> — accessible, impactful, and deeply connected to the people it serves.
+            <h1 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.15rem] font-editorial font-medium text-foreground leading-[1.12] tracking-tight max-w-4xl">
+              Building at the intersection of research, code, and creativity
             </h1>
           </RevealText>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
-            className="mt-10 space-y-5"
-          >
-            <p className="text-text-subtle font-detail text-base leading-relaxed max-w-3xl">
-              Hey, I'm Toyeshh — a high school senior and aspiring CS major with a focus on using tech to expand access to education and knowledge. I have experience in full-stack web development, machine learning, and research in NLP and AI through internships, fellowships, and edtech work.
-            </p>
-            <p className="text-text-subtle font-detail text-base leading-relaxed max-w-3xl">
-              When I'm not coding or researching, you'll find me exploring generative art, diving into math competitions, or working on education nonprofits. I believe the best creative work comes from a life lived with curiosity and openness.
-            </p>
-          </motion.div>
-
-          {/* Info Grid */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.8 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-14 pt-10 border-t border-border"
-          >
-            {infoCards.map((card) => (
-              <div key={card.label}>
-                <span className="text-xs font-detail text-primary tracking-widest uppercase">{card.label}</span>
-                <p className={`mt-2 text-sm font-body ${card.highlight ? "text-primary underline underline-offset-4" : "text-foreground"}`}>
-                  {card.value}
+          <div className="mt-12 lg:mt-16 grid lg:grid-cols-[minmax(260px,380px)_1fr] gap-10 lg:gap-14 xl:gap-20 items-start">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15, duration: 0.7 }}
+              className="relative mx-auto w-full max-w-[340px] lg:max-w-none"
+            >
+              <div className="relative rounded-[2.25rem] md:rounded-[2.5rem] overflow-hidden border border-border/60 bg-card aspect-[3/4] shadow-[0_24px_80px_-20px_rgba(0,0,0,0.55)]">
+                <img
+                  src={profileImg}
+                  alt="Toyeshh"
+                  className="absolute inset-0 w-full h-full object-cover object-[center_20%]"
+                />
+              </div>
+              <div className="absolute bottom-4 right-4 md:bottom-5 md:right-5 rounded-2xl bg-[#0a0a0a]/92 border border-border/50 backdrop-blur-md px-4 py-3 md:px-5 md:py-3.5 shadow-lg min-w-[7.5rem]">
+                <p className="font-editorial text-2xl md:text-3xl text-primary leading-none font-semibold">
+                  {aboutHeroBadge.number}
+                </p>
+                <p className="mt-1 text-[10px] md:text-xs font-detail text-foreground/90 tracking-wide uppercase leading-snug">
+                  {aboutHeroBadge.line2}
                 </p>
               </div>
-            ))}
-          </motion.div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.28, duration: 0.75 }}
+              className="space-y-0"
+            >
+              <p className="font-editorial text-lg md:text-xl lg:text-[1.35rem] text-foreground leading-relaxed">
+                I&apos;m Toyeshh — a developer and researcher based in Texas. I care about technology that feels{" "}
+                <span className="text-primary not-italic">human</span>
+                {" "}— accessible, impactful, and connected to the people it serves.
+              </p>
+
+              <div className="mt-6 md:mt-8 space-y-4">
+                <p className="text-[0.9375rem] md:text-base text-muted-foreground font-detail leading-relaxed">
+                  Hey, I&apos;m Toyeshh — a high school senior and aspiring CS major focused on using tech to expand access to education
+                  and knowledge. I have experience in full-stack web development, machine learning, and research in NLP and AI through
+                  internships, fellowships, and edtech work.
+                </p>
+                <p className="text-[0.9375rem] md:text-base text-muted-foreground font-detail leading-relaxed">
+                  When I&apos;m not coding or researching, you&apos;ll find me exploring generative art, diving into math competitions, or
+                  working with education nonprofits. The best creative work comes from curiosity and openness.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-x-8 gap-y-8 md:gap-y-10 mt-10 md:mt-12 pt-10 border-t border-border/80">
+                {infoCards.map((card) => (
+                  <div key={card.label} className="min-w-0">
+                    <span className="text-[10px] md:text-xs font-detail text-primary tracking-[0.18em] uppercase block">
+                      {card.label}
+                    </span>
+                    <p
+                      className={`mt-2 text-sm md:text-[0.9375rem] font-detail leading-snug ${
+                        card.highlight ? "text-primary" : "text-foreground/95"
+                      }`}
+                    >
+                      {card.value}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
         </section>
 
         {/* Experience — Vertical Timeline */}

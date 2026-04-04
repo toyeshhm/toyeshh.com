@@ -17,6 +17,7 @@ export default {
         display: ["Syne", "sans-serif"],
         body: ["Space Grotesk", "sans-serif"],
         detail: ["Inter", "sans-serif"],
+        editorial: ["Playfair Display", "Georgia", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",

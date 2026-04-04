@@ -1,15 +1,24 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 import RevealText from "@/components/RevealText";
 import MagneticButton from "@/components/MagneticButton";
 import SectionDivider from "@/components/SectionDivider";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 import profileImg from "@/assets/profile.jpg";
 import heroBg from "@/assets/hero-bg.jpg";
 import project1 from "@/assets/project-1.jpg";
 import project2 from "@/assets/project-2.jpg";
 import project3 from "@/assets/project-3.jpg";
+import { socialLinks } from "@/lib/contact";
 
 const Index = () => {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -27,11 +36,34 @@ const Index = () => {
     { title: "Mobile Experience", category: "App Design", image: project3, year: "2023" },
   ];
 
+  const [featuredApi, setFeaturedApi] = useState<CarouselApi>();
+  const [featuredSnap, setFeaturedSnap] = useState(0);
+
+  const onFeaturedSelect = useCallback((api: CarouselApi) => {
+    setFeaturedSnap(api.selectedScrollSnap());
+  }, []);
+
+  useEffect(() => {
+    if (!featuredApi) return;
+    onFeaturedSelect(featuredApi);
+    const onSelect = () => onFeaturedSelect(featuredApi);
+    featuredApi.on("select", onSelect);
+    return () => {
+      featuredApi.off("select", onSelect);
+    };
+  }, [featuredApi, onFeaturedSelect]);
+
+  useEffect(() => {
+    if (!featuredApi) return;
+    const t = window.setInterval(() => featuredApi.scrollNext(), 6000);
+    return () => window.clearInterval(t);
+  }, [featuredApi]);
+
   return (
     <PageTransition>
       <div className="noise-overlay">
         {/* Hero Section */}
-        <section ref={heroRef} className="relative min-h-screen flex items-center overflow-hidden">
+        <section ref={heroRef} className="relative min-h-screen flex flex-col overflow-hidden">
           <motion.div
             style={{ y: heroY, scale: heroScale }}
             className="absolute inset-0"
@@ -48,9 +80,13 @@ const Index = () => {
             style={{ background: "linear-gradient(135deg, hsl(28 80% 52%), hsl(15 85% 45%))" }}
           />
 
-          <motion.div style={{ opacity: heroOpacity }} className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
-            <div className="grid lg:grid-cols-[1fr_auto] gap-12 items-end">
-              <div className="pt-32 lg:pt-0">
+          <motion.div
+            style={{ opacity: heroOpacity }}
+            className="relative z-10 flex flex-1 flex-col w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-20 min-h-0"
+          >
+            <div className="flex-1 flex items-center pt-28 pb-8 lg:py-0 min-h-0">
+              <div className="grid lg:grid-cols-[1fr_auto] gap-12 items-end w-full">
+              <div className="pt-4 lg:pt-0">
                 <motion.div
                   initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -125,17 +161,18 @@ const Index = () => {
                   className="absolute -bottom-6 -left-8 glass-panel px-5 py-3"
                 >
                   <span className="text-xs font-detail text-text-subtle">Based in</span>
-                  <p className="text-sm font-body text-foreground">Worldwide · Remote</p>
+                  <p className="text-sm font-body text-foreground">Frisco, TX</p>
                 </motion.div>
               </motion.div>
             </div>
+            </div>
 
-            {/* Scroll indicator */}
+            {/* Scroll indicator — own row so it never overlaps CTAs */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.2 }}
-              className="absolute bottom-12 left-6 md:left-12 lg:left-20 flex items-center gap-3"
+              className="shrink-0 flex justify-center sm:justify-end items-center gap-3 pb-8 md:pb-10 pt-2"
             >
               <motion.div
                 animate={{ y: [0, 8, 0] }}
@@ -153,77 +190,124 @@ const Index = () => {
           </motion.div>
         </section>
 
-        {/* Featured Work */}
-        <section className="py-32 px-6 md:px-12 lg:px-20 max-w-7xl mx-auto">
-          <SectionDivider />
-          <div className="mt-20 mb-16 flex items-end justify-between">
-            <div>
-              <RevealText>
-                <span className="text-xs font-detail text-text-dim tracking-widest uppercase">Selected Work</span>
-              </RevealText>
-              <RevealText delay={0.1}>
-                <h2 className="text-4xl md:text-5xl font-display font-bold mt-4">
-                  Featured<br />
-                  <span className="text-gradient">Projects</span>
-                </h2>
-              </RevealText>
+        {/* Featured Work — horizontal filmstrip carousel */}
+        <section className="py-32 overflow-hidden">
+          <div className="px-6 md:px-12 lg:px-20 max-w-7xl mx-auto">
+            <SectionDivider />
+            <div className="mt-20 mb-10 md:mb-12 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+              <div>
+                <RevealText>
+                  <span className="text-xs font-detail text-text-dim tracking-widest uppercase">Selected Work</span>
+                </RevealText>
+                <RevealText delay={0.1}>
+                  <h2 className="text-4xl md:text-5xl font-display font-bold mt-4">
+                    Featured<br />
+                    <span className="text-gradient">Projects</span>
+                  </h2>
+                </RevealText>
+              </div>
+              <Link to="/work">
+                <motion.span
+                  whileHover={{ x: 5 }}
+                  className="text-sm font-detail text-text-subtle hover:text-primary transition-colors inline-block"
+                >
+                  View all →
+                </motion.span>
+              </Link>
             </div>
-            <Link to="/work">
-              <motion.span
-                whileHover={{ x: 5 }}
-                className="text-sm font-detail text-text-subtle hover:text-primary transition-colors hidden md:block"
-              >
-                View all →
-              </motion.span>
-            </Link>
           </div>
 
-          <div className="space-y-8">
-            {featuredProjects.map((project, i) => (
-              <motion.div
-                key={project.title}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, delay: i * 0.15, ease: [0.23, 1, 0.32, 1] }}
-                className="floating-card group cursor-pointer"
-              >
-                <div className="grid md:grid-cols-[1fr_1.2fr] gap-0">
-                  <div className="p-8 md:p-12 flex flex-col justify-between">
-                    <div>
-                      <span className="text-xs font-detail text-text-dim tracking-widest uppercase">
-                        {project.category}
-                      </span>
-                      <h3 className="text-2xl md:text-3xl font-display font-bold mt-3 group-hover:text-primary transition-colors duration-500">
-                        {project.title}
-                      </h3>
-                    </div>
-                    <div className="flex items-center justify-between mt-8">
-                      <span className="text-sm font-detail text-text-dim">{project.year}</span>
-                      <motion.span
-                        whileHover={{ x: 5 }}
-                        className="text-sm font-detail text-text-subtle group-hover:text-primary transition-colors"
+          <div className="relative mt-4">
+            <div
+              className="pointer-events-none absolute inset-y-0 left-0 w-16 md:w-24 z-10 bg-gradient-to-r from-background to-transparent"
+              aria-hidden
+            />
+            <div
+              className="pointer-events-none absolute inset-y-0 right-0 w-16 md:w-24 z-10 bg-gradient-to-l from-background to-transparent"
+              aria-hidden
+            />
+
+            <Carousel
+              setApi={setFeaturedApi}
+              opts={{
+                loop: true,
+                align: "start",
+                slidesToScroll: 1,
+              }}
+              className="w-full pl-6 md:pl-12 lg:pl-[max(1.5rem,calc((100vw-80rem)/2+1.5rem))]"
+            >
+              <CarouselContent className="-ml-4 md:-ml-6">
+                {featuredProjects.map((project, i) => (
+                  <CarouselItem
+                    key={project.title}
+                    className="pl-4 md:pl-6 basis-[min(100%,340px)] sm:basis-[72%] md:basis-[56%] lg:basis-[46%] xl:basis-[40%]"
+                  >
+                    <Link to="/work" className="block group h-full">
+                      <div
+                        className={`relative h-[min(72vw,420px)] sm:h-[380px] md:h-[420px] rounded-[1.75rem] overflow-hidden border transition-all duration-500 ease-out ${
+                          featuredSnap === i
+                            ? "border-primary/35 shadow-[0_20px_60px_-15px_hsl(28_80%_52%/0.2)] scale-100"
+                            : "border-border/60 scale-[0.97] opacity-75 sm:opacity-90"
+                        }`}
                       >
-                        View →
-                      </motion.span>
-                    </div>
-                  </div>
-                  <div className="relative overflow-hidden h-64 md:h-80">
-                    <motion.img
-                      whileHover={{ scale: 1.05 }}
-                      transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-                      src={project.image}
-                      alt={project.title}
-                      loading="lazy"
-                      width={1200}
-                      height={800}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-l from-transparent to-card/50" />
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+                        <img
+                          src={project.image}
+                          alt={project.title}
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                          loading="lazy"
+                          width={1200}
+                          height={800}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                        <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-primary via-primary/40 to-transparent opacity-80" />
+
+                        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+                          <span className="text-[10px] md:text-xs font-detail text-primary tracking-[0.2em] uppercase">
+                            {project.category}
+                          </span>
+                          <h3 className="text-xl md:text-3xl font-display font-bold mt-2 text-foreground group-hover:text-primary transition-colors duration-300 leading-tight">
+                            {project.title}
+                          </h3>
+                          <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/40">
+                            <span className="text-xs font-detail text-text-dim">{project.year}</span>
+                            <span className="text-xs font-detail text-text-subtle group-hover:text-primary transition-colors flex items-center gap-1">
+                              View case
+                              <span aria-hidden className="inline-block transition-transform group-hover:translate-x-1">
+                                →
+                              </span>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious
+                variant="outline"
+                className="left-4 md:left-8 top-[calc(50%-1.25rem)] border-border bg-background/80 backdrop-blur-sm hover:bg-background"
+              />
+              <CarouselNext
+                variant="outline"
+                className="right-4 md:right-8 top-[calc(50%-1.25rem)] border-border bg-background/80 backdrop-blur-sm hover:bg-background"
+              />
+            </Carousel>
+
+            <div className="flex justify-center gap-2 mt-8 px-6">
+              {featuredProjects.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    featuredSnap === i ? "w-8 bg-primary" : "w-1.5 bg-border hover:bg-text-dim/50"
+                  }`}
+                  aria-label={`Go to project ${i + 1}`}
+                  onClick={() => featuredApi?.scrollTo(i)}
+                />
+              ))}
+            </div>
           </div>
         </section>
 
@@ -278,10 +362,16 @@ const Index = () => {
           <SectionDivider />
           <div className="mt-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <span className="text-sm font-detail text-text-dim">© 2024 · Crafted with intention</span>
-            <div className="flex gap-6">
-              {["Twitter", "GitHub", "LinkedIn", "Dribbble"].map((s) => (
-                <a key={s} href="#" className="text-sm font-detail text-text-dim hover:text-primary transition-colors">
-                  {s}
+            <div className="flex flex-wrap gap-6">
+              {socialLinks.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-detail text-text-dim hover:text-primary transition-colors"
+                >
+                  {s.label}
                 </a>
               ))}
             </div>
