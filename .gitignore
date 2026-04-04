@@ -6,6 +6,10 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+# Bun lockfiles — Cloudflare Workers Git builds auto-run `bun install --frozen-lockfile`
+# when these exist; this project uses npm + package-lock.json in CI.
+bun.lockb
+bun.lock
 
 node_modules
 .env
