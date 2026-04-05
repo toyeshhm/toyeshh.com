@@ -16,39 +16,39 @@ const aboutHeroBadge = { number: "4+", line2: "Years of craft" };
 
 const experience = [
   {
-    role: "Alumni Officer",
-    company: "The New York Academy of Sciences",
-    period: "Jul 2025 — Present",
-    type: "Seasonal · Remote",
-    desc: "Recognized as a Young Member for outstanding leadership in science engagement. Invited to join the JCSVEI alumni network, a U.S. Department of State program administered by the Aspen Institute.",
+    role: "Founding Technical Engineer & UI/UX Lead",
+    company: "Ultra (Y Combinator W24)",
+    period: "2025 — Present",
+    type: "Paid · Startup",
+    desc: "Co-built frontend and AI for an accessible college-guidance platform helping 10K+ students, collaborated 1:1 with the CEO, and helped grow the Discord community from 20 to 2,500+ members.",
   },
   {
-    role: "Research Team Lead",
-    company: "The New York Academy of Sciences",
-    period: "Mar 2025 — Jul 2025",
-    type: "Internship · Remote",
-    desc: "Led a six-member international team investigating biochar–nanocellulose composites for sustainable air filtration. Created NanoChar prototype achieving 63% reduction in cellular damage. Placed 2nd out of 119 teams at the 2025 International Student Symposium.",
+    role: "Summer Research Intern & First Author",
+    company: "The University of Texas at Dallas (NLP Research)",
+    period: "2025",
+    type: "Research · On-site",
+    desc: "Developed an NLP framework to evaluate AI-generated art critiques, created an 840+ example dataset, and published the research through UTD.",
   },
   {
-    role: "NLP Research Intern",
-    company: "The University of Texas at Dallas",
-    period: "Jun 2025 — Sep 2025",
-    type: "Internship · On-site",
-    desc: "Designed NLP pipelines for multimodal data analysis under Dr. Chris Davis. Created the Creative Coherence Score (CCS) and ArtCriqk dataset of 850+ annotated critiques. Fine-tuned GPT-4, Claude 3, and Llama-3 via LoRA, reducing cultural bias by 38%.",
+    role: "Research Lead & UI/UX Website Designer",
+    company: "New York Academy of Sciences (NYAS)",
+    period: "2025",
+    type: "Research · Global Team",
+    desc: "Selected into NYAS (<10% acceptance), sketched 30+ designs, built the NanoChar website, and led a six-person team that developed a biodegradable air filter with 63% reduction in cell damage.",
   },
   {
-    role: "Frontend Engineer",
-    company: "Ultra (YC-backed)",
-    period: "Jan 2025 — Aug 2025",
-    type: "Internship · Remote",
-    desc: "Engineered responsive landing page from scratch for a YC-backed college admissions AI startup. Integrated GPT API and dynamic scheduling into a Notion-style roadmap calendar. Prototyped a RAG model for conversational AI guidance.",
+    role: "Quantum Machine Learning Researcher",
+    company: "Non-Trivial Global Research Program",
+    period: "2025",
+    type: "Research · <6% Acceptance",
+    desc: "Built a Quantum ML model for early crop disease detection using visual features, trained on 10K+ images, and achieved 20% higher accuracy than a CNN baseline.",
   },
   {
-    role: "Quantum ML Researcher",
-    company: "Non-Trivial Fellowship",
-    period: "Mar 2025 — Jul 2025",
-    type: "Part-time · Remote",
-    desc: "Selected among top 6% of global applicants. Designed a Quantum Convolutional Neural Network (QCNN) for crop disease detection, achieving 20% accuracy improvement over classical CNNs on 10,000+ plant images. Authored a 13-page research paper.",
+    role: "Product + Community Builder",
+    company: "Ultra Community Growth",
+    period: "2025",
+    type: "Leadership · Remote",
+    desc: "Supported product-led growth strategy and expanded the student Discord from 20 users to 2,500+, contributing to a prize package worth over $3K.",
   },
 ];
 
@@ -57,7 +57,8 @@ const education = [
     school: "Liberty High School",
     degree: "High School Diploma",
     period: "Aug 2022 — May 2026",
-    details: "CS Club, BPA, DECA, Mu Alpha Theta, Math/Science/CS UIL, Science Olympiad, Key Club",
+    details:
+      "CS Club, BPA, DECA, Mu Alpha Theta, Math/Science/CS UIL, Science Olympiad, Key Club",
   },
   {
     school: "Collin College",
@@ -68,24 +69,39 @@ const education = [
 ];
 
 const awards = [
-  { title: "NYAS Research Finalist", detail: "2nd / 119 teams internationally", year: "2025" },
-  { title: "BPA NLC Competitor", detail: "1st / 200+ in Financial Portfolio Management", year: "2025" },
-  { title: "Non-Trivial Fellow", detail: "Top 6% of global applicants", year: "2025" },
-  { title: "IT Specialist — Java", detail: "Certiport Certification", year: "2025" },
+  {
+    title: "NYAS Research Program",
+    detail: "Selected at <10% acceptance rate",
+    year: "2025",
+  },
+  {
+    title: "Non-Trivial Research Program",
+    detail: "Selected at <6% acceptance rate",
+    year: "2025",
+  },
+  {
+    title: "Ultra Growth Milestone",
+    detail: "Discord scaled from 20 to 2,500+ users",
+    year: "2025",
+  },
+  {
+    title: "WearItForward Impact",
+    detail: "$160K+ clothing donated to underserved communities",
+    year: "2025",
+  },
 ];
 
 const volunteering = {
-  role: "Curriculum Coordinator",
-  org: "ExcelAcademe",
-  period: "Mar 2025 — Present",
-  desc: "501(c)(3) education nonprofit sponsored by Wolfram & Jane Street, focused on making competitive academic opportunities accessible to all motivated students. Host free math contests and provide concept-driven learning resources.",
+  role: "Co-founder & UI/UX + Website Designer",
+  org: "WearItForward (Partnered with Frisco Threads & Storehouse Center)",
+  period: "2022 — Present",
+  desc: "Co-led a team of 20+ volunteers, donated $160K+ in clothing, designed 70+ media assets, presented to Frisco PTA's 24K+ member audience, and was featured on Fox News and five additional news articles.",
 };
 
 const About = () => (
   <PageTransition>
     <div className="noise-overlay min-h-screen pt-28 md:pt-32 pb-20">
       <div className="max-w-6xl mx-auto px-6 md:px-10 lg:px-16">
-
         {/* Hero — editorial two-column (reference layout) */}
         <section className="pb-4">
           <motion.div
@@ -94,7 +110,10 @@ const About = () => (
             transition={{ duration: 0.6 }}
             className="flex items-center gap-3 mb-8 md:mb-10"
           >
-            <span className="h-px w-10 md:w-12 bg-primary shrink-0" aria-hidden />
+            <span
+              className="h-px w-10 md:w-12 bg-primary shrink-0"
+              aria-hidden
+            />
             <span className="text-[11px] md:text-xs font-detail text-primary tracking-[0.2em] uppercase">
               About me
             </span>
@@ -137,20 +156,25 @@ const About = () => (
               className="space-y-0"
             >
               <p className="font-editorial text-lg md:text-xl lg:text-[1.35rem] text-foreground leading-relaxed">
-                I&apos;m Toyeshh — a developer and researcher based in Texas. I care about technology that feels{" "}
-                <span className="text-primary not-italic">human</span>
-                {" "}— accessible, impactful, and connected to the people it serves.
+                I&apos;m Toyeshh — a developer and researcher based in Texas. I
+                care about technology that feels{" "}
+                <span className="text-primary not-italic">human</span> —
+                accessible, impactful, and connected to the people it serves.
               </p>
 
               <div className="mt-6 md:mt-8 space-y-4">
                 <p className="text-[0.9375rem] md:text-base text-muted-foreground font-detail leading-relaxed">
-                  Hey, I&apos;m Toyeshh — a high school senior and aspiring CS major focused on using tech to expand access to education
-                  and knowledge. I have experience in full-stack web development, machine learning, and research in NLP and AI through
+                  Hey, I&apos;m Toyeshh — a high school senior and aspiring CS
+                  major focused on using tech to expand access to education and
+                  knowledge. I have experience in full-stack web development,
+                  machine learning, and research in NLP and AI through
                   internships, fellowships, and edtech work.
                 </p>
                 <p className="text-[0.9375rem] md:text-base text-muted-foreground font-detail leading-relaxed">
-                  When I&apos;m not coding or researching, you&apos;ll find me exploring generative art, diving into math competitions, or
-                  working with education nonprofits. The best creative work comes from curiosity and openness.
+                  When I&apos;m not coding or researching, you&apos;ll find me
+                  exploring generative art, diving into math competitions, or
+                  working with education nonprofits. The best creative work
+                  comes from curiosity and openness.
                 </p>
               </div>
 
@@ -204,15 +228,25 @@ const About = () => (
                     <div className="group hover:bg-surface-hover/30 p-5 -m-5 rounded-xl transition-colors duration-500">
                       <div className="flex flex-col md:flex-row md:items-start justify-between gap-1">
                         <div>
-                          <h3 className="text-lg font-display font-semibold group-hover:text-primary transition-colors">{exp.role}</h3>
-                          <p className="text-sm font-detail text-text-subtle mt-0.5">{exp.company}</p>
+                          <h3 className="text-lg font-display font-semibold group-hover:text-primary transition-colors">
+                            {exp.role}
+                          </h3>
+                          <p className="text-sm font-detail text-text-subtle mt-0.5">
+                            {exp.company}
+                          </p>
                         </div>
                         <div className="text-right mt-1 md:mt-0 shrink-0">
-                          <span className="text-xs font-detail text-text-dim tracking-wider block">{exp.period}</span>
-                          <span className="text-xs font-detail text-text-dim/60">{exp.type}</span>
+                          <span className="text-xs font-detail text-text-dim tracking-wider block">
+                            {exp.period}
+                          </span>
+                          <span className="text-xs font-detail text-text-dim/60">
+                            {exp.type}
+                          </span>
                         </div>
                       </div>
-                      <p className="text-sm font-detail text-text-dim mt-3 leading-relaxed">{exp.desc}</p>
+                      <p className="text-sm font-detail text-text-dim mt-3 leading-relaxed">
+                        {exp.desc}
+                      </p>
                     </div>
                   </motion.div>
                 ))}
@@ -241,10 +275,18 @@ const About = () => (
                   transition={{ delay: i * 0.15, duration: 0.6 }}
                   className="glass-panel p-6 group hover:border-primary/30 transition-colors duration-500"
                 >
-                  <h3 className="text-lg font-display font-semibold group-hover:text-primary transition-colors">{edu.school}</h3>
-                  <p className="text-sm font-detail text-text-subtle mt-1">{edu.degree}</p>
-                  <span className="text-xs font-detail text-text-dim tracking-wider mt-2 block">{edu.period}</span>
-                  <p className="text-xs font-detail text-text-dim mt-3 leading-relaxed">{edu.details}</p>
+                  <h3 className="text-lg font-display font-semibold group-hover:text-primary transition-colors">
+                    {edu.school}
+                  </h3>
+                  <p className="text-sm font-detail text-text-subtle mt-1">
+                    {edu.degree}
+                  </p>
+                  <span className="text-xs font-detail text-text-dim tracking-wider mt-2 block">
+                    {edu.period}
+                  </span>
+                  <p className="text-xs font-detail text-text-dim mt-3 leading-relaxed">
+                    {edu.details}
+                  </p>
                 </motion.div>
               ))}
             </div>
@@ -272,12 +314,20 @@ const About = () => (
                   className="flex items-start gap-4 p-5 rounded-xl border border-border hover:border-primary/30 transition-colors duration-500 group"
                 >
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                    <span className="text-primary text-sm font-display font-bold">★</span>
+                    <span className="text-primary text-sm font-display font-bold">
+                      ★
+                    </span>
                   </div>
                   <div>
-                    <h3 className="text-sm font-display font-semibold group-hover:text-primary transition-colors">{award.title}</h3>
-                    <p className="text-xs font-detail text-text-dim mt-1">{award.detail}</p>
-                    <span className="text-xs font-detail text-text-dim/60 mt-1 block">{award.year}</span>
+                    <h3 className="text-sm font-display font-semibold group-hover:text-primary transition-colors">
+                      {award.title}
+                    </h3>
+                    <p className="text-xs font-detail text-text-dim mt-1">
+                      {award.detail}
+                    </p>
+                    <span className="text-xs font-detail text-text-dim/60 mt-1 block">
+                      {award.year}
+                    </span>
                   </div>
                 </motion.div>
               ))}
@@ -304,16 +354,23 @@ const About = () => (
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
                 <div>
-                  <h3 className="text-lg font-display font-semibold group-hover:text-primary transition-colors">{volunteering.role}</h3>
-                  <p className="text-sm font-detail text-text-subtle mt-0.5">{volunteering.org}</p>
+                  <h3 className="text-lg font-display font-semibold group-hover:text-primary transition-colors">
+                    {volunteering.role}
+                  </h3>
+                  <p className="text-sm font-detail text-text-subtle mt-0.5">
+                    {volunteering.org}
+                  </p>
                 </div>
-                <span className="text-xs font-detail text-text-dim tracking-wider">{volunteering.period}</span>
+                <span className="text-xs font-detail text-text-dim tracking-wider">
+                  {volunteering.period}
+                </span>
               </div>
-              <p className="text-sm font-detail text-text-dim mt-4 leading-relaxed">{volunteering.desc}</p>
+              <p className="text-sm font-detail text-text-dim mt-4 leading-relaxed">
+                {volunteering.desc}
+              </p>
             </motion.div>
           </div>
         </div>
-
       </div>
     </div>
   </PageTransition>
