@@ -27,7 +27,7 @@ const ProjectTile = ({
   index: number;
 }) => {
   const card = (
-    <div className="group relative w-[20rem] sm:w-[24rem] md:w-[29rem] lg:w-[33rem] rounded-[2rem] overflow-hidden border border-border/70 bg-card/80 shadow-[0_30px_90px_-24px_rgba(0,0,0,0.65)] backdrop-blur-sm transition-colors duration-300 hover:border-border/90">
+    <div className="group relative w-[20rem] sm:w-[22.5rem] md:w-[24rem] lg:w-[30rem] rounded-[2rem] overflow-hidden border border-border/70 bg-card/80 shadow-[0_30px_90px_-24px_rgba(0,0,0,0.65)] backdrop-blur-sm transition-colors duration-300 hover:border-border/90">
       <div className="relative aspect-[16/9] overflow-hidden">
         <motion.img
           src={project.image}
@@ -149,8 +149,8 @@ const Work = () => {
               transition={{ delay: 0.25, duration: 0.6 }}
               className="mt-6 text-text-subtle font-detail text-base md:text-lg leading-relaxed"
             >
-              A centered, motion-led presentation inspired by editorial hero
-              animations, tuned to stay light, balanced, and easy to follow.
+              A couple of the works that have shaped who I am. I’ve done a lot
+              of different things, but here are some highlights.
             </motion.p>
           </div>
 

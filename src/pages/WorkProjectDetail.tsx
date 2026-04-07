@@ -1,9 +1,69 @@
 import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { Document, Page, pdfjs } from "react-pdf";
 import MagneticButton from "@/components/MagneticButton";
 import PageTransition from "@/components/PageTransition";
 import SectionDivider from "@/components/SectionDivider";
 import { getProjectBySlug } from "@/lib/projects";
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url,
+).toString();
+
+const PdfViewer = ({ pdfUrl, title }: { pdfUrl: string; title: string }) => {
+  const [pageCount, setPageCount] = useState(0);
+  const [pageWidth, setPageWidth] = useState(() =>
+    typeof window !== "undefined" ? Math.min(window.innerWidth - 96, 960) : 960,
+  );
+
+  useEffect(() => {
+    const updateWidth = () => {
+      setPageWidth(Math.min(window.innerWidth - 96, 960));
+    };
+
+    updateWidth();
+    window.addEventListener("resize", updateWidth);
+
+    return () => window.removeEventListener("resize", updateWidth);
+  }, []);
+
+  return (
+    <Document
+      file={pdfUrl}
+      loading={
+        <div className="flex min-h-[36rem] items-center justify-center px-6 text-sm font-detail text-text-subtle">
+          Loading PDF...
+        </div>
+      }
+      error={
+        <div className="flex min-h-[36rem] items-center justify-center px-6 text-sm font-detail text-text-subtle">
+          Unable to display the PDF. Use the open button above to view it in a
+          new tab.
+        </div>
+      }
+      onLoadSuccess={({ numPages }) => setPageCount(numPages)}
+      className="bg-background"
+    >
+      <div className="space-y-6 md:space-y-8 p-3 md:p-4">
+        {Array.from({ length: pageCount }, (_, index) => (
+          <div
+            key={`${title}-page-${index + 1}`}
+            className="overflow-hidden rounded-[1.5rem] border border-border/70 bg-white shadow-sm"
+          >
+            <Page
+              pageNumber={index + 1}
+              width={pageWidth}
+              renderAnnotationLayer={false}
+              renderTextLayer={false}
+            />
+          </div>
+        ))}
+      </div>
+    </Document>
+  );
+};
 
 const WorkProjectDetail = () => {
   const shouldReduceMotion = useReducedMotion();
@@ -109,6 +169,24 @@ const WorkProjectDetail = () => {
                     </span>
                   ))}
                 </div>
+
+                {project.pdfUrl ? (
+                  <div className="mt-6">
+                    <MagneticButton
+                      type="button"
+                      onClick={() =>
+                        window.open(
+                          project.pdfUrl,
+                          "_blank",
+                          "noopener,noreferrer",
+                        )
+                      }
+                      className="px-6 py-3 rounded-full border border-border text-foreground font-body text-sm font-medium tracking-wide hover:border-primary/40 transition-colors"
+                    >
+                      {project.pdfLabel ?? "View project PDF"}
+                    </MagneticButton>
+                  </div>
+                ) : null}
               </motion.section>
 
               <motion.section
@@ -140,6 +218,47 @@ const WorkProjectDetail = () => {
               </motion.section>
             </div>
           </div>
+
+          {project.pdfUrl ? (
+            <motion.section
+              initial={
+                shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 18 }
+              }
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 0.5,
+                delay: 0.15,
+                ease: [0.23, 1, 0.32, 1],
+              }}
+              className="mt-10 rounded-[2rem] border border-border/70 bg-card/80 backdrop-blur-sm p-4 md:p-6"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4 md:mb-5 px-2 md:px-1">
+                <div>
+                  <h2 className="text-xl md:text-2xl font-display font-bold text-foreground">
+                    Project PDF
+                  </h2>
+                  <p className="mt-1 text-sm font-detail text-text-subtle">
+                    Scroll through the paper right here, or open it in a new tab
+                    if you prefer.
+                  </p>
+                </div>
+                <MagneticButton
+                  type="button"
+                  onClick={() =>
+                    window.open(project.pdfUrl, "_blank", "noopener,noreferrer")
+                  }
+                  className="px-6 py-3 rounded-full border border-border text-foreground font-body text-sm font-medium tracking-wide hover:border-primary/40 transition-colors"
+                >
+                  {project.pdfLabel ?? "Open PDF in new tab"}
+                </MagneticButton>
+              </div>
+
+              <div className="max-h-[85vh] overflow-y-auto overflow-x-hidden rounded-[1.5rem] border border-border/70 bg-background/80">
+                <PdfViewer pdfUrl={project.pdfUrl} title={project.title} />
+              </div>
+            </motion.section>
+          ) : null}
 
           <div className="mt-12 flex flex-col sm:flex-row items-center gap-4">
             <Link to="/work">
