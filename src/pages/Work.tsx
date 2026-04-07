@@ -185,7 +185,7 @@ const Work = () => {
               <div className="w-[34rem] h-[34rem] md:w-[48rem] md:h-[48rem] rounded-full bg-primary/6 blur-3xl" />
             </div>
 
-            <AnimatePresence mode="wait" initial={false}>
+            <AnimatePresence mode="wait">
               {activeFilter === "everything" ? (
                 <motion.div
                   key={`everything-${overviewNonce}`}
@@ -204,6 +204,11 @@ const Work = () => {
                       <motion.div
                         key={rowIndex}
                         className="flex items-stretch gap-6 md:gap-8 w-max py-1"
+                        initial={
+                          shouldReduceMotion
+                            ? undefined
+                            : { x: rowIndex === 0 ? "0%" : "-50%" }
+                        }
                         animate={
                           shouldReduceMotion
                             ? undefined
@@ -220,6 +225,7 @@ const Work = () => {
                             : {
                                 duration: rowIndex === 0 ? 30 : 34,
                                 repeat: Infinity,
+                                repeatType: "loop",
                                 ease: "linear",
                               }
                         }

@@ -26,7 +26,10 @@ export type Project = {
   desc: string;
   details: string[];
   highlights: string[];
+  projectUrl?: string;
+  projectUrlLabel?: string;
   pdfUrl?: string;
+  pdfEmbedUrl?: string;
   pdfLabel?: string;
 };
 
@@ -38,8 +41,11 @@ export const projects: Project[] = [
     type: "competitions",
     image: project7,
     year: "2026",
-    pdfUrl: "/pdfs/M3_2026_Team_19018%20(5).pdf",
-    pdfLabel: "Read the M3 paper",
+    pdfUrl:
+      "https://drive.google.com/file/d/195PQxtRjGUz3v0cjUgY_JTgCxxmqjzNU/view?usp=sharing",
+    pdfEmbedUrl:
+      "https://drive.google.com/file/d/195PQxtRjGUz3v0cjUgY_JTgCxxmqjzNU/preview",
+    pdfLabel: "Open the M3 paper",
     desc: "Placed 6th nationally as a finalist (Team #19018) and won $5,000 in the M3 Challenge by building a multi-stage model on the long-term financial impact of online sports betting.",
     details: [
       "Completed a full 14-hour national modeling sprint: assumptions, calibration, sensitivity analysis, and policy framing.",
@@ -63,6 +69,11 @@ export const projects: Project[] = [
     type: "projects",
     image: project6,
     year: "2025",
+    pdfUrl:
+      "https://drive.google.com/file/d/1pvcXzBaSlmd4Acp0DrDHdnuGE-KPx5Cy/view?usp=sharing",
+    pdfEmbedUrl:
+      "https://drive.google.com/file/d/1pvcXzBaSlmd4Acp0DrDHdnuGE-KPx5Cy/preview",
+    pdfLabel: "Open UT MITE report",
     desc: "Selected for UT Austin MITE (<20% acceptance), led the team as ML researcher, and won 1st out of 14 teams for code quality while forecasting cumulative oil production for test wells.",
     details: [
       "Built an end-to-end workflow to predict cumulative oil output across 10 test wells for drilling prioritization.",
@@ -84,6 +95,8 @@ export const projects: Project[] = [
     type: "work",
     image: project1,
     year: "2025",
+    projectUrl: "https://useultra.ai",
+    projectUrlLabel: "Visit useultra.ai",
     desc: "Co-built frontend and AI systems for an accessible college-guidance product serving 10K+ students, while partnering 1:1 with the CEO.",
     details: [
       "Built product-facing frontend experiences for students and counselors.",
@@ -118,6 +131,11 @@ export const projects: Project[] = [
     type: "research",
     image: project3,
     year: "2025",
+    pdfUrl:
+      "https://drive.google.com/file/d/1bHH_m0PdiFvqgaIhn92Jp3HI0pPqJQqr/view?usp=drive_link",
+    pdfEmbedUrl:
+      "https://drive.google.com/file/d/1bHH_m0PdiFvqgaIhn92Jp3HI0pPqJQqr/preview",
+    pdfLabel: "Open Non-Trivial paper",
     desc: "Built a Quantum ML pipeline trained on 10K+ crop images, improving disease-detection accuracy by 20% over a classical CNN baseline.",
     details: [
       "Designed the pipeline for a research comparison against a classical baseline.",
@@ -133,6 +151,11 @@ export const projects: Project[] = [
     type: "research",
     image: project4,
     year: "2025",
+    pdfUrl:
+      "https://drive.google.com/file/d/1mFQ8GaAps3dFjdiS_7WCfCzNIy0SmNoi/view?usp=sharing",
+    pdfEmbedUrl:
+      "https://drive.google.com/file/d/1mFQ8GaAps3dFjdiS_7WCfCzNIy0SmNoi/preview",
+    pdfLabel: "Open ArtCriq paper",
     desc: "Developed a first-author NLP framework with 840+ examples to evaluate AI-generated art critiques and quantify bias patterns.",
     details: [
       "Built the framework to study quality and bias in generated critique text.",
@@ -148,6 +171,11 @@ export const projects: Project[] = [
     type: "research",
     image: project5,
     year: "2025",
+    pdfUrl:
+      "https://drive.google.com/file/d/108xVpXa6Sf-4tQ3Ku4TRztQYpqVBX-yh/view?usp=sharing",
+    pdfEmbedUrl:
+      "https://drive.google.com/file/d/108xVpXa6Sf-4tQ3Ku4TRztQYpqVBX-yh/preview",
+    pdfLabel: "Open NYAS paper",
     desc: "Led a six-person team, produced 30+ design concepts, and built the project website for a biodegradable air filter showing 63% lower cell damage.",
     details: [
       "Led design and web presentation for the initiative.",
