@@ -8,12 +8,12 @@ import { CONTACT } from "@/lib/contact";
 
 const infoCards = [
   { label: "LOCATION", value: CONTACT.location },
-  { label: "EDUCATION", value: "Turing Scholar — UT Austin '30" },
-  { label: "FOCUS", value: "CS, AI/ML & Full-Stack Dev" },
+  { label: "EDUCATION", value: "Turing Scholar (CS Honors) @ UT Austin '30" },
+  { label: "FOCUS", value: "Quant, AI/ML, & SWE" },
   { label: "STATUS", value: "Available for work", highlight: true },
 ];
 
-const aboutHeroBadge = { number: "4+", line2: "Years of craft" };
+const aboutHeroBadge = { number: "4+", line2: "Years of experience" };
 
 const experience = [
   {
@@ -151,7 +151,7 @@ const About = () => (
               className="space-y-0"
             >
               <p className="font-editorial text-lg md:text-xl lg:text-[1.35rem] text-foreground leading-relaxed">
-                I&apos;m Toyeshh — a developer and researcher based in Texas. I
+                I&apos;m Toyeshh, a developer and researcher based in Texas. I
                 care about technology that feels{" "}
                 <span className="text-primary not-italic">human</span> —
                 accessible, impactful, and connected to the people it serves.
