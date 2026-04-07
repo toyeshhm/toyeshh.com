@@ -12,9 +12,9 @@ import MagneticButton from "@/components/MagneticButton";
 import SectionDivider from "@/components/SectionDivider";
 import profileImg from "@/assets/profile.jpg";
 import heroBg from "@/assets/hero-bg.jpg";
-import project1 from "@/assets/project-1.jpg";
-import project2 from "@/assets/Ultra.png";
-import project3 from "@/assets/project-3.jpg";
+import project1 from "@/assets/Ultra.png";
+import project2 from "@/assets/WearItForward.png";
+import project3 from "@/assets/hero-bg.jpg";
 import { socialLinks } from "@/lib/contact";
 
 const Index = () => {
@@ -273,25 +273,25 @@ const Index = () => {
                   }
                 >
                   <Link to="/work" className="block group">
-                    <div className="relative w-[20rem] sm:w-[24rem] md:w-[28rem] lg:w-[32rem] aspect-[16/10] rounded-[1.75rem] overflow-hidden border border-border/60 transition-transform duration-500 ease-out">
-                      <img
-                        src={project.image}
-                        alt={project.title}
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                        loading="lazy"
-                        width={1200}
-                        height={800}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="group relative w-[20rem] sm:w-[24rem] md:w-[29rem] lg:w-[33rem] rounded-[2rem] overflow-hidden border border-border/70 bg-card/80 transition-transform duration-500 ease-out">
+                      <div className="relative aspect-[16/9] overflow-hidden">
+                        <img
+                          src={project.image}
+                          alt={project.title}
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                          loading="lazy"
+                          width={1400}
+                          height={788}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-background/35 via-transparent to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      </div>
 
-                      <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-primary via-primary/40 to-transparent opacity-80" />
-
-                      <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+                      <div className="p-5 md:p-6 border-t border-border/60 bg-background/80 backdrop-blur-md">
                         <span className="text-[10px] md:text-xs font-detail text-primary tracking-[0.2em] uppercase">
                           {project.category}
                         </span>
-                        <h3 className="text-xl md:text-3xl font-display font-bold mt-2 text-foreground group-hover:text-primary transition-colors duration-300 leading-tight">
+                        <h3 className="text-xl md:text-2xl font-display font-bold mt-2 text-foreground group-hover:text-primary transition-colors duration-300 leading-tight">
                           {project.title}
                         </h3>
                         <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/40">
@@ -315,35 +315,6 @@ const Index = () => {
               ))}
             </motion.div>
           </div>
-        </section>
-
-        {/* Services Strip */}
-        <section className="py-20 overflow-hidden">
-          <motion.div
-            animate={{ x: [0, -1000] }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="flex gap-12 whitespace-nowrap"
-          >
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="flex gap-12 items-center">
-                {[
-                  "Web Development",
-                  "UI/UX Design",
-                  "Brand Identity",
-                  "Creative Direction",
-                  "Motion Design",
-                ].map((service) => (
-                  <span
-                    key={`${service}-${i}`}
-                    className="text-4xl md:text-6xl font-display font-bold text-muted/50 flex items-center gap-12"
-                  >
-                    {service}
-                    <span className="w-3 h-3 rounded-full bg-primary/30" />
-                  </span>
-                ))}
-              </div>
-            ))}
-          </motion.div>
         </section>
 
         {/* CTA */}
