@@ -29,24 +29,13 @@ const ProjectTile = ({
   const card = (
     <div className="group relative w-[20rem] sm:w-[22.5rem] md:w-[24rem] lg:w-[30rem] rounded-[2rem] overflow-hidden border border-border/70 bg-card/80 shadow-[0_30px_90px_-24px_rgba(0,0,0,0.65)] backdrop-blur-sm transition-colors duration-300 hover:border-border/90">
       <div className="relative aspect-[16/9] overflow-hidden">
-        <motion.img
+        <img
           src={project.image}
           alt={project.title}
           loading="lazy"
           width={1400}
           height={788}
           className="h-full w-full object-cover"
-          animate={overview ? { scale: [1, 1.03, 1] } : undefined}
-          transition={
-            overview
-              ? {
-                  duration: 10 + index * 0.9,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: index * 0.35,
-                }
-              : undefined
-          }
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background/45 via-background/10 to-transparent" />
         <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-background/25 to-transparent" />

@@ -66,7 +66,7 @@ export const projects: Project[] = [
     slug: "ut-austin-mite-energy-ai-hackathon",
     title: "UT Austin MITE Energy A.I. Hackathon",
     category: "ML Research + Team Leadership",
-    type: "projects",
+    type: "competitions",
     image: project6,
     year: "2025",
     pdfUrl:

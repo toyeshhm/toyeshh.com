@@ -88,7 +88,7 @@ const Contact = () => {
                 className="mt-6 text-text-subtle font-detail text-base leading-relaxed max-w-md"
               >
                 Have a project in mind? I'd love to hear about it. Drop me a message 
-                and let's create something extraordinary together.
+                and let's create something unforgettable together.
               </motion.p>
 
               <motion.div

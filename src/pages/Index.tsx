@@ -12,10 +12,8 @@ import MagneticButton from "@/components/MagneticButton";
 import SectionDivider from "@/components/SectionDivider";
 import profileImg from "@/assets/profile.jpg";
 import heroBg from "@/assets/hero-bg.jpg";
-import project1 from "@/assets/Ultra.png";
-import project2 from "@/assets/WearItForward.png";
-import project3 from "@/assets/hero-bg.jpg";
 import { socialLinks } from "@/lib/contact";
+import { projects, type Project } from "@/lib/projects";
 
 const Index = () => {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -28,26 +26,7 @@ const Index = () => {
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
   const shouldReduceMotion = useReducedMotion();
 
-  const featuredProjects = [
-    {
-      title: "Ultra College Guidance AI",
-      category: "EdTech Startup",
-      image: project1,
-      year: "2025",
-    },
-    {
-      title: "UTD NLP Art-Critique Research",
-      category: "Research",
-      image: project2,
-      year: "2025",
-    },
-    {
-      title: "NanoChar Air Filter Platform",
-      category: "Research + UI/UX",
-      image: project3,
-      year: "2025",
-    },
-  ];
+  const featuredProjects: Project[] = projects;
   const featuredBannerProjects = [...featuredProjects, ...featuredProjects];
 
   return (
@@ -272,7 +251,7 @@ const Index = () => {
                     shouldReduceMotion ? undefined : { y: -6, scale: 1.01 }
                   }
                 >
-                  <Link to="/work" className="block group">
+                  <Link to={`/work/${project.slug}`} className="block group">
                     <div className="group relative w-[20rem] sm:w-[24rem] md:w-[29rem] lg:w-[33rem] rounded-[2rem] overflow-hidden border border-border/70 bg-card/80 transition-transform duration-500 ease-out">
                       <div className="relative aspect-[16/9] overflow-hidden">
                         <img
@@ -349,7 +328,7 @@ const Index = () => {
           <SectionDivider />
           <div className="mt-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <span className="text-sm font-detail text-text-dim">
-              © 2024 · Crafted with intention
+              © 2026 · Crafted with intention
             </span>
             <div className="flex flex-wrap gap-6">
               {socialLinks.map((s) => (
