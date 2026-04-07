@@ -2,15 +2,13 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Document, Page, pdfjs } from "react-pdf";
+import pdfWorkerSrc from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import MagneticButton from "@/components/MagneticButton";
 import PageTransition from "@/components/PageTransition";
 import SectionDivider from "@/components/SectionDivider";
 import { getProjectBySlug } from "@/lib/projects";
 
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url,
-).toString();
+pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerSrc;
 
 const PdfViewer = ({ pdfUrl, title }: { pdfUrl: string; title: string }) => {
   const [pageCount, setPageCount] = useState(0);
@@ -69,6 +67,7 @@ const WorkProjectDetail = () => {
   const shouldReduceMotion = useReducedMotion();
   const { projectSlug } = useParams();
   const project = projectSlug ? getProjectBySlug(projectSlug) : undefined;
+  const openPdfUrl = project?.pdfUrl ?? project?.pdfEmbedUrl;
 
   if (!project) {
     return (
@@ -124,21 +123,52 @@ const WorkProjectDetail = () => {
           </div>
 
           <div className="mt-10 grid gap-10 lg:grid-cols-[1.1fr_0.9fr] items-start">
-            <motion.div
-              initial={
-                shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 18 }
-              }
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-              className="relative overflow-hidden rounded-[2rem] border border-border/70 bg-card/80 shadow-[0_30px_90px_-24px_rgba(0,0,0,0.65)]"
-            >
-              <img
-                src={project.image}
-                alt={project.title}
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/35 via-transparent to-transparent" />
-            </motion.div>
+            {openPdfUrl ? (
+              <motion.section
+                initial={
+                  shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 18 }
+                }
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+                className="rounded-[2rem] border border-border/70 bg-card/80 backdrop-blur-sm p-4 md:p-6"
+              >
+                <h2 className="px-2 text-xl md:text-2xl font-display font-bold text-foreground">
+                  Project PDF
+                </h2>
+                <p className="mt-1 px-2 text-sm font-detail text-text-subtle">
+                  Scroll through the paper here while reading the project notes.
+                </p>
+
+                <div className="mt-4 max-h-[85vh] overflow-y-auto overflow-x-hidden rounded-[1.5rem] border border-border/70 bg-background/80">
+                  {project.pdfEmbedUrl ? (
+                    <iframe
+                      src={project.pdfEmbedUrl}
+                      title={`${project.title} PDF`}
+                      className="h-[80vh] min-h-[36rem] w-full"
+                      allow="autoplay"
+                    />
+                  ) : project.pdfUrl ? (
+                    <PdfViewer pdfUrl={project.pdfUrl} title={project.title} />
+                  ) : null}
+                </div>
+              </motion.section>
+            ) : (
+              <motion.div
+                initial={
+                  shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 18 }
+                }
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+                className="relative overflow-hidden rounded-[2rem] border border-border/70 bg-card/80 shadow-[0_30px_90px_-24px_rgba(0,0,0,0.65)]"
+              >
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/35 via-transparent to-transparent" />
+              </motion.div>
+            )}
 
             <div className="space-y-8">
               <motion.section
@@ -170,20 +200,34 @@ const WorkProjectDetail = () => {
                   ))}
                 </div>
 
-                {project.pdfUrl ? (
+                {openPdfUrl ? (
                   <div className="mt-6">
                     <MagneticButton
                       type="button"
                       onClick={() =>
+                        window.open(openPdfUrl, "_blank", "noopener,noreferrer")
+                      }
+                      className="px-6 py-3 rounded-full border border-border text-foreground font-body text-sm font-medium tracking-wide hover:border-primary/40 transition-colors"
+                    >
+                      {project.pdfLabel ?? "View project PDF"}
+                    </MagneticButton>
+                  </div>
+                ) : null}
+
+                {project.projectUrl ? (
+                  <div className="mt-4">
+                    <MagneticButton
+                      type="button"
+                      onClick={() =>
                         window.open(
-                          project.pdfUrl,
+                          project.projectUrl,
                           "_blank",
                           "noopener,noreferrer",
                         )
                       }
                       className="px-6 py-3 rounded-full border border-border text-foreground font-body text-sm font-medium tracking-wide hover:border-primary/40 transition-colors"
                     >
-                      {project.pdfLabel ?? "View project PDF"}
+                      {project.projectUrlLabel ?? "Visit project website"}
                     </MagneticButton>
                   </div>
                 ) : null}
@@ -218,47 +262,6 @@ const WorkProjectDetail = () => {
               </motion.section>
             </div>
           </div>
-
-          {project.pdfUrl ? (
-            <motion.section
-              initial={
-                shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 18 }
-              }
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 0.5,
-                delay: 0.15,
-                ease: [0.23, 1, 0.32, 1],
-              }}
-              className="mt-10 rounded-[2rem] border border-border/70 bg-card/80 backdrop-blur-sm p-4 md:p-6"
-            >
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4 md:mb-5 px-2 md:px-1">
-                <div>
-                  <h2 className="text-xl md:text-2xl font-display font-bold text-foreground">
-                    Project PDF
-                  </h2>
-                  <p className="mt-1 text-sm font-detail text-text-subtle">
-                    Scroll through the paper right here, or open it in a new tab
-                    if you prefer.
-                  </p>
-                </div>
-                <MagneticButton
-                  type="button"
-                  onClick={() =>
-                    window.open(project.pdfUrl, "_blank", "noopener,noreferrer")
-                  }
-                  className="px-6 py-3 rounded-full border border-border text-foreground font-body text-sm font-medium tracking-wide hover:border-primary/40 transition-colors"
-                >
-                  {project.pdfLabel ?? "Open PDF in new tab"}
-                </MagneticButton>
-              </div>
-
-              <div className="max-h-[85vh] overflow-y-auto overflow-x-hidden rounded-[1.5rem] border border-border/70 bg-background/80">
-                <PdfViewer pdfUrl={project.pdfUrl} title={project.title} />
-              </div>
-            </motion.section>
-          ) : null}
 
           <div className="mt-12 flex flex-col sm:flex-row items-center gap-4">
             <Link to="/work">
