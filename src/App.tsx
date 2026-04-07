@@ -8,6 +8,7 @@ import FloatingNav from "@/components/FloatingNav";
 import Index from "./pages/Index.tsx";
 import About from "./pages/About.tsx";
 import Work from "./pages/Work.tsx";
+import WorkProjectDetail from "./pages/WorkProjectDetail.tsx";
 import Contact from "./pages/Contact.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -21,6 +22,7 @@ const AnimatedRoutes = () => {
         <Route path="/" element={<Index />} />
         <Route path="/about" element={<About />} />
         <Route path="/work" element={<Work />} />
+        <Route path="/work/:projectSlug" element={<WorkProjectDetail />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

@@ -1,76 +1,110 @@
-import { motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 import RevealText from "@/components/RevealText";
 import MagneticButton from "@/components/MagneticButton";
 import SectionDivider from "@/components/SectionDivider";
-import project1 from "@/assets/Ultra.png";
-import project2 from "@/assets/WearItForward.png";
-import project3 from "@/assets/project-3.jpg";
+import {
+  getProjectsByFilter,
+  projectFilters,
+  projects,
+  type Project,
+  type ProjectFilter,
+} from "@/lib/projects";
 
-const projects = [
-  {
-    title: "Ultra (YC W24) AI College Guidance",
-    category: "EdTech Startup",
-    type: "work",
-    image: project1,
-    year: "2025",
-    desc: "Co-built frontend and AI systems for an accessible college-guidance product serving 10K+ students, while partnering 1:1 with the CEO.",
-  },
-  {
-    title: "WearItForward Humanitarian Nonprofit",
-    category: "Volunteering + Product",
-    type: "projects",
-    image: project2,
-    year: "2025",
-    desc: "Co-founded a humanitarian initiative that donated $160K+ in clothing, led a 20+ person team, and delivered 70+ media assets.",
-  },
-  {
-    title: "Quantum ML Crop Disease Detection",
-    category: "Quantum ML Research",
-    type: "research",
-    image: project3,
-    year: "2025",
-    desc: "Built a Quantum ML pipeline trained on 10K+ crop images, improving disease-detection accuracy by 20% over a classical CNN baseline.",
-  },
-  {
-    title: "UTD NLP Art-Critique Framework",
-    category: "NLP Research",
-    type: "work",
-    image: project1,
-    year: "2025",
-    desc: "Developed a first-author NLP framework with 840+ examples to evaluate AI-generated art critiques and quantify bias patterns.",
-  },
-  {
-    title: "NYAS NanoChar Initiative",
-    category: "Research + Website",
-    type: "projects",
-    image: project2,
-    year: "2025",
-    desc: "Led a six-person team, produced 30+ design concepts, and built the project website for a biodegradable air filter showing 63% lower cell damage.",
-  },
-];
+const filters = projectFilters;
 
-const filters = ["everything", "work", "research", "projects"] as const;
-type FilterType = (typeof filters)[number];
+const ProjectTile = ({
+  project,
+  overview,
+  rowIndex,
+  index,
+}: {
+  project: Project;
+  overview: boolean;
+  rowIndex?: number;
+  index: number;
+}) => {
+  const card = (
+    <div className="group relative w-[20rem] sm:w-[24rem] md:w-[29rem] lg:w-[33rem] rounded-[2rem] overflow-hidden border border-border/70 bg-card/80 shadow-[0_30px_90px_-24px_rgba(0,0,0,0.65)] backdrop-blur-sm transition-colors duration-300 hover:border-border/90">
+      <div className="relative aspect-[16/9] overflow-hidden">
+        <motion.img
+          src={project.image}
+          alt={project.title}
+          loading="lazy"
+          width={1400}
+          height={788}
+          className="h-full w-full object-cover"
+          animate={overview ? { scale: [1, 1.03, 1] } : undefined}
+          transition={
+            overview
+              ? {
+                  duration: 10 + index * 0.9,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: index * 0.35,
+                }
+              : undefined
+          }
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/45 via-background/10 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-background/25 to-transparent" />
+      </div>
+
+      <div className="p-4 md:p-5 border-t border-border/60 bg-background/75 backdrop-blur-md">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <span className="text-[10px] md:text-xs font-detail text-text-dim tracking-[0.2em] uppercase block">
+              {project.category} · {project.year}
+            </span>
+            <h3 className="mt-1.5 text-lg md:text-xl font-display font-bold text-foreground group-hover:text-primary transition-colors duration-300">
+              {project.title}
+            </h3>
+          </div>
+          <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/80 text-sm text-primary transition-transform duration-300 group-hover:translate-x-0.5">
+            →
+          </span>
+        </div>
+        <p className="mt-2 text-xs md:text-sm font-detail text-text-subtle leading-relaxed max-w-2xl line-clamp-2">
+          {project.desc}
+        </p>
+      </div>
+    </div>
+  );
+
+  if (overview) {
+    return (
+      <motion.article
+        key={`${project.title}-${rowIndex}-${index}`}
+        className="shrink-0 will-change-transform"
+        whileHover={{ y: -6, scale: 1.01 }}
+      >
+        <Link to={`/work/${project.slug}`} className="block">
+          {card}
+        </Link>
+      </motion.article>
+    );
+  }
+
+  return (
+    <Link to={`/work/${project.slug}`} className="group block h-full">
+      {card}
+    </Link>
+  );
+};
 
 const Work = () => {
   const shouldReduceMotion = useReducedMotion();
-  const [activeFilter, setActiveFilter] = useState<FilterType>("everything");
+  const [activeFilter, setActiveFilter] = useState<ProjectFilter>("everything");
+  const [overviewNonce, setOverviewNonce] = useState(0);
 
   const visibleProjects = useMemo(
-    () =>
-      activeFilter === "everything"
-        ? projects
-        : projects.filter((project) => project.type === activeFilter),
+    () => getProjectsByFilter(activeFilter),
     [activeFilter],
   );
 
-  const baseProjects = useMemo(() => {
-    const base = visibleProjects.length > 0 ? visibleProjects : projects;
-    return base;
-  }, [visibleProjects]);
+  const baseProjects = useMemo(() => projects, []);
 
   const topRowProjects = useMemo(() => {
     const evenItems = baseProjects.filter((_, index) => index % 2 === 0);
@@ -83,6 +117,14 @@ const Work = () => {
     const source = oddItems.length > 0 ? oddItems : baseProjects;
     return [...source, ...source];
   }, [baseProjects]);
+
+  const handleFilterClick = (filter: ProjectFilter) => {
+    if (filter === "everything") {
+      setOverviewNonce((value) => value + 1);
+    }
+
+    setActiveFilter(filter);
+  };
 
   return (
     <PageTransition>
@@ -120,7 +162,7 @@ const Work = () => {
                   <button
                     key={filter}
                     type="button"
-                    onClick={() => setActiveFilter(filter)}
+                    onClick={() => handleFilterClick(filter)}
                     className={`rounded-full px-4 py-2 text-sm font-detail tracking-wide capitalize transition-colors ${
                       isActive
                         ? "bg-foreground text-background"
@@ -143,94 +185,87 @@ const Work = () => {
               <div className="w-[34rem] h-[34rem] md:w-[48rem] md:h-[48rem] rounded-full bg-primary/6 blur-3xl" />
             </div>
 
-            <div className="relative overflow-hidden py-2 space-y-6 md:space-y-8 px-3 sm:px-5 md:px-8 lg:px-10">
-              {[topRowProjects, bottomRowProjects].map(
-                (rowProjects, rowIndex) => (
-                  <motion.div
-                    key={rowIndex}
-                    className="flex items-stretch gap-6 md:gap-8 w-max py-1"
-                    animate={
-                      shouldReduceMotion
-                        ? undefined
-                        : {
-                            x: rowIndex === 0 ? ["0%", "-50%"] : ["-50%", "0%"],
-                          }
-                    }
-                    transition={
-                      shouldReduceMotion
-                        ? undefined
-                        : {
-                            duration: rowIndex === 0 ? 30 : 34,
-                            repeat: Infinity,
-                            ease: "linear",
-                          }
-                    }
-                    style={{ willChange: "transform" }}
-                  >
-                    {rowProjects.map((project, index) => (
-                      <motion.article
-                        key={`${project.title}-${rowIndex}-${index}`}
-                        className="shrink-0 will-change-transform"
-                        whileHover={
+            <AnimatePresence mode="wait" initial={false}>
+              {activeFilter === "everything" ? (
+                <motion.div
+                  key={`everything-${overviewNonce}`}
+                  className="relative overflow-hidden py-2 space-y-6 md:space-y-8 px-3 sm:px-5 md:px-8 lg:px-10"
+                  initial={
+                    shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 16 }
+                  }
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={
+                    shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -16 }
+                  }
+                  transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
+                >
+                  {[topRowProjects, bottomRowProjects].map(
+                    (rowProjects, rowIndex) => (
+                      <motion.div
+                        key={rowIndex}
+                        className="flex items-stretch gap-6 md:gap-8 w-max py-1"
+                        animate={
                           shouldReduceMotion
                             ? undefined
-                            : { y: -6, scale: 1.01 }
+                            : {
+                                x:
+                                  rowIndex === 0
+                                    ? ["0%", "-50%"]
+                                    : ["-50%", "0%"],
+                              }
                         }
+                        transition={
+                          shouldReduceMotion
+                            ? undefined
+                            : {
+                                duration: rowIndex === 0 ? 30 : 34,
+                                repeat: Infinity,
+                                ease: "linear",
+                              }
+                        }
+                        style={{ willChange: "transform" }}
                       >
-                        <div className="group relative w-[20rem] sm:w-[24rem] md:w-[29rem] lg:w-[33rem] rounded-[2rem] overflow-hidden border border-border/70 bg-card/80 shadow-[0_30px_90px_-24px_rgba(0,0,0,0.65)] backdrop-blur-sm">
-                          <div className="relative aspect-[16/9] overflow-hidden">
-                            <motion.img
-                              src={project.image}
-                              alt={project.title}
-                              loading="lazy"
-                              width={1400}
-                              height={788}
-                              className="h-full w-full object-cover"
-                              animate={
-                                shouldReduceMotion
-                                  ? undefined
-                                  : { scale: [1, 1.03, 1] }
-                              }
-                              transition={
-                                shouldReduceMotion
-                                  ? undefined
-                                  : {
-                                      duration: 10 + index * 0.9,
-                                      repeat: Infinity,
-                                      ease: "easeInOut",
-                                      delay: index * 0.35,
-                                    }
-                              }
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-background/45 via-background/10 to-transparent" />
-                            <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-background/25 to-transparent" />
-                          </div>
-
-                          <div className="p-4 md:p-5 border-t border-border/60 bg-background/75 backdrop-blur-md">
-                            <div className="flex items-start justify-between gap-4">
-                              <div>
-                                <span className="text-[10px] md:text-xs font-detail text-text-dim tracking-[0.2em] uppercase block">
-                                  {project.category} · {project.year}
-                                </span>
-                                <h3 className="mt-1.5 text-lg md:text-xl font-display font-bold text-foreground">
-                                  {project.title}
-                                </h3>
-                              </div>
-                              <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/80 text-sm text-primary">
-                                →
-                              </span>
-                            </div>
-                            <p className="mt-2 text-xs md:text-sm font-detail text-text-subtle leading-relaxed max-w-2xl line-clamp-2">
-                              {project.desc}
-                            </p>
-                          </div>
-                        </div>
-                      </motion.article>
+                        {rowProjects.map((project, index) => (
+                          <ProjectTile
+                            key={`${project.title}-${rowIndex}-${index}`}
+                            project={project}
+                            overview
+                            rowIndex={rowIndex}
+                            index={index}
+                          />
+                        ))}
+                      </motion.div>
+                    ),
+                  )}
+                </motion.div>
+              ) : (
+                <motion.div
+                  key={activeFilter}
+                  className="relative py-2 px-3 sm:px-5 md:px-8 lg:px-10 overflow-x-auto overflow-y-hidden"
+                  initial={
+                    shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: 28 }
+                  }
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={
+                    shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: -28 }
+                  }
+                  transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
+                  style={{ willChange: "transform" }}
+                >
+                  <div className="flex w-max gap-6 md:gap-8 pr-3 snap-x snap-mandatory">
+                    {visibleProjects.map((project, index) => (
+                      <div key={project.slug} className="snap-start shrink-0">
+                        <ProjectTile
+                          project={project}
+                          overview={false}
+                          index={index}
+                        />
+                      </div>
                     ))}
-                  </motion.div>
-                ),
+                  </div>
+                </motion.div>
               )}
-            </div>
+            </AnimatePresence>
           </div>
 
           <div className="mt-14 md:mt-16 flex flex-col sm:flex-row items-center justify-center gap-4">
