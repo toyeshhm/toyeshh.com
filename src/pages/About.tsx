@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 import RevealText from "@/components/RevealText";
 import SectionDivider from "@/components/SectionDivider";
@@ -16,87 +17,81 @@ const aboutHeroBadge = { number: "4+", line2: "Years of craft" };
 
 const experience = [
   {
-    role: "Founding Technical Engineer & UI/UX Lead",
-    company: "Ultra (Y Combinator W24)",
-    period: "2025 — Present",
-    type: "Paid · Startup",
-    desc: "Co-built frontend and AI for an accessible college-guidance platform helping 10K+ students, collaborated 1:1 with the CEO, and helped grow the Discord community from 20 to 2,500+ members.",
+    role: "Research Team Lead & Alumni Officer",
+    company: "The New York Academy of Sciences",
+    projectSlug: "nyas-nanochar-initiative",
+    period: "Mar 2025 — Present",
+    type: "Internship + Seasonal · Remote",
+    points: [
+      "Selected in the top 10% of global applicants and led a 6-person international team on NanoChar.",
+      "Directed modeling and prototype design, surveyed 100+ users, and achieved a 63% reduction in average cellular damage.",
+      "Project placed 2nd/119 and was showcased at the 2025 International Student Symposium; later recognized as a NYAS Young Member and invited to the JCSVEI alumni network.",
+    ],
   },
   {
-    role: "Summer Research Intern & First Author",
-    company: "The University of Texas at Dallas (NLP Research)",
-    period: "2025",
-    type: "Research · On-site",
-    desc: "Developed an NLP framework to evaluate AI-generated art critiques, created an 840+ example dataset, and published the research through UTD.",
+    role: "Research Intern",
+    company: "The University of Texas at Dallas",
+    projectSlug: "utd-nlp-art-critique-framework",
+    period: "Jun 2025 — Sep 2025",
+    type: "Internship · On-site",
+    points: [
+      "Built NLP and multimodal pipelines under Dr. Chris Davis for large-scale language and art-critique analysis.",
+      "Introduced the Creative Coherence Score (CCS) and created the ArtCriq dataset with 850+ annotated critiques.",
+      "Reduced cultural bias by 38% through LoRA fine-tuning across GPT-4, Claude 3, and Llama-3.",
+    ],
   },
   {
-    role: "Research Lead & UI/UX Website Designer",
-    company: "New York Academy of Sciences (NYAS)",
-    period: "2025",
-    type: "Research · Global Team",
-    desc: "Selected into NYAS (<10% acceptance), sketched 30+ designs, built the NanoChar website, and led a six-person team that developed a biodegradable air filter with 63% reduction in cell damage.",
+    role: "Frontend Engineer",
+    company: "Ultra",
+    projectSlug: "ultra-yc-w24-ai-college-guidance",
+    period: "Jan 2025 — Aug 2025",
+    type: "Internship · Remote",
+    points: [
+      "Built and optimized Ultra's landing experience to improve conversion and retention.",
+      "Shipped performance and accessibility upgrades across the frontend architecture.",
+      "Integrated GPT-powered roadmap features with full CRUD and prototyped a RAG-based startup guidance assistant.",
+    ],
   },
   {
     role: "Quantum Machine Learning Researcher",
-    company: "Non-Trivial Global Research Program",
-    period: "2025",
-    type: "Research · <6% Acceptance",
-    desc: "Built a Quantum ML model for early crop disease detection using visual features, trained on 10K+ images, and achieved 20% higher accuracy than a CNN baseline.",
-  },
-  {
-    role: "Product + Community Builder",
-    company: "Ultra Community Growth",
-    period: "2025",
-    type: "Leadership · Remote",
-    desc: "Supported product-led growth strategy and expanded the student Discord from 20 users to 2,500+, contributing to a prize package worth over $3K.",
-  },
-];
-
-const education = [
-  {
-    school: "Liberty High School",
-    degree: "High School Diploma",
-    period: "Aug 2022 — May 2026",
-    details:
-      "CS Club, BPA, DECA, Mu Alpha Theta, Math/Science/CS UIL, Science Olympiad, Key Club",
-  },
-  {
-    school: "Collin College",
-    degree: "Associate of Science (Dual Credit)",
-    period: "Aug 2024 — May 2025",
-    details: "Calculus III, Differential Equations",
+    company: "Non-Trivial",
+    projectSlug: "quantum-ml-crop-disease-detection",
+    period: "Mar 2025 — Jul 2025",
+    type: "Part-time · Remote",
+    points: [
+      "Selected among the top 6% globally for the Non-Trivial research fellowship.",
+      "Designed a QCNN pipeline for crop disease detection with angle/amplitude encoding and cGAN-based augmentation.",
+      "Trained on 10K+ plant images and achieved 20% higher accuracy than a classical CNN baseline.",
+    ],
   },
 ];
 
 const awards = [
   {
-    title: "NYAS Research Program",
-    detail: "Selected at <10% acceptance rate",
-    year: "2025",
+    title: "NYAS Research Finalist",
+    detail: "2nd/119 teams. Associated with The New York Academy of Sciences.",
+    year: "Issued by New York Academy of Sciences · Jul 2025",
+    projectSlug: "nyas-nanochar-initiative",
   },
   {
-    title: "Non-Trivial Research Program",
-    detail: "Selected at <6% acceptance rate",
-    year: "2025",
+    title: "BPA NLC Competitor",
+    detail:
+      "Financial Portfolio Management: 1st/200+ internationally. Java Programming: 12th internationally and 3rd in Texas.",
+    year: "Issued by BPA · May 2025",
   },
   {
-    title: "Ultra Growth Milestone",
-    detail: "Discord scaled from 20 to 2,500+ users",
-    year: "2025",
+    title: "SIAM International M3 MathWorks Math Modeling Challenge Finalist",
+    detail: "6th/770+ teams in 2026 ($5,000 prize); Top 150 teams in 2025.",
+    year: "Issued by SIAM · Mar 2025",
+    projectSlug: "m3-mathworks-math-modeling-challenge-finalist",
   },
   {
-    title: "WearItForward Impact",
-    detail: "$160K+ clothing donated to underserved communities",
-    year: "2025",
+    title: "Texas DECA ICDC Alternate",
+    detail:
+      "Qualified for state in the Marketing Cluster 4 consecutive years (2023-2026); State Finalist 2025 (ICDC Alternate).",
+    year: "Issued by DECA · Jan 2025",
   },
 ];
-
-const volunteering = {
-  role: "Co-founder & UI/UX + Website Designer",
-  org: "WearItForward (Partnered with Frisco Threads & Storehouse Center)",
-  period: "2022 — Present",
-  desc: "Co-led a team of 20+ volunteers, donated $160K+ in clothing, designed 70+ media assets, presented to Frisco PTA's 24K+ member audience, and was featured on Fox News and five additional news articles.",
-};
 
 const About = () => (
   <PageTransition>
@@ -225,7 +220,10 @@ const About = () => (
                     {/* Timeline dot */}
                     <div className="absolute left-0 top-[6px] w-4 h-4 md:w-[18px] md:h-[18px] rounded-full border-2 border-primary bg-background z-10" />
 
-                    <div className="group hover:bg-surface-hover/30 p-5 -m-5 rounded-xl transition-colors duration-500">
+                    <Link
+                      to={`/work/${exp.projectSlug}`}
+                      className="group block p-5 -m-5 rounded-xl transition-colors duration-500 hover:bg-surface-hover/30"
+                    >
                       <div className="flex flex-col md:flex-row md:items-start justify-between gap-1">
                         <div>
                           <h3 className="text-lg font-display font-semibold group-hover:text-primary transition-colors">
@@ -244,51 +242,21 @@ const About = () => (
                           </span>
                         </div>
                       </div>
-                      <p className="text-sm font-detail text-text-dim mt-3 leading-relaxed">
-                        {exp.desc}
-                      </p>
-                    </div>
+                      <ul className="mt-3 space-y-2">
+                        {exp.points.map((point) => (
+                          <li
+                            key={point}
+                            className="flex gap-2.5 text-sm font-detail text-text-dim leading-relaxed"
+                          >
+                            <span className="mt-[0.45rem] h-1.5 w-1.5 shrink-0 rounded-full bg-primary/80" />
+                            <span>{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </Link>
                   </motion.div>
                 ))}
               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Education */}
-        <div className="mt-32">
-          <SectionDivider />
-          <div className="mt-16">
-            <RevealText>
-              <h2 className="text-3xl md:text-4xl font-display font-bold">
-                Education
-              </h2>
-            </RevealText>
-
-            <div className="grid md:grid-cols-2 gap-6 mt-12">
-              {education.map((edu, i) => (
-                <motion.div
-                  key={edu.school}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.15, duration: 0.6 }}
-                  className="glass-panel p-6 group hover:border-primary/30 transition-colors duration-500"
-                >
-                  <h3 className="text-lg font-display font-semibold group-hover:text-primary transition-colors">
-                    {edu.school}
-                  </h3>
-                  <p className="text-sm font-detail text-text-subtle mt-1">
-                    {edu.degree}
-                  </p>
-                  <span className="text-xs font-detail text-text-dim tracking-wider mt-2 block">
-                    {edu.period}
-                  </span>
-                  <p className="text-xs font-detail text-text-dim mt-3 leading-relaxed">
-                    {edu.details}
-                  </p>
-                </motion.div>
-              ))}
             </div>
           </div>
         </div>
@@ -299,7 +267,7 @@ const About = () => (
           <div className="mt-16">
             <RevealText>
               <h2 className="text-3xl md:text-4xl font-display font-bold">
-                Honors & <span className="text-gradient">Awards</span>
+                <span className="text-gradient">Awards</span>
               </h2>
             </RevealText>
 
@@ -311,64 +279,53 @@ const About = () => (
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1, duration: 0.5 }}
-                  className="flex items-start gap-4 p-5 rounded-xl border border-border hover:border-primary/30 transition-colors duration-500 group"
+                  className="group"
                 >
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                    <span className="text-primary text-sm font-display font-bold">
-                      ★
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-display font-semibold group-hover:text-primary transition-colors">
-                      {award.title}
-                    </h3>
-                    <p className="text-xs font-detail text-text-dim mt-1">
-                      {award.detail}
-                    </p>
-                    <span className="text-xs font-detail text-text-dim/60 mt-1 block">
-                      {award.year}
-                    </span>
-                  </div>
+                  {award.projectSlug ? (
+                    <Link
+                      to={`/work/${award.projectSlug}`}
+                      className="flex items-start gap-4 p-5 rounded-xl border border-border hover:border-primary/30 transition-colors duration-500"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
+                        <span className="text-primary text-sm font-display font-bold">
+                          ★
+                        </span>
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-display font-semibold group-hover:text-primary transition-colors">
+                          {award.title}
+                        </h3>
+                        <p className="text-xs font-detail text-text-dim mt-1">
+                          {award.detail}
+                        </p>
+                        <span className="text-xs font-detail text-text-dim/60 mt-1 block">
+                          {award.year}
+                        </span>
+                      </div>
+                    </Link>
+                  ) : (
+                    <div className="flex items-start gap-4 p-5 rounded-xl border border-border hover:border-primary/30 transition-colors duration-500">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
+                        <span className="text-primary text-sm font-display font-bold">
+                          ★
+                        </span>
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-display font-semibold group-hover:text-primary transition-colors">
+                          {award.title}
+                        </h3>
+                        <p className="text-xs font-detail text-text-dim mt-1">
+                          {award.detail}
+                        </p>
+                        <span className="text-xs font-detail text-text-dim/60 mt-1 block">
+                          {award.year}
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </motion.div>
               ))}
             </div>
-          </div>
-        </div>
-
-        {/* Volunteering */}
-        <div className="mt-32">
-          <SectionDivider />
-          <div className="mt-16">
-            <RevealText>
-              <h2 className="text-3xl md:text-4xl font-display font-bold">
-                Volunteering
-              </h2>
-            </RevealText>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="mt-12 glass-panel p-8 hover:border-primary/30 transition-colors duration-500 group"
-            >
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                <div>
-                  <h3 className="text-lg font-display font-semibold group-hover:text-primary transition-colors">
-                    {volunteering.role}
-                  </h3>
-                  <p className="text-sm font-detail text-text-subtle mt-0.5">
-                    {volunteering.org}
-                  </p>
-                </div>
-                <span className="text-xs font-detail text-text-dim tracking-wider">
-                  {volunteering.period}
-                </span>
-              </div>
-              <p className="text-sm font-detail text-text-dim mt-4 leading-relaxed">
-                {volunteering.desc}
-              </p>
-            </motion.div>
           </div>
         </div>
       </div>

@@ -3,12 +3,15 @@ import project2 from "@/assets/WearItForward.png";
 import project3 from "@/assets/NonTrivial.png";
 import project4 from "@/assets/ArtCriq.png";
 import project5 from "@/assets/NYAS.png";
+import project6 from "@/assets/MITE.png";
+import project7 from "@/assets/m3.png";
 
 export const projectFilters = [
   "everything",
   "work",
   "research",
   "projects",
+  "competitions",
 ] as const;
 
 export type ProjectFilter = (typeof projectFilters)[number];
@@ -23,9 +26,57 @@ export type Project = {
   desc: string;
   details: string[];
   highlights: string[];
+  pdfUrl?: string;
+  pdfLabel?: string;
 };
 
 export const projects: Project[] = [
+  {
+    slug: "m3-mathworks-math-modeling-challenge-finalist",
+    title: "M3 MathWorks Math Modeling Challenge",
+    category: "Competition + Mathematical Modeling",
+    type: "competitions",
+    image: project7,
+    year: "2026",
+    pdfUrl: "/pdfs/M3_2026_Team_19018%20(5).pdf",
+    pdfLabel: "Read the M3 paper",
+    desc: "Placed 6th nationally as a finalist (Team #19018) and won $5,000 in the M3 Challenge by building a multi-stage model on the long-term financial impact of online sports betting.",
+    details: [
+      "Completed a full 14-hour national modeling sprint: assumptions, calibration, sensitivity analysis, and policy framing.",
+      "Modeled disposable income with natural cubic splines on 2024 BLS expenditure data and adjusted spending shares using Engel's Law.",
+      "Built a three-step betting-risk pipeline (participation logistic model, handle estimation, and 10,000-run Monte Carlo outcomes).",
+      "Estimated that 76-80% of bettors lose annually, with high-frequency young male profiles showing the highest disposable-income exposure.",
+      "Quantified opportunity cost: $750 annual losses can compound to about $59,293 foregone retirement wealth over 30 years at 6% real return.",
+      "Extended to national scale: $13.7B in 2024 losses projects to about $1.08T in 30-year foregone wealth.",
+      "Proposed the Future Cost Disclosure Act to surface real-time long-term cost of wagers at point of bet.",
+    ],
+    highlights: [
+      "6th place finalist (national)",
+      "$5,000 award",
+      "Team #19018",
+    ],
+  },
+  {
+    slug: "ut-austin-mite-energy-ai-hackathon",
+    title: "UT Austin MITE Energy A.I. Hackathon",
+    category: "ML Research + Team Leadership",
+    type: "projects",
+    image: project6,
+    year: "2025",
+    desc: "Selected for UT Austin MITE (<20% acceptance), led the team as ML researcher, and won 1st out of 14 teams for code quality while forecasting cumulative oil production for test wells.",
+    details: [
+      "Built an end-to-end workflow to predict cumulative oil output across 10 test wells for drilling prioritization.",
+      "Applied MICE data imputation over 12 parameters to preserve feature relationships and strengthen model reliability.",
+      "Ranked key predictors (Por, Perm, AI) using correlation, mutual information, and distribution analysis plots.",
+      "Benchmarked linear regression and optimized a decision tree (about 12 nodes) for improved fit on production targets.",
+      "Presented findings and recommendations, including stronger cross-validation and hyperparameter tuning for better generalization.",
+    ],
+    highlights: [
+      "UT Austin MITE (<20% acceptance)",
+      "1st/14 teams for code quality",
+      "MICE imputation on 12 features",
+    ],
+  },
   {
     slug: "ultra-yc-w24-ai-college-guidance",
     title: "Ultra (YC W24) AI College Guidance",
