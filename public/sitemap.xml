@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Home Page -->
+  <url>
+    <loc>https://toyeshh.com</loc>
+    <lastmod>2026-04-08</lastmod>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- About Page -->
+  <url>
+    <loc>https://toyeshh.com/about</loc>
+    <lastmod>2026-04-08</lastmod>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Work Index -->
+  <url>
+    <loc>https://toyeshh.com/work</loc>
+    <lastmod>2026-04-08</lastmod>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Project: M3 MathWorks Math Modeling Challenge -->
+  <url>
+    <loc>https://toyeshh.com/work/m3-mathworks-math-modeling-challenge-finalist</loc>
+    <lastmod>2026-04-08</lastmod>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Project: UT Austin MITE Energy A.I. Hackathon -->
+  <url>
+    <loc>https://toyeshh.com/work/ut-austin-mite-energy-ai-hackathon</loc>
+    <lastmod>2026-04-08</lastmod>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Project: Ultra (YC W24) AI College Guidance -->
+  <url>
+    <loc>https://toyeshh.com/work/ultra-yc-w24-ai-college-guidance</loc>
+    <lastmod>2026-04-08</lastmod>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Project: WearItForward Nonprofit -->
+  <url>
+    <loc>https://toyeshh.com/work/wear-it-forward-nonprofit</loc>
+    <lastmod>2026-04-08</lastmod>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Project: Quantum ML Crop Disease Detection -->
+  <url>
+    <loc>https://toyeshh.com/work/quantum-ml-crop-disease-detection</loc>
+    <lastmod>2026-04-08</lastmod>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Project: UTD NLP Art-Critique Framework -->
+  <url>
+    <loc>https://toyeshh.com/work/utd-nlp-art-critique-framework</loc>
+    <lastmod>2026-04-08</lastmod>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Project: NYAS NanoChar Initiative -->
+  <url>
+    <loc>https://toyeshh.com/work/nyas-nanochar-initiative</loc>
+    <lastmod>2026-04-08</lastmod>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Contact Page -->
+  <url>
+    <loc>https://toyeshh.com/contact</loc>
+    <lastmod>2026-04-08</lastmod>
+    <priority>0.8</priority>
+  </url>
+</urlset>
