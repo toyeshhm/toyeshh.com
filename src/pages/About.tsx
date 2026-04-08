@@ -116,7 +116,7 @@ const About = () => (
 
           <RevealText>
             <h1 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.15rem] font-editorial font-medium text-foreground leading-[1.12] tracking-tight max-w-4xl">
-              Building at the intersection of research, code, and creativity
+              Building towards the future
             </h1>
           </RevealText>
 
@@ -151,25 +151,29 @@ const About = () => (
               className="space-y-0"
             >
               <p className="font-editorial text-lg md:text-xl lg:text-[1.35rem] text-foreground leading-relaxed">
-                I&apos;m Toyeshh, a developer and researcher based in Texas. I
-                care about technology that feels{" "}
-                <span className="text-primary not-italic">human</span> —
-                accessible, impactful, and connected to the people it serves.
+                Hey, I&apos;m Toyeshh, an incoming freshman at UT Austin focused on building the{" "}
+                <span className="text-primary not-italic">future </span> 
+                 of technology.
               </p>
-
+             <div className="mt-6 md:mt-8 space-y-4">
+                <p className="text-[0.9375rem] md:text-base text-muted-foreground font-detail leading-relaxed">
+                  
+                 
+                </p>
+                <p className="text-[0.9375rem] md:text-base text-muted-foreground font-detail leading-relaxed">
+                 
+                </p>
+              </div>
               <div className="mt-6 md:mt-8 space-y-4">
                 <p className="text-[0.9375rem] md:text-base text-muted-foreground font-detail leading-relaxed">
-                  Hey, I&apos;m Toyeshh — a high school senior and aspiring CS
-                  major focused on using tech to expand access to education and
-                  knowledge. I have experience in full-stack web development,
+                  
+                  I have experience in full-stack web development,
                   machine learning, and research in NLP and AI through
                   internships, fellowships, and edtech work.
                 </p>
                 <p className="text-[0.9375rem] md:text-base text-muted-foreground font-detail leading-relaxed">
                   When I&apos;m not coding or researching, you&apos;ll find me
-                  exploring generative art, diving into math competitions, or
-                  working with education nonprofits. The best creative work
-                  comes from curiosity and openness.
+                  exploring the latest tech or generating ideas for an innovative startup. 
                 </p>
               </div>
 

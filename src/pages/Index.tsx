@@ -81,19 +81,15 @@ const Index = () => {
 
                   <RevealText>
                     <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-display font-bold leading-[0.95] tracking-tight">
-                      Creative
+                      Technical
                     </h1>
                   </RevealText>
                   <RevealText delay={0.1}>
                     <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-display font-bold leading-[0.95] tracking-tight text-gradient">
-                      Developer
+                      Founder
                     </h1>
                   </RevealText>
-                  <RevealText delay={0.2}>
-                    <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-display font-bold leading-[0.95] tracking-tight">
-                      & Designer
-                    </h1>
-                  </RevealText>
+                 
 
                   <motion.p
                     initial={{ opacity: 0, y: 20 }}
@@ -101,9 +97,8 @@ const Index = () => {
                     transition={{ delay: 0.6, duration: 0.8 }}
                     className="mt-8 max-w-md text-text-subtle font-detail text-base leading-relaxed"
                   >
-                    I craft digital experiences that blend aesthetics with
-                    functionality. Focused on creating meaningful products that
-                    resonate.
+                    Building intelligent technology that will change the world
+
                   </motion.p>
 
                   <motion.div
@@ -328,7 +323,7 @@ const Index = () => {
           <SectionDivider />
           <div className="mt-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <span className="text-sm font-detail text-text-dim">
-              © 2026 · Crafted with intention
+              © 2026 
             </span>
             <div className="flex flex-wrap gap-6">
               {socialLinks.map((s) => (
