@@ -89,17 +89,68 @@ const Index = () => {
                       Founder
                     </h1>
                   </RevealText>
-                 
 
-                  <motion.p
+                  <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.6, duration: 0.8 }}
-                    className="mt-8 max-w-md text-text-subtle font-detail text-base leading-relaxed"
+                    className="mt-8 max-w-2xl text-text-subtle font-detail text-base leading-relaxed"
                   >
-                    Building intelligent technology that will change the world
-
-                  </motion.p>
+                    <p className="font-medium text-foreground/90 lowercase">
+                      Quick overview of me:
+                    </p>
+                    <ul className="mt-3 space-y-1.5 list-disc pl-5">
+                      <li>
+                        worked on AI college mapping at{" "}
+                        <span className="rounded-sm border border-primary/35 bg-primary/20 px-1 text-foreground">
+                          Ultra (YC W24)
+                        </span>
+                        ; 10k+ users
+                      </li>
+                      <li>
+                        researched at{" "}
+                        <span className="rounded-sm border border-primary/30 bg-primary/15 px-1 text-foreground">
+                          Non-Trivial
+                        </span>{" "}
+                        on quantum machine learning for crop-disease detection
+                      </li>
+                      <li>
+                        co-founded{" "}
+                        <span className="rounded-sm border border-accent/35 bg-accent/20 px-1 text-foreground">
+                          WearItForward
+                        </span>
+                        ; a humanitarian nonprofit raising $200k+ in
+                        clothing donations and featured on FOX News
+                      </li>
+                      <li>
+                        was a finalist in{" "}
+                        <span className="rounded-sm border border-secondary-foreground/30 bg-secondary/80 px-1 text-foreground">
+                          M3 Math Modeling</span>{""}; won $5,000, and presented at Jane Street
+                      </li>
+                      <li>
+                        researched at{" "}
+                        <span className="rounded-sm border border-primary/40 bg-primary/25 px-1 text-foreground">
+                          UTD
+                        </span>
+                        on NLP frameworks for AI art critiques
+                      </li>
+                      <li>
+                        worked on accessible competition math at{" "}
+                        <span className="rounded-sm border border-primary/25 bg-muted px-1 text-foreground">
+                          ExcelAcademe
+                        </span>
+                        ; sponsored by Jane Street & Wolfram
+                      </li>
+                      <li>
+                        researched at{" "}
+                        <span className="rounded-sm border border-secondary-foreground/25 bg-secondary px-1 text-foreground">
+                          NYAS
+                        </span>{" "}
+                        on biodegradable air filters; invited to the
+                        JCSVEI alumni community by the U.S. Dept. of State
+                      </li>
+                    </ul>
+                  </motion.div>
 
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -322,9 +373,7 @@ const Index = () => {
         <footer className="py-12 px-6 md:px-12 lg:px-20 max-w-7xl mx-auto">
           <SectionDivider />
           <div className="mt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <span className="text-sm font-detail text-text-dim">
-              © 2026 
-            </span>
+            <span className="text-sm font-detail text-text-dim">© 2026</span>
             <div className="flex flex-wrap gap-6">
               {socialLinks.map((s) => (
                 <a
