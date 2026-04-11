@@ -1,9 +1,4 @@
-import {
-  motion,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-} from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
@@ -13,7 +8,6 @@ import SectionDivider from "@/components/SectionDivider";
 import profileImg from "@/assets/profile.jpg";
 import heroBg from "@/assets/hero-bg.jpg";
 import { socialLinks } from "@/lib/contact";
-import { projects, type Project } from "@/lib/projects";
 
 const Index = () => {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -22,12 +16,7 @@ const Index = () => {
     offset: ["start start", "end start"],
   });
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 200]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
-  const shouldReduceMotion = useReducedMotion();
-
-  const featuredProjects: Project[] = projects;
-  const featuredBannerProjects = [...featuredProjects, ...featuredProjects];
 
   return (
     <PageTransition>
@@ -60,35 +49,27 @@ const Index = () => {
             }}
           />
 
-          <motion.div
-            style={{ opacity: heroOpacity }}
-            className="relative z-10 flex flex-1 flex-col w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-20 min-h-0"
-          >
+          <motion.div className="relative z-10 flex flex-1 flex-col w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-20 min-h-0">
             <div className="flex-1 flex items-center pt-28 pb-8 lg:py-0 min-h-0">
               <div className="grid lg:grid-cols-[1fr_auto] gap-12 items-end w-full">
                 <div className="pt-4 lg:pt-0">
-                  <motion.div
-                    initial={{ opacity: 0, x: -30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                    className="flex items-center gap-3 mb-8"
-                  >
-                    <div className="glow-dot" />
-                    <span className="text-sm font-detail text-text-subtle tracking-widest uppercase">
-                      Available for projects
-                    </span>
-                  </motion.div>
+                  <div className="mb-8 h-6" aria-hidden="true" />
 
                   <RevealText>
-                    <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-display font-bold leading-[0.95] tracking-tight">
-                      Technical
+                    <h1 className="text-3xl md:text-5xl lg:text-[4rem] font-display font-bold leading-[0.95] tracking-tight">
+                      Toyeshh Medikonda
                     </h1>
                   </RevealText>
-                  <RevealText delay={0.1}>
-                    <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-display font-bold leading-[0.95] tracking-tight text-gradient">
-                      Founder
-                    </h1>
-                  </RevealText>
+
+                  <motion.p
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.45, duration: 0.6 }}
+                    className="mt-3 text-sm md:text-base font-detail text-text-subtle"
+                  >
+                    Turing Scholar (CS Honors) + Math @ UT
+                    Austin
+                  </motion.p>
 
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -211,146 +192,7 @@ const Index = () => {
                 </motion.div>
               </div>
             </div>
-
-            {/* Scroll indicator — own row so it never overlaps CTAs */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.2 }}
-              className="shrink-0 flex justify-center sm:justify-end items-center gap-3 pb-8 md:pb-10 pt-2"
-            >
-              <motion.div
-                animate={{ y: [0, 8, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="w-5 h-8 rounded-full border border-border flex justify-center pt-1.5"
-              >
-                <motion.div
-                  animate={{ opacity: [1, 0], y: [0, 6] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="w-1 h-1 rounded-full bg-primary"
-                />
-              </motion.div>
-              <span className="text-xs font-detail text-text-dim tracking-widest uppercase">
-                Scroll
-              </span>
-            </motion.div>
           </motion.div>
-        </section>
-
-        {/* Featured Work — moving banner */}
-        <section className="py-20 overflow-hidden">
-          <div className="px-6 md:px-12 lg:px-20 max-w-7xl mx-auto">
-            <SectionDivider />
-            <div className="mt-12 mb-6 md:mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-              <div>
-                <RevealText>
-                  <span className="text-xs font-detail text-text-dim tracking-widest uppercase">
-                    Selected Work
-                  </span>
-                </RevealText>
-                <RevealText delay={0.1}>
-                  <h2 className="text-4xl md:text-5xl font-display font-bold mt-4">
-                    Featured
-                    <br />
-                    <span className="text-gradient">Projects</span>
-                  </h2>
-                </RevealText>
-              </div>
-              <Link to="/work">
-                <motion.span
-                  whileHover={{ x: 5 }}
-                  className="text-sm font-detail text-text-subtle hover:text-primary transition-colors inline-block"
-                >
-                  View all →
-                </motion.span>
-              </Link>
-            </div>
-          </div>
-
-          <div className="relative mt-4">
-            <div
-              className="pointer-events-none absolute inset-y-0 left-0 w-16 md:w-24 z-10 bg-gradient-to-r from-background to-transparent"
-              aria-hidden
-            />
-            <div
-              className="pointer-events-none absolute inset-y-0 right-0 w-16 md:w-24 z-10 bg-gradient-to-l from-background to-transparent"
-              aria-hidden
-            />
-
-            <motion.div
-              className="flex w-max items-stretch gap-0.5 py-0.5 md:py-1 pl-6 md:pl-12 lg:pl-[max(1.5rem,calc((100vw-80rem)/2+1.5rem))] pr-6 md:pr-12"
-              animate={shouldReduceMotion ? undefined : { x: ["0%", "-50%"] }}
-              transition={
-                shouldReduceMotion
-                  ? undefined
-                  : {
-                      duration: 20,
-                      repeat: Infinity,
-                      ease: "linear",
-                    }
-              }
-              style={{ willChange: "transform" }}
-            >
-              {featuredBannerProjects.map((project, i) => (
-                <motion.div
-                  key={`${project.title}-${i}`}
-                  className="shrink-0 will-change-transform"
-                  whileHover={
-                    shouldReduceMotion ? undefined : { y: -2, scale: 1.002 }
-                  }
-                >
-                  <Link to={`/work/${project.slug}`} className="block group">
-                    <div className="group relative w-[5.5rem] sm:w-[6.5rem] md:w-[7.5rem] lg:w-[8.5rem] rounded-[0.35rem] overflow-hidden border border-border/70 bg-card/80 transition-transform duration-500 ease-out">
-                      <div className="relative aspect-[7/1] overflow-hidden">
-                        <img
-                          src={project.image}
-                          alt={project.title}
-                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                          loading="lazy"
-                          width={1400}
-                          height={788}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-background/35 via-transparent to-transparent" />
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background/90 to-transparent px-0.5 py-0.5">
-                          <h3 className="text-[6px] md:text-[7px] font-display font-bold text-foreground group-hover:text-primary transition-colors duration-300 leading-none truncate">
-                            {project.title}
-                          </h3>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="py-32 px-6 md:px-12 lg:px-20 max-w-7xl mx-auto text-center">
-          <SectionDivider />
-          <div className="mt-20">
-            <RevealText>
-              <h2 className="text-4xl md:text-6xl font-display font-bold">
-                Let's create
-                <br />
-                <span className="text-gradient">something great</span>
-              </h2>
-            </RevealText>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-              className="mt-10"
-            >
-              <Link to="/contact">
-                <MagneticButton className="px-12 py-5 rounded-full bg-primary text-primary-foreground font-body text-base font-medium">
-                  Start a Conversation
-                </MagneticButton>
-              </Link>
-            </motion.div>
-          </div>
         </section>
 
         {/* Footer */}
