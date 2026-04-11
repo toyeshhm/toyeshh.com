@@ -14,6 +14,23 @@ import {
 } from "@/lib/projects";
 
 const filters = projectFilters;
+const MIN_LOOP_SEGMENT_ITEMS = 6;
+
+const buildLoopingRow = (items: Project[]) => {
+  if (items.length === 0) {
+    return [];
+  }
+
+  const segment =
+    items.length >= MIN_LOOP_SEGMENT_ITEMS
+      ? items
+      : Array.from(
+          { length: Math.ceil(MIN_LOOP_SEGMENT_ITEMS / items.length) },
+          () => items,
+        ).flat();
+
+  return [...segment, ...segment, ...segment];
+};
 
 const ProjectTile = ({
   project,
@@ -27,7 +44,7 @@ const ProjectTile = ({
   index: number;
 }) => {
   const card = (
-    <div className="group relative w-[20rem] sm:w-[22.5rem] md:w-[24rem] lg:w-[30rem] rounded-[2rem] overflow-hidden border border-border/70 bg-card/80 shadow-[0_30px_90px_-24px_rgba(0,0,0,0.65)] backdrop-blur-sm transition-colors duration-300 hover:border-border/90">
+    <div className="group relative w-[16.5rem] sm:w-[18.5rem] md:w-[20.5rem] lg:w-[23.5rem] rounded-[1.85rem] overflow-hidden border border-border/70 bg-card/80 shadow-[0_30px_90px_-24px_rgba(0,0,0,0.65)] backdrop-blur-sm transition-colors duration-300 hover:border-border/90">
       <div className="relative aspect-[16/9] overflow-hidden">
         <img
           src={project.image}
@@ -41,21 +58,21 @@ const ProjectTile = ({
         <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-background/25 to-transparent" />
       </div>
 
-      <div className="p-4 md:p-5 border-t border-border/60 bg-background/75 backdrop-blur-md">
-        <div className="flex items-start justify-between gap-4">
+      <div className="p-3.5 md:p-4 border-t border-border/60 bg-background/75 backdrop-blur-md">
+        <div className="flex items-start justify-between gap-3">
           <div>
             <span className="text-[10px] md:text-xs font-detail text-text-dim tracking-[0.2em] uppercase block">
               {project.category} · {project.year}
             </span>
-            <h3 className="mt-1.5 text-lg md:text-xl font-display font-bold text-foreground group-hover:text-primary transition-colors duration-300">
+            <h3 className="mt-1 text-base md:text-lg font-display font-bold text-foreground group-hover:text-primary transition-colors duration-300">
               {project.title}
             </h3>
           </div>
-          <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/80 text-sm text-primary transition-transform duration-300 group-hover:translate-x-0.5">
+          <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border/80 text-sm text-primary transition-transform duration-300 group-hover:translate-x-0.5">
             →
           </span>
         </div>
-        <p className="mt-2 text-xs md:text-sm font-detail text-text-subtle leading-relaxed max-w-2xl line-clamp-2">
+        <p className="mt-1.5 text-[11px] md:text-xs font-detail text-text-subtle leading-relaxed max-w-2xl line-clamp-2">
           {project.desc}
         </p>
       </div>
@@ -98,13 +115,13 @@ const Work = () => {
   const topRowProjects = useMemo(() => {
     const evenItems = baseProjects.filter((_, index) => index % 2 === 0);
     const source = evenItems.length > 0 ? evenItems : baseProjects;
-    return [...source, ...source];
+    return buildLoopingRow(source);
   }, [baseProjects]);
 
   const bottomRowProjects = useMemo(() => {
     const oddItems = baseProjects.filter((_, index) => index % 2 === 1);
     const source = oddItems.length > 0 ? oddItems : baseProjects;
-    return [...source, ...source];
+    return buildLoopingRow(source);
   }, [baseProjects]);
 
   const handleFilterClick = (filter: ProjectFilter) => {
@@ -118,7 +135,7 @@ const Work = () => {
   return (
     <PageTransition>
       <div className="noise-overlay min-h-screen pt-28 md:pt-32 pb-20 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
+        <div className="max-w-7xl mx-auto px-5 md:px-10 lg:px-16">
           <div className="text-center max-w-3xl mx-auto">
             <RevealText>
               <span className="text-xs font-detail text-text-dim tracking-widest uppercase">
@@ -178,7 +195,7 @@ const Work = () => {
               {activeFilter === "everything" ? (
                 <motion.div
                   key={`everything-${overviewNonce}`}
-                  className="relative overflow-hidden py-2 space-y-6 md:space-y-8 px-3 sm:px-5 md:px-8 lg:px-10"
+                  className="relative overflow-hidden py-2 space-y-4 md:space-y-5 px-2 sm:px-4 md:px-6 lg:px-8"
                   initial={
                     shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 16 }
                   }
@@ -192,11 +209,11 @@ const Work = () => {
                     (rowProjects, rowIndex) => (
                       <motion.div
                         key={rowIndex}
-                        className="flex items-stretch gap-6 md:gap-8 w-max py-1"
+                        className="flex items-stretch gap-4 md:gap-5 w-max py-1"
                         initial={
                           shouldReduceMotion
                             ? undefined
-                            : { x: rowIndex === 0 ? "0%" : "-50%" }
+                            : { x: rowIndex === 0 ? "0%" : "-33.333%" }
                         }
                         animate={
                           shouldReduceMotion
@@ -204,15 +221,15 @@ const Work = () => {
                             : {
                                 x:
                                   rowIndex === 0
-                                    ? ["0%", "-50%"]
-                                    : ["-50%", "0%"],
+                                    ? ["0%", "-33.333%"]
+                                    : ["-33.333%", "0%"],
                               }
                         }
                         transition={
                           shouldReduceMotion
                             ? undefined
                             : {
-                                duration: rowIndex === 0 ? 30 : 34,
+                                duration: rowIndex === 0 ? 44 : 48,
                                 repeat: Infinity,
                                 repeatType: "loop",
                                 ease: "linear",
@@ -236,7 +253,7 @@ const Work = () => {
               ) : (
                 <motion.div
                   key={activeFilter}
-                  className="relative py-2 px-3 sm:px-5 md:px-8 lg:px-10 overflow-x-auto overflow-y-hidden"
+                  className="relative py-2 px-2 sm:px-4 md:px-6 lg:px-8 overflow-x-auto overflow-y-hidden"
                   initial={
                     shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: 28 }
                   }
@@ -247,7 +264,7 @@ const Work = () => {
                   transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
                   style={{ willChange: "transform" }}
                 >
-                  <div className="flex w-max gap-6 md:gap-8 pr-3 snap-x snap-mandatory">
+                  <div className="flex w-max gap-4 md:gap-5 pr-2 snap-x snap-mandatory">
                     {visibleProjects.map((project, index) => (
                       <div key={project.slug} className="snap-start shrink-0">
                         <ProjectTile

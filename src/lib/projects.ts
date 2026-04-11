@@ -36,8 +36,8 @@ export type Project = {
 export const projects: Project[] = [
   {
     slug: "m3-mathworks-math-modeling-challenge-finalist",
-    title: "M3 MathWorks Math Modeling Challenge",
-    category: "Competition + Mathematical Modeling",
+    title: "M3 Math Modeling Challenge",
+    category: "Mathematical Modeling",
     type: "competitions",
     image: project7,
     year: "2026",
@@ -64,8 +64,8 @@ export const projects: Project[] = [
   },
   {
     slug: "ut-austin-mite-energy-ai-hackathon",
-    title: "UT Austin MITE Energy A.I. Hackathon",
-    category: "ML Research + Team Leadership",
+    title: "UT Austin MITE Hackathon",
+    category: "ML Research",
     type: "competitions",
     image: project6,
     year: "2025",
@@ -90,7 +90,7 @@ export const projects: Project[] = [
   },
   {
     slug: "ultra-yc-w24-ai-college-guidance",
-    title: "Ultra (YC W24) AI College Guidance",
+    title: "Ultra (YC W24)",
     category: "EdTech Startup",
     type: "work",
     image: project1,
@@ -112,7 +112,7 @@ export const projects: Project[] = [
   {
     slug: "wear-it-forward-nonprofit",
     title: "WearItForward Nonprofit",
-    category: "Volunteering + Product",
+    category: "Volunteering + Scaling",
     type: "projects",
     image: project2,
     year: "2025",
@@ -126,7 +126,7 @@ export const projects: Project[] = [
   },
   {
     slug: "quantum-ml-crop-disease-detection",
-    title: "Quantum ML Crop Disease Detection",
+    title: "Novel Crop Disease Detection",
     category: "Quantum ML Research",
     type: "research",
     image: project3,
@@ -165,9 +165,9 @@ export const projects: Project[] = [
     highlights: ["840+ examples", "Bias analysis", "First-author framework"],
   },
   {
-    slug: "nyas-nanochar-initiative",
-    title: "NYAS NanoChar Initiative",
-    category: "Research + Website",
+    slug: "nyas-nanochar-research",
+    title: "NYAS NanoChar Filter",
+    category: "Environmental Science Research",
     type: "research",
     image: project5,
     year: "2025",
