@@ -119,13 +119,15 @@ const Index = () => {
                         <span className="rounded-sm border border-accent/35 bg-accent/20 px-1 text-foreground">
                           WearItForward
                         </span>
-                        ; a humanitarian nonprofit raising $200k+ in
-                        clothing donations and featured on FOX News
+                        ; a humanitarian nonprofit raising $200k+ in clothing
+                        donations and featured on FOX News
                       </li>
                       <li>
                         was a finalist in{" "}
                         <span className="rounded-sm border border-secondary-foreground/30 bg-secondary/80 px-1 text-foreground">
-                          M3 Math Modeling</span>{""}; won $5,000, and presented at Jane Street
+                          M3 Math Modeling
+                        </span>
+                        {""}; won $5,000, and presented at Jane Street
                       </li>
                       <li>
                         researched at{" "}
@@ -146,8 +148,8 @@ const Index = () => {
                         <span className="rounded-sm border border-secondary-foreground/25 bg-secondary px-1 text-foreground">
                           NYAS
                         </span>{" "}
-                        on biodegradable air filters; invited to the
-                        JCSVEI alumni community by the U.S. Dept. of State
+                        on biodegradable air filters; invited to the JCSVEI
+                        alumni community by the U.S. Dept. of State
                       </li>
                     </ul>
                   </motion.div>
@@ -236,10 +238,10 @@ const Index = () => {
         </section>
 
         {/* Featured Work — moving banner */}
-        <section className="py-32 overflow-hidden">
+        <section className="py-20 overflow-hidden">
           <div className="px-6 md:px-12 lg:px-20 max-w-7xl mx-auto">
             <SectionDivider />
-            <div className="mt-20 mb-10 md:mb-12 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+            <div className="mt-12 mb-6 md:mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
               <div>
                 <RevealText>
                   <span className="text-xs font-detail text-text-dim tracking-widest uppercase">
@@ -276,7 +278,7 @@ const Index = () => {
             />
 
             <motion.div
-              className="flex w-max items-stretch gap-6 md:gap-8 py-4 md:py-6 pl-6 md:pl-12 lg:pl-[max(1.5rem,calc((100vw-80rem)/2+1.5rem))] pr-6 md:pr-12"
+              className="flex w-max items-stretch gap-0.5 py-0.5 md:py-1 pl-6 md:pl-12 lg:pl-[max(1.5rem,calc((100vw-80rem)/2+1.5rem))] pr-6 md:pr-12"
               animate={shouldReduceMotion ? undefined : { x: ["0%", "-50%"] }}
               transition={
                 shouldReduceMotion
@@ -294,12 +296,12 @@ const Index = () => {
                   key={`${project.title}-${i}`}
                   className="shrink-0 will-change-transform"
                   whileHover={
-                    shouldReduceMotion ? undefined : { y: -6, scale: 1.01 }
+                    shouldReduceMotion ? undefined : { y: -2, scale: 1.002 }
                   }
                 >
                   <Link to={`/work/${project.slug}`} className="block group">
-                    <div className="group relative w-[20rem] sm:w-[24rem] md:w-[29rem] lg:w-[33rem] rounded-[2rem] overflow-hidden border border-border/70 bg-card/80 transition-transform duration-500 ease-out">
-                      <div className="relative aspect-[16/9] overflow-hidden">
+                    <div className="group relative w-[5.5rem] sm:w-[6.5rem] md:w-[7.5rem] lg:w-[8.5rem] rounded-[0.35rem] overflow-hidden border border-border/70 bg-card/80 transition-transform duration-500 ease-out">
+                      <div className="relative aspect-[7/1] overflow-hidden">
                         <img
                           src={project.image}
                           alt={project.title}
@@ -310,28 +312,10 @@ const Index = () => {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-background/35 via-transparent to-transparent" />
                         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                      </div>
-
-                      <div className="p-5 md:p-6 border-t border-border/60 bg-background/80 backdrop-blur-md">
-                        <span className="text-[10px] md:text-xs font-detail text-primary tracking-[0.2em] uppercase">
-                          {project.category}
-                        </span>
-                        <h3 className="text-xl md:text-2xl font-display font-bold mt-2 text-foreground group-hover:text-primary transition-colors duration-300 leading-tight">
-                          {project.title}
-                        </h3>
-                        <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/40">
-                          <span className="text-xs font-detail text-text-dim">
-                            {project.year}
-                          </span>
-                          <span className="text-xs font-detail text-text-subtle group-hover:text-primary transition-colors flex items-center gap-1">
-                            View case
-                            <span
-                              aria-hidden
-                              className="inline-block transition-transform group-hover:translate-x-1"
-                            >
-                              →
-                            </span>
-                          </span>
+                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background/90 to-transparent px-0.5 py-0.5">
+                          <h3 className="text-[6px] md:text-[7px] font-display font-bold text-foreground group-hover:text-primary transition-colors duration-300 leading-none truncate">
+                            {project.title}
+                          </h3>
                         </div>
                       </div>
                     </div>
