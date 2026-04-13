@@ -93,6 +93,20 @@ const awards = [
   },
 ];
 
+const coursesByTerm = [
+  {
+    term: "Fall 2026",
+    courses: [
+      "CS 311H: Discrete Math",
+      "CS 314H: Data Structures",
+      "CS 109: Think Lab",
+      "M 340L: Matrices & Matrix Calcs",
+      "UGS 303: Undergraduate Studies",
+      "CC 301: Ancient Greece Intro",
+    ],
+  },
+];
+
 const About = () => (
   <PageTransition>
     <div className="noise-overlay min-h-screen pt-28 md:pt-32 pb-20">
@@ -257,6 +271,46 @@ const About = () => (
                   </motion.div>
                 ))}
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Courses */}
+        <div className="mt-32">
+          <SectionDivider />
+          <div className="mt-16">
+            <RevealText>
+              <h2 className="text-3xl md:text-4xl font-display font-bold">
+                Courses
+              </h2>
+            </RevealText>
+
+            <div className="mt-12 grid gap-5">
+              {coursesByTerm.map((termInfo, i) => (
+                <motion.div
+                  key={termInfo.term}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08, duration: 0.45 }}
+                  className="rounded-2xl border border-border bg-card/60 p-6 backdrop-blur-sm"
+                >
+                  <h3 className="text-lg md:text-xl font-display font-semibold text-primary">
+                    {termInfo.term}
+                  </h3>
+                  <ul className="mt-4 grid gap-2">
+                    {termInfo.courses.map((course) => (
+                      <li
+                        key={course}
+                        className="flex items-start gap-2.5 text-sm md:text-[0.95rem] font-detail text-text-dim leading-relaxed"
+                      >
+                        <span className="mt-[0.5rem] h-1.5 w-1.5 shrink-0 rounded-full bg-primary/80" />
+                        <span>{course}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              ))}
             </div>
           </div>
         </div>
