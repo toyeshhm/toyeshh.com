@@ -67,8 +67,7 @@ const Index = () => {
                     transition={{ delay: 0.45, duration: 0.6 }}
                     className="mt-3 text-sm md:text-base font-detail text-text-subtle"
                   >
-                    Turing Scholar (CS Honors) + Math @ UT
-                    Austin
+                    Turing Scholar (CS Honors) + Math @ UT Austin
                   </motion.p>
 
                   <motion.div
