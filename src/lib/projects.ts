@@ -167,7 +167,7 @@ export const projects: Project[] = [
   {
     slug: "nyas-nanochar-research",
     title: "NYAS NanoChar Filter",
-    category: "Environmental Science Research",
+    category: "Environmental Research",
     type: "research",
     image: project5,
     year: "2025",

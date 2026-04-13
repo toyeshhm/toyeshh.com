@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -44,9 +44,9 @@
     --gradient-warm: linear-gradient(135deg, hsl(28 80% 52%), hsl(15 85% 45%));
     --gradient-surface: linear-gradient(180deg, hsl(20 12% 8%), hsl(20 14% 4%));
 
-    --font-display: 'Syne', sans-serif;
-    --font-body: 'Space Grotesk', sans-serif;
-    --font-detail: 'Inter', sans-serif;
+    --font-display: "Syne", sans-serif;
+    --font-body: "Space Grotesk", sans-serif;
+    --font-detail: "Inter", sans-serif;
 
     --sidebar-background: 20 12% 6%;
     --sidebar-foreground: 40 20% 92%;
@@ -70,7 +70,12 @@
     overflow-x: hidden;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
   }
 
@@ -98,12 +103,19 @@
 @layer components {
   .text-gradient {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(28 80% 52%), hsl(15 85% 55%), hsl(40 70% 60%));
+    background-image: linear-gradient(
+      135deg,
+      hsl(28 80% 52%),
+      hsl(15 85% 55%),
+      hsl(40 70% 60%)
+    );
   }
 
   .glow-dot {
     @apply w-2 h-2 rounded-full bg-primary;
-    box-shadow: 0 0 12px hsl(28 80% 52% / 0.6), 0 0 40px hsl(28 80% 52% / 0.2);
+    box-shadow:
+      0 0 12px hsl(28 80% 52% / 0.6),
+      0 0 40px hsl(28 80% 52% / 0.2);
   }
 
   .glass-panel {
@@ -116,12 +128,16 @@
     @apply rounded-2xl border border-border overflow-hidden;
     background: hsl(20 12% 8% / 0.8);
     backdrop-filter: blur(12px);
-    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    transition:
+      transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+      box-shadow 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   }
 
   .floating-card:hover {
     transform: translateY(-8px) scale(1.01);
-    box-shadow: 0 20px 60px hsl(28 80% 52% / 0.08), 0 8px 24px hsl(0 0% 0% / 0.3);
+    box-shadow:
+      0 20px 60px hsl(28 80% 52% / 0.08),
+      0 8px 24px hsl(0 0% 0% / 0.3);
   }
 
   .magnetic-btn {
@@ -136,7 +152,12 @@
 
   .line-reveal {
     @apply h-px w-0;
-    background: linear-gradient(90deg, transparent, hsl(28 80% 52%), transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(28 80% 52%),
+      transparent
+    );
     transition: width 1.2s cubic-bezier(0.23, 1, 0.32, 1);
   }
 
@@ -145,7 +166,7 @@
   }
 
   .noise-overlay::before {
-    content: '';
+    content: "";
     position: fixed;
     top: 0;
     left: 0;
@@ -159,22 +180,48 @@
 }
 
 @keyframes morph {
-  0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
-  50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
-  100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+  0% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+  50% {
+    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+  }
+  100% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  33% { transform: translateY(-10px) rotate(1deg); }
-  66% { transform: translateY(5px) rotate(-1deg); }
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+  66% {
+    transform: translateY(5px) rotate(-1deg);
+  }
 }
 
 @keyframes grain {
-  0%, 100% { transform: translate(0, 0); }
-  10% { transform: translate(-5%, -10%); }
-  30% { transform: translate(3%, -15%); }
-  50% { transform: translate(12%, 9%); }
-  70% { transform: translate(9%, 4%); }
-  90% { transform: translate(-1%, 7%); }
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(-5%, -10%);
+  }
+  30% {
+    transform: translate(3%, -15%);
+  }
+  50% {
+    transform: translate(12%, 9%);
+  }
+  70% {
+    transform: translate(9%, 4%);
+  }
+  90% {
+    transform: translate(-1%, 7%);
+  }
 }

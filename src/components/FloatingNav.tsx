@@ -47,19 +47,22 @@ const FloatingNav = () => {
                       <motion.div
                         layoutId="nav-pill"
                         className="absolute inset-0 rounded-xl bg-primary/15 border border-primary/20"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 380,
+                          damping: 30,
+                        }}
                       />
                     )}
-                    <span className={`relative z-10 ${isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
+                    <span
+                      className={`relative z-10 ${isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+                    >
                       {item.label}
                     </span>
                   </Link>
                 </li>
               );
             })}
-            <li className="ml-2">
-              <div className="glow-dot" />
-            </li>
           </ul>
         </motion.nav>
       )}

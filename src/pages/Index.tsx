@@ -67,8 +67,7 @@ const Index = () => {
                     transition={{ delay: 0.45, duration: 0.6 }}
                     className="mt-3 text-sm md:text-base font-detail text-text-subtle"
                   >
-                    Turing Scholar (CS Honors) + Math @ UT
-                    Austin
+                    Turing Scholar (CS Honors) + Math @ UT Austin
                   </motion.p>
 
                   <motion.div
@@ -198,9 +197,23 @@ const Index = () => {
         {/* Footer */}
         <footer className="py-12 px-6 md:px-12 lg:px-20 max-w-7xl mx-auto">
           <SectionDivider />
-          <div className="mt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="mt-8 flex flex-col gap-4 md:grid md:grid-cols-3 md:items-center">
             <span className="text-sm font-detail text-text-dim">© 2026</span>
-            <div className="flex flex-wrap gap-6">
+            <div className="flex items-center justify-center gap-4">
+              <a
+                href="https://api.jolteon.me/webring/prevlink"
+                className="text-sm font-detail text-text-dim hover:text-primary transition-colors"
+              >
+                ← prev
+              </a>
+              <a
+                href="https://api.jolteon.me/webring/nextlink"
+                className="text-sm font-detail text-text-dim hover:text-primary transition-colors"
+              >
+                next →
+              </a>
+            </div>
+            <div className="flex flex-wrap items-center justify-center md:justify-end gap-6">
               {socialLinks.map((s) => (
                 <a
                   key={s.label}
