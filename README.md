@@ -1,4 +1,4 @@
-# Stellar Portfolio Studio
+# Personal website
 
 Vite + React + TypeScript portfolio site.
 
