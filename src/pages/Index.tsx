@@ -198,7 +198,7 @@ const Index = () => {
         <footer className="py-12 px-6 md:px-12 lg:px-20 max-w-7xl mx-auto">
           <SectionDivider />
           <div className="mt-8 flex flex-col gap-4 md:grid md:grid-cols-3 md:items-center">
-            <span className="text-sm font-detail text-text-dim">© 2026</span>
+            <span className="text-sm font-detail text-text-dim">© 2026 Toyeshh Medikonda.</span>
             <div className="flex items-center justify-center gap-4">
               <a
                 href="https://api.jolteon.me/webring/prevlink"
