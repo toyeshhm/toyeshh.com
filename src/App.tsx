@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AnimatePresence } from "framer-motion";
+import { useEffect } from "react";
 import FloatingNav from "@/components/FloatingNav";
 import Index from "./pages/Index.tsx";
 import About from "./pages/About.tsx";
@@ -13,6 +14,36 @@ import Contact from "./pages/Contact.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
+const SITE_URL = "https://toyeshh.com";
+
+const getCanonicalPath = (pathname: string) => {
+  if (pathname.length > 1 && pathname.endsWith("/")) {
+    return pathname.slice(0, -1);
+  }
+
+  return pathname;
+};
+
+const CanonicalManager = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    const canonicalHref = `${SITE_URL}${getCanonicalPath(pathname)}`;
+    let canonicalLink = document.head.querySelector(
+      "link[rel='canonical']",
+    ) as HTMLLinkElement | null;
+
+    if (!canonicalLink) {
+      canonicalLink = document.createElement("link");
+      canonicalLink.setAttribute("rel", "canonical");
+      document.head.appendChild(canonicalLink);
+    }
+
+    canonicalLink.setAttribute("href", canonicalHref);
+  }, [pathname]);
+
+  return null;
+};
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -36,6 +67,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <CanonicalManager />
         <FloatingNav />
         <AnimatedRoutes />
       </BrowserRouter>
