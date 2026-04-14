@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 import RevealText from "@/components/RevealText";
 import SectionDivider from "@/components/SectionDivider";
-import profileImg from "@/assets/profile.jpg";
+import TerminalWindow from "@/components/TerminalWindow";
 import { CONTACT } from "@/lib/contact";
 
 const infoCards = [
@@ -12,8 +12,6 @@ const infoCards = [
   { label: "FOCUS", value: "Quant, AI/ML, & SWE" },
   { label: "STATUS", value: "Available for work", highlight: true },
 ];
-
-const aboutHeroBadge = { number: "4+", line2: "Years of experience" };
 
 const experience = [
   {
@@ -113,48 +111,15 @@ const About = () => (
       <div className="max-w-6xl mx-auto px-6 md:px-10 lg:px-16">
         {/* Hero — editorial two-column (reference layout) */}
         <section className="pb-4">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex items-center gap-3 mb-8 md:mb-10"
-          >
-            <span
-              className="h-px w-10 md:w-12 bg-primary shrink-0"
-              aria-hidden
-            />
-            <span className="text-[11px] md:text-xs font-detail text-primary tracking-[0.2em] uppercase">
-              About me
-            </span>
-          </motion.div>
-
-          <RevealText>
-            <h1 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.15rem] font-editorial font-medium text-foreground leading-[1.12] tracking-tight max-w-4xl">
-              Building towards the future
-            </h1>
-          </RevealText>
-
-          <div className="mt-12 lg:mt-16 grid lg:grid-cols-[minmax(260px,380px)_1fr] gap-10 lg:gap-14 xl:gap-20 items-start">
+          <div className="mt-2 lg:mt-6 grid lg:grid-cols-[minmax(320px,460px)_1fr] gap-10 lg:gap-14 xl:gap-20 items-start">
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.7 }}
-              className="relative mx-auto w-full max-w-[340px] lg:max-w-none"
+              className="relative mx-auto w-full max-w-[420px] lg:max-w-[460px] xl:max-w-[500px]"
             >
               <div className="relative rounded-[2.25rem] md:rounded-[2.5rem] overflow-hidden border border-border/60 bg-card aspect-[3/4] shadow-[0_24px_80px_-20px_rgba(0,0,0,0.55)]">
-                <img
-                  src={profileImg}
-                  alt="Toyeshh"
-                  className="absolute inset-0 w-full h-full object-cover object-[center_20%]"
-                />
-              </div>
-              <div className="absolute bottom-4 right-4 md:bottom-5 md:right-5 rounded-2xl bg-[#0a0a0a]/92 border border-border/50 backdrop-blur-md px-4 py-3 md:px-5 md:py-3.5 shadow-lg min-w-[7.5rem]">
-                <p className="font-editorial text-2xl md:text-3xl text-primary leading-none font-semibold">
-                  {aboutHeroBadge.number}
-                </p>
-                <p className="mt-1 text-[10px] md:text-xs font-detail text-foreground/90 tracking-wide uppercase leading-snug">
-                  {aboutHeroBadge.line2}
-                </p>
+                <TerminalWindow className="h-full w-full" />
               </div>
             </motion.div>
 
@@ -164,7 +129,7 @@ const About = () => (
               transition={{ delay: 0.28, duration: 0.75 }}
               className="space-y-0"
             >
-              <p className="font-editorial text-lg md:text-xl lg:text-[1.35rem] text-foreground leading-relaxed">
+              <p className="font-detail text-lg md:text-xl lg:text-[1.35rem] text-foreground leading-relaxed">
                 Hey, I&apos;m Toyeshh, an incoming freshman at UT Austin focused
                 on building the{" "}
                 <span className="text-primary not-italic">future </span>
