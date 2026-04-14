@@ -130,10 +130,7 @@ const About = () => (
               className="space-y-0"
             >
               <p className="font-detail text-lg md:text-xl lg:text-[1.35rem] text-foreground leading-relaxed">
-                Hey, I&apos;m Toyeshh, an incoming freshman at UT Austin focused
-                on building the{" "}
-                <span className="text-primary not-italic">future </span>
-                of technology.
+                Hey, I&apos;m Toyeshh, a freshman at UT Austin.
               </p>
               <div className="mt-6 md:mt-8 space-y-4">
                 <p className="text-[0.9375rem] md:text-base text-muted-foreground font-detail leading-relaxed"></p>
