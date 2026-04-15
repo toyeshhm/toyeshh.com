@@ -53,7 +53,7 @@ const ProjectTile = ({
   onOverviewHoverChange?: (isHovering: boolean) => void;
 }) => {
   const card = (
-    <div className="group relative w-[16.5rem] sm:w-[18.5rem] md:w-[20.5rem] lg:w-[23.5rem] rounded-[1.85rem] overflow-hidden border border-border/70 bg-card/80 shadow-[0_30px_90px_-24px_rgba(0,0,0,0.65)] backdrop-blur-sm transition-colors duration-300 hover:border-border/90">
+    <div className="group relative w-[16.5rem] sm:w-[18.5rem] md:w-[20.5rem] lg:w-[23.5rem] rounded-[1.25rem] overflow-hidden border border-border/70 bg-card/80 shadow-[0_30px_90px_-24px_rgba(0,0,0,0.65)] backdrop-blur-sm transition-colors duration-300 hover:border-border/90">
       <div className="relative aspect-[16/9] overflow-hidden">
         {project.image ? (
           <img
@@ -194,7 +194,7 @@ const Work = () => {
           </div>
 
           <div className="mt-8 md:mt-10 flex justify-center">
-            <div className="inline-flex flex-wrap items-center justify-center gap-2 rounded-full border border-border/70 bg-card/70 p-2 backdrop-blur-sm">
+            <div className="inline-flex flex-wrap items-center justify-center gap-2 rounded-xl border border-border/70 bg-card/70 p-2 backdrop-blur-sm">
               {filters.map((filter) => {
                 const isActive = activeFilter === filter;
                 return (
@@ -202,7 +202,7 @@ const Work = () => {
                     key={filter}
                     type="button"
                     onClick={() => handleFilterClick(filter)}
-                    className={`rounded-full px-4 py-2 text-sm font-detail tracking-wide capitalize transition-colors ${
+                    className={`rounded-lg px-4 py-2 text-sm font-detail tracking-wide capitalize transition-colors ${
                       isActive
                         ? "bg-foreground text-background"
                         : "text-text-subtle hover:text-foreground"
@@ -326,12 +326,12 @@ const Work = () => {
 
           <div className="mt-14 md:mt-16 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link to="/contact">
-              <MagneticButton className="px-8 py-4 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium tracking-wide">
+              <MagneticButton className="px-8 py-4 rounded-lg bg-primary text-primary-foreground font-body text-sm font-medium tracking-wide">
                 Start a project
               </MagneticButton>
             </Link>
             <Link to="/about">
-              <MagneticButton className="px-8 py-4 rounded-full border border-border text-foreground font-body text-sm font-medium tracking-wide hover:border-primary/40 transition-colors">
+              <MagneticButton className="px-8 py-4 rounded-lg border border-border text-foreground font-body text-sm font-medium tracking-wide hover:border-primary/40 transition-colors">
                 About me
               </MagneticButton>
             </Link>

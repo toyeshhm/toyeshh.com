@@ -33,6 +33,10 @@ type TerminalTheme = {
   prompt: string;
 };
 
+type TerminalWindowMode = "normal" | "minimized" | "maximized" | "closed";
+
+const SITE_THEME_STORAGE_KEY = "site-theme";
+
 const INTRO_COMMAND = "cat welcome.md";
 const INTRO_COMMAND_SPEED = 42;
 const INTRO_OUTPUT_SPEED = 9;
@@ -148,7 +152,18 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
   const commandHistoryRef = useRef<string[]>([]);
   const commandHistoryIndexRef = useRef(-1);
   const mountedRef = useRef(true);
-  const [themeIndex, setThemeIndex] = useState(0);
+  const [themeIndex, setThemeIndex] = useState(() => {
+    if (typeof window === "undefined") {
+      return 0;
+    }
+
+    const savedThemeId = window.localStorage.getItem(SITE_THEME_STORAGE_KEY);
+    const matchedThemeIndex = TERMINAL_THEMES.findIndex(
+      (candidateTheme) => candidateTheme.id === savedThemeId,
+    );
+
+    return matchedThemeIndex >= 0 ? matchedThemeIndex : 0;
+  });
   const [agentMode, setAgentMode] = useState(false);
   const [agentHistory, setAgentHistory] = useState<AgentMessage[]>([]);
   const [isBusy, setIsBusy] = useState(false);
@@ -156,7 +171,24 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
   const [inputValue, setInputValue] = useState("");
   const [history, setHistory] = useState<TerminalHistoryEntry[]>([]);
   const [intro, setIntro] = useState<IntroState | null>(null);
+  const [windowMode, setWindowMode] = useState<TerminalWindowMode>("normal");
   const theme = TERMINAL_THEMES[themeIndex] ?? TERMINAL_THEMES[0];
+
+  const applySiteTheme = (themeId: TerminalTheme["id"]) => {
+    const root = document.documentElement;
+
+    if (themeId === "site") {
+      root.removeAttribute("data-theme");
+    } else {
+      root.setAttribute("data-theme", themeId);
+    }
+
+    try {
+      window.localStorage.setItem(SITE_THEME_STORAGE_KEY, themeId);
+    } catch {
+      // Ignore storage failures; theme still applies for current session.
+    }
+  };
 
   useEffect(() => {
     cwdRef.current = cwd;
@@ -181,6 +213,63 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
       behavior: "auto",
     });
   }, [history, intro, cwd, inputValue]);
+
+  useEffect(() => {
+    applySiteTheme(theme.id);
+  }, [theme.id]);
+
+  useEffect(() => {
+    if (windowMode !== "maximized") {
+      return;
+    }
+
+    const handleEscape = (event: globalThis.KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setWindowMode("normal");
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [windowMode]);
+
+  const handleCloseWindow = () => {
+    setWindowMode("closed");
+  };
+
+  const handleMinimizeWindow = () => {
+    setWindowMode((currentMode) => {
+      if (currentMode === "minimized") {
+        return "normal";
+      }
+
+      if (currentMode === "closed") {
+        return "minimized";
+      }
+
+      return "minimized";
+    });
+  };
+
+  const handleZoomWindow = () => {
+    setWindowMode((currentMode) => {
+      if (currentMode === "maximized") {
+        return "normal";
+      }
+
+      return "maximized";
+    });
+  };
+
+  const handleReopenWindow = () => {
+    setWindowMode("normal");
+    window.requestAnimationFrame(() => {
+      inputRef.current?.focus();
+    });
+  };
 
   const addHistoryEntry = (entry: Omit<TerminalHistoryEntry, "id">): number => {
     const id = nextIdRef.current + 1;
@@ -265,12 +354,9 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
 
   const setThemeFromArg = (themeArg?: string) => {
     if (!themeArg) {
-      setThemeIndex(
-        (currentThemeIndex) => (currentThemeIndex + 1) % TERMINAL_THEMES.length,
-      );
-
-      const nextTheme =
-        TERMINAL_THEMES[(themeIndex + 1) % TERMINAL_THEMES.length];
+      const nextThemeIndex = (themeIndex + 1) % TERMINAL_THEMES.length;
+      const nextTheme = TERMINAL_THEMES[nextThemeIndex];
+      setThemeIndex(nextThemeIndex);
       return `theme changed to ${nextTheme.label}`;
     }
 
@@ -582,7 +668,7 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (isBusy || intro) {
+    if (isBusy || intro || windowMode === "closed") {
       return;
     }
 
@@ -671,8 +757,16 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
   };
 
   const focusInput = () => {
+    if (windowMode === "closed") {
+      return;
+    }
+
     inputRef.current?.focus();
   };
+
+  const isClosed = windowMode === "closed";
+  const isMinimized = windowMode === "minimized";
+  const isMaximized = windowMode === "maximized";
 
   return (
     <motion.div
@@ -680,7 +774,8 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, ease: [0.23, 1, 0.32, 1] }}
       className={cn(
-        "relative overflow-hidden rounded-[2.25rem] border shadow-[0_24px_80px_-20px_rgba(0,0,0,0.65)]",
+        "relative overflow-hidden rounded-[1.5rem] border shadow-[0_24px_80px_-20px_rgba(0,0,0,0.65)]",
+        isMaximized ? "fixed inset-4 z-[90] md:inset-8" : "",
         className,
       )}
       style={{
@@ -689,7 +784,12 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
       }}
       onClick={focusInput}
     >
-      <div className="flex h-full min-h-[420px] flex-col">
+      <div
+        className={cn(
+          "flex h-full flex-col",
+          isMinimized ? "min-h-0" : "min-h-[420px]",
+        )}
+      >
         <div
           className="flex items-center justify-between gap-4 border-b px-4 py-3 md:px-5"
           style={{
@@ -698,9 +798,29 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
           }}
         >
           <div className="flex items-center gap-2.5">
-            <span className="h-3 w-3 rounded-full bg-[#ff5f57] shadow-[0_0_0_1px_rgba(0,0,0,0.25)_inset]" />
-            <span className="h-3 w-3 rounded-full bg-[#febc2e] shadow-[0_0_0_1px_rgba(0,0,0,0.25)_inset]" />
-            <span className="h-3 w-3 rounded-full bg-[#28c840] shadow-[0_0_0_1px_rgba(0,0,0,0.25)_inset]" />
+            <button
+              type="button"
+              onClick={handleCloseWindow}
+              title="Close"
+              aria-label="Close terminal"
+              className="h-3 w-3 rounded-full bg-[#ff5f57] shadow-[0_0_0_1px_rgba(0,0,0,0.25)_inset] transition-transform duration-150 hover:scale-110"
+            />
+            <button
+              type="button"
+              onClick={handleMinimizeWindow}
+              title={isMinimized ? "Restore" : "Minimize"}
+              aria-label={
+                isMinimized ? "Restore terminal" : "Minimize terminal"
+              }
+              className="h-3 w-3 rounded-full bg-[#febc2e] shadow-[0_0_0_1px_rgba(0,0,0,0.25)_inset] transition-transform duration-150 hover:scale-110"
+            />
+            <button
+              type="button"
+              onClick={handleZoomWindow}
+              title={isMaximized ? "Exit zoom" : "Zoom"}
+              aria-label={isMaximized ? "Exit terminal zoom" : "Zoom terminal"}
+              className="h-3 w-3 rounded-full bg-[#28c840] shadow-[0_0_0_1px_rgba(0,0,0,0.25)_inset] transition-transform duration-150 hover:scale-110"
+            />
           </div>
 
           <div
@@ -714,119 +834,161 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
             className="hidden md:block text-[10px] uppercase tracking-[0.24em]"
             style={{ color: theme.muted }}
           >
-            {theme.label}
+            {isClosed
+              ? "closed"
+              : isMinimized
+                ? "minimized"
+                : isMaximized
+                  ? `${theme.label} · zoomed`
+                  : theme.label}
           </div>
         </div>
 
-        <div
-          ref={scrollRef}
-          className="flex-1 overflow-y-auto px-4 py-4 md:px-5 md:py-5 font-mono text-[13px] leading-6"
-          style={{ color: theme.foreground }}
-        >
-          <div className="space-y-3">
-            {intro ? (
-              <div className="space-y-2">
-                <div className="flex gap-2 whitespace-pre-wrap break-words">
-                  <span className="shrink-0" style={{ color: theme.prompt }}>
-                    {formatTerminalPromptPath("/")}%
-                  </span>
-                  <span>{intro.typedCommand}</span>
-                  <span
-                    className="animate-pulse"
-                    style={{ color: theme.prompt }}
-                  >
-                    ▍
-                  </span>
-                </div>
-                <pre
-                  className="whitespace-pre-wrap break-words"
-                  style={{ color: theme.muted }}
+        {!isMinimized ? (
+          <>
+            {!isClosed ? (
+              <>
+                <div
+                  ref={scrollRef}
+                  className="flex-1 overflow-y-auto px-4 py-4 md:px-5 md:py-5 font-mono text-[13px] leading-6"
+                  style={{ color: theme.foreground }}
                 >
-                  {intro.streamedOutput}
-                  <span
-                    className="inline-block w-2 animate-pulse"
-                    style={{ color: theme.prompt }}
-                  >
-                    ▍
-                  </span>
-                </pre>
-              </div>
-            ) : null}
+                  <div className="space-y-3">
+                    {intro ? (
+                      <div className="space-y-2">
+                        <div className="flex gap-2 whitespace-pre-wrap break-words">
+                          <span
+                            className="shrink-0"
+                            style={{ color: theme.prompt }}
+                          >
+                            {formatTerminalPromptPath("/")}%
+                          </span>
+                          <span>{intro.typedCommand}</span>
+                          <span
+                            className="animate-pulse"
+                            style={{ color: theme.prompt }}
+                          >
+                            ▍
+                          </span>
+                        </div>
+                        <pre
+                          className="whitespace-pre-wrap break-words"
+                          style={{ color: theme.muted }}
+                        >
+                          {intro.streamedOutput}
+                          <span
+                            className="inline-block w-2 animate-pulse"
+                            style={{ color: theme.prompt }}
+                          >
+                            ▍
+                          </span>
+                        </pre>
+                      </div>
+                    ) : null}
 
-            {history.map((entry) => (
-              <div key={entry.id} className="space-y-2">
-                {entry.kind === "command" ? (
-                  <div className="flex gap-2 whitespace-pre-wrap break-words">
+                    {history.map((entry) => (
+                      <div key={entry.id} className="space-y-2">
+                        {entry.kind === "command" ? (
+                          <div className="flex gap-2 whitespace-pre-wrap break-words">
+                            <span
+                              className="shrink-0"
+                              style={{ color: theme.prompt }}
+                            >
+                              {agentMode
+                                ? "agent"
+                                : formatTerminalPromptPath(entry.cwd)}
+                              %
+                            </span>
+                            <span>{entry.text}</span>
+                          </div>
+                        ) : (
+                          <pre
+                            className={cn(
+                              "whitespace-pre-wrap break-words",
+                              entry.kind === "error" ? "text-[#ff8a7a]" : "",
+                            )}
+                            style={
+                              entry.kind === "error"
+                                ? undefined
+                                : { color: theme.muted }
+                            }
+                          >
+                            {entry.text}
+                          </pre>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <form
+                  onSubmit={handleSubmit}
+                  className="border-t px-4 py-4 md:px-5"
+                  style={{
+                    borderColor: theme.border,
+                    background: theme.input,
+                  }}
+                >
+                  <label
+                    className="flex items-center gap-2 font-mono text-[13px] leading-6"
+                    style={{ color: theme.foreground }}
+                  >
                     <span className="shrink-0" style={{ color: theme.prompt }}>
                       {agentMode
-                        ? "agent"
-                        : formatTerminalPromptPath(entry.cwd)}
-                      %
+                        ? "agent%"
+                        : `${formatTerminalPromptPath(cwd)}%`}
                     </span>
-                    <span>{entry.text}</span>
-                  </div>
-                ) : (
-                  <pre
-                    className={cn(
-                      "whitespace-pre-wrap break-words",
-                      entry.kind === "error" ? "text-[#ff8a7a]" : "",
-                    )}
-                    style={
-                      entry.kind === "error"
-                        ? undefined
-                        : { color: theme.muted }
-                    }
+                    <input
+                      ref={inputRef}
+                      value={inputValue}
+                      onChange={(event) => setInputValue(event.target.value)}
+                      onKeyDown={handleKeyDown}
+                      spellCheck={false}
+                      autoCapitalize="off"
+                      autoComplete="off"
+                      autoCorrect="off"
+                      disabled={isBusy || Boolean(intro)}
+                      className="min-w-0 flex-1 bg-transparent outline-none"
+                      style={{
+                        color: theme.foreground,
+                        caretColor: theme.prompt,
+                      }}
+                      placeholder={
+                        isBusy
+                          ? "processing..."
+                          : intro
+                            ? "booting terminal..."
+                            : agentMode
+                              ? "ask the agent anything"
+                              : "type a command"
+                      }
+                    />
+                  </label>
+                </form>
+              </>
+            ) : (
+              <div
+                className="flex flex-1 items-center justify-center px-6 py-10"
+                style={{ color: theme.muted }}
+              >
+                <div className="text-center">
+                  <p className="font-mono text-sm">window closed</p>
+                  <button
+                    type="button"
+                    onClick={handleReopenWindow}
+                    className="mt-4 rounded-md border px-3 py-1.5 text-xs uppercase tracking-[0.16em] transition-colors hover:bg-white/10"
+                    style={{
+                      borderColor: theme.border,
+                      color: theme.foreground,
+                    }}
                   >
-                    {entry.text}
-                  </pre>
-                )}
+                    reopen terminal
+                  </button>
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
-
-        <form
-          onSubmit={handleSubmit}
-          className="border-t px-4 py-4 md:px-5"
-          style={{
-            borderColor: theme.border,
-            background: theme.input,
-          }}
-        >
-          <label
-            className="flex items-center gap-2 font-mono text-[13px] leading-6"
-            style={{ color: theme.foreground }}
-          >
-            <span className="shrink-0" style={{ color: theme.prompt }}>
-              {agentMode ? "agent%" : `${formatTerminalPromptPath(cwd)}%`}
-            </span>
-            <input
-              ref={inputRef}
-              value={inputValue}
-              onChange={(event) => setInputValue(event.target.value)}
-              onKeyDown={handleKeyDown}
-              spellCheck={false}
-              autoCapitalize="off"
-              autoComplete="off"
-              autoCorrect="off"
-              disabled={isBusy || Boolean(intro)}
-              className="min-w-0 flex-1 bg-transparent outline-none"
-              style={{
-                color: theme.foreground,
-                caretColor: theme.prompt,
-              }}
-              placeholder={
-                isBusy
-                  ? "processing..."
-                  : intro
-                    ? "booting terminal..."
-                    : agentMode
-                      ? "ask the agent anything"
-                      : "type a command"
-              }
-            />
-          </label>
-        </form>
+            )}
+          </>
+        ) : null}
       </div>
     </motion.div>
   );
