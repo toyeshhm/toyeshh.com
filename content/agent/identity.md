@@ -9,7 +9,6 @@
 - Worked with Ultra (YC W24), Non-Trivial, UTD research, and NYAS NanoChar initiative
 - USACO Platinum, NYAS finalist (2nd/119), M3 MathWorks finalist (6th/770+) presented @ Jane Street for $5,000, BPA international placements (1st/200+ Financial Portfolio Management, 12th/901 Java Programming)
 - Based in Frisco, TX
-
 ## Bio
 
 Toyeshh is a builder-researcher with a strong bias for shipping. His work blends product execution with technical depth, from AI-native frontend systems to research pipelines in NLP and quantum machine learning.
