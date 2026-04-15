@@ -182,7 +182,7 @@ export const projects: Project[] = [
   },
   {
     slug: "utd-nlp-art-critique-framework",
-    title: "UTD NLP Art-Critique Framework",
+    title: "UTD NLP Framework",
     category: "NLP Research",
     type: "research",
     image: project4,

@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Github, Linkedin } from "lucide-react";
 import { useState } from "react";
 import PageTransition from "@/components/PageTransition";
 import RevealText from "@/components/RevealText";
@@ -139,8 +140,14 @@ const Contact = () => {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.8 + i * 0.1 }}
-                      className="text-sm font-detail text-text-dim hover:text-primary transition-colors"
+                      className="inline-flex items-center gap-1.5 text-sm font-detail text-text-dim hover:text-primary transition-colors"
                     >
+                      {s.label === "GitHub" ? (
+                        <Github className="h-4 w-4" aria-hidden="true" />
+                      ) : null}
+                      {s.label === "LinkedIn" ? (
+                        <Linkedin className="h-4 w-4" aria-hidden="true" />
+                      ) : null}
                       {s.label}
                     </motion.a>
                   ))}
