@@ -1,4 +1,5 @@
 import { motion, useScroll, useTransform } from "framer-motion";
+import { Github, Linkedin } from "lucide-react";
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
@@ -206,8 +207,14 @@ const Index = () => {
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm font-detail text-text-dim hover:text-primary transition-colors"
+                  className="inline-flex items-center gap-1.5 text-sm font-detail text-text-dim hover:text-primary transition-colors"
                 >
+                  {s.label === "GitHub" ? (
+                    <Github className="h-4 w-4" aria-hidden="true" />
+                  ) : null}
+                  {s.label === "LinkedIn" ? (
+                    <Linkedin className="h-4 w-4" aria-hidden="true" />
+                  ) : null}
                   {s.label}
                 </a>
               ))}

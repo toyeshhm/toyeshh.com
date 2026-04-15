@@ -22,7 +22,7 @@ const calLinks = {
 
 const experience = [
   {
-    role: "Research Team Lead & UI/UX Designer",
+    role: "Research Team Lead & Alumni Officer",
     company: "The New York Academy of Sciences",
     logo: "/logos/nyas.png",
     projectSlug: "nyas-nanochar-research",
