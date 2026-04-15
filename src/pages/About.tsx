@@ -24,7 +24,7 @@ const experience = [
   {
     role: "Research Team Lead & UI/UX Designer",
     company: "The New York Academy of Sciences",
-    logo: "public/logos/nyas.png",
+    logo: "/logos/nyas.png",
     projectSlug: "nyas-nanochar-research",
     period: "Mar 2025 — Present",
     type: "Internship + Seasonal · Remote",
@@ -37,8 +37,8 @@ const experience = [
   {
     role: "Summer Research Intern & First Author",
     company: "The University of Texas at Dallas",
-    logo: "public/logos/utd.png",
-    projectSlug: "utd-nlp-art-critique-framework",
+    logo: "/logos/utd.png",
+    projectSlug: "utd-nlp-art-critique-framework", 
     period: "Jun 2025 — Sep 2025",
     type: "Internship · On-site",
     points: [
@@ -50,7 +50,7 @@ const experience = [
   {
     role: "Paid Founding Technical Engineer & UI/UX Lead",
     company: "Ultra (YC W24)",
-    logo: "public/logos/ultra.png",
+    logo: "/logos/ultra.png",
     projectSlug: "ultra-yc-w24-ai-college-guidance",
     period: "Jan 2025 — Aug 2025",
     type: "Internship · Remote",
@@ -63,7 +63,7 @@ const experience = [
   {
     role: "Quantum Machine Learning Researcher",
     company: "Non-Trivial",
-    logo: "public/logos/nontrivial.png",
+    logo: "/logos/nontrivial.png",
     projectSlug: "quantum-ml-crop-disease-detection",
     period: "Mar 2025 — Jul 2025",
     type: "Part-time · Remote",
