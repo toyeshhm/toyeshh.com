@@ -48,7 +48,7 @@ const PdfViewer = ({ pdfUrl, title }: { pdfUrl: string; title: string }) => {
         {Array.from({ length: pageCount }, (_, index) => (
           <div
             key={`${title}-page-${index + 1}`}
-            className="overflow-hidden rounded-[1.5rem] border border-border/70 bg-white shadow-sm"
+            className="overflow-hidden rounded-[1.125rem] border border-border/70 bg-white shadow-sm"
           >
             <Page
               pageNumber={index + 1}
@@ -82,7 +82,7 @@ const WorkProjectDetail = () => {
             </h1>
             <div className="mt-8">
               <Link to="/work">
-                <MagneticButton className="px-8 py-4 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium tracking-wide">
+                <MagneticButton className="px-8 py-4 rounded-lg bg-primary text-primary-foreground font-body text-sm font-medium tracking-wide">
                   Back to work
                 </MagneticButton>
               </Link>
@@ -130,7 +130,7 @@ const WorkProjectDetail = () => {
                 }
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-                className="rounded-[2rem] border border-border/70 bg-card/80 backdrop-blur-sm p-4 md:p-6"
+                className="rounded-[1.5rem] border border-border/70 bg-card/80 backdrop-blur-sm p-4 md:p-6"
               >
                 <h2 className="px-2 text-xl md:text-2xl font-display font-bold text-foreground">
                   Project PDF
@@ -139,7 +139,7 @@ const WorkProjectDetail = () => {
                   Scroll through the paper here while reading the project notes.
                 </p>
 
-                <div className="mt-4 max-h-[85vh] overflow-y-auto overflow-x-hidden rounded-[1.5rem] border border-border/70 bg-background/80">
+                <div className="mt-4 max-h-[85vh] overflow-y-auto overflow-x-hidden rounded-[1.125rem] border border-border/70 bg-background/80">
                   {project.pdfEmbedUrl ? (
                     <iframe
                       src={project.pdfEmbedUrl}
@@ -159,7 +159,7 @@ const WorkProjectDetail = () => {
                 }
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-                className="relative overflow-hidden rounded-[2rem] border border-border/70 bg-card/80 shadow-[0_30px_90px_-24px_rgba(0,0,0,0.65)]"
+                className="relative overflow-hidden rounded-[1.5rem] border border-border/70 bg-card/80 shadow-[0_30px_90px_-24px_rgba(0,0,0,0.65)]"
               >
                 {project.image ? (
                   <>
@@ -191,7 +191,7 @@ const WorkProjectDetail = () => {
                   delay: 0.05,
                   ease: [0.23, 1, 0.32, 1],
                 }}
-                className="rounded-[2rem] border border-border/70 bg-card/80 backdrop-blur-sm p-6 md:p-8"
+                className="rounded-[1.5rem] border border-border/70 bg-card/80 backdrop-blur-sm p-6 md:p-8"
               >
                 <h2 className="text-xl md:text-2xl font-display font-bold text-foreground">
                   Project Overview
@@ -203,7 +203,7 @@ const WorkProjectDetail = () => {
                   {project.highlights.map((highlight) => (
                     <span
                       key={highlight}
-                      className="inline-flex items-center rounded-full border border-border/70 bg-background/60 px-3 py-1 text-xs font-detail text-text-subtle"
+                      className="inline-flex items-center rounded-lg border border-border/70 bg-background/60 px-3 py-1 text-xs font-detail text-text-subtle"
                     >
                       {highlight}
                     </span>
@@ -217,7 +217,7 @@ const WorkProjectDetail = () => {
                       onClick={() =>
                         window.open(openPdfUrl, "_blank", "noopener,noreferrer")
                       }
-                      className="px-6 py-3 rounded-full border border-border text-foreground font-body text-sm font-medium tracking-wide hover:border-primary/40 transition-colors"
+                      className="px-6 py-3 rounded-lg border border-border text-foreground font-body text-sm font-medium tracking-wide hover:border-primary/40 transition-colors"
                     >
                       {project.pdfLabel ?? "View project PDF"}
                     </MagneticButton>
@@ -235,7 +235,7 @@ const WorkProjectDetail = () => {
                           "noopener,noreferrer",
                         )
                       }
-                      className="px-6 py-3 rounded-full border border-border text-foreground font-body text-sm font-medium tracking-wide hover:border-primary/40 transition-colors"
+                      className="px-6 py-3 rounded-lg border border-border text-foreground font-body text-sm font-medium tracking-wide hover:border-primary/40 transition-colors"
                     >
                       {project.projectUrlLabel ?? "Visit project website"}
                     </MagneticButton>
@@ -253,7 +253,7 @@ const WorkProjectDetail = () => {
                   delay: 0.1,
                   ease: [0.23, 1, 0.32, 1],
                 }}
-                className="rounded-[2rem] border border-border/70 bg-card/80 backdrop-blur-sm p-6 md:p-8"
+                className="rounded-[1.5rem] border border-border/70 bg-card/80 backdrop-blur-sm p-6 md:p-8"
               >
                 <h2 className="text-xl md:text-2xl font-display font-bold text-foreground">
                   What I Did
@@ -275,12 +275,12 @@ const WorkProjectDetail = () => {
 
           <div className="mt-12 flex flex-col sm:flex-row items-center gap-4">
             <Link to="/work">
-              <MagneticButton className="px-8 py-4 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium tracking-wide">
+              <MagneticButton className="px-8 py-4 rounded-lg bg-primary text-primary-foreground font-body text-sm font-medium tracking-wide">
                 Back to all work
               </MagneticButton>
             </Link>
             <Link to="/contact">
-              <MagneticButton className="px-8 py-4 rounded-full border border-border text-foreground font-body text-sm font-medium tracking-wide hover:border-primary/40 transition-colors">
+              <MagneticButton className="px-8 py-4 rounded-lg border border-border text-foreground font-body text-sm font-medium tracking-wide hover:border-primary/40 transition-colors">
                 Start a project
               </MagneticButton>
             </Link>

@@ -7,13 +7,20 @@ import SectionDivider from "@/components/SectionDivider";
 import { toast } from "@/components/ui/sonner";
 import { CONTACT, FORMSPREE_FORM_URL, socialLinks } from "@/lib/contact";
 
-const FORMSPREE_URL = import.meta.env.VITE_FORMSPREE_URL?.trim() || FORMSPREE_FORM_URL;
+const FORMSPREE_URL =
+  import.meta.env.VITE_FORMSPREE_URL?.trim() || FORMSPREE_FORM_URL;
 
 const Contact = () => {
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
   const [submitting, setSubmitting] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -73,11 +80,14 @@ const Contact = () => {
           <div className="grid lg:grid-cols-2 gap-20">
             <div>
               <RevealText>
-                <span className="text-xs font-detail text-text-dim tracking-widest uppercase">Get in Touch</span>
+                <span className="text-xs font-detail text-text-dim tracking-widest uppercase">
+                  Get in Touch
+                </span>
               </RevealText>
               <RevealText delay={0.1}>
                 <h1 className="text-4xl md:text-6xl font-display font-bold mt-4 leading-tight">
-                  Let's work<br />
+                  Let's work
+                  <br />
                   <span className="text-gradient">together</span>
                 </h1>
               </RevealText>
@@ -87,8 +97,8 @@ const Contact = () => {
                 transition={{ delay: 0.4, duration: 0.8 }}
                 className="mt-6 text-text-subtle font-detail text-base leading-relaxed max-w-md"
               >
-                Have a project in mind? I'd love to hear about it. Drop me a message 
-                and let's create something unforgettable together.
+                Have a project in mind? I'd love to hear about it. Drop me a
+                message and let's create something unforgettable together.
               </motion.p>
 
               <motion.div
@@ -98,7 +108,9 @@ const Contact = () => {
                 className="mt-12 space-y-6"
               >
                 <div>
-                  <span className="text-xs font-detail text-text-dim tracking-widest uppercase">Email</span>
+                  <span className="text-xs font-detail text-text-dim tracking-widest uppercase">
+                    Email
+                  </span>
                   <p className="text-foreground font-body mt-1">
                     <a
                       href={`mailto:${CONTACT.email}`}
@@ -109,8 +121,12 @@ const Contact = () => {
                   </p>
                 </div>
                 <div>
-                  <span className="text-xs font-detail text-text-dim tracking-widest uppercase">Location</span>
-                  <p className="text-foreground font-body mt-1">{CONTACT.location}</p>
+                  <span className="text-xs font-detail text-text-dim tracking-widest uppercase">
+                    Location
+                  </span>
+                  <p className="text-foreground font-body mt-1">
+                    {CONTACT.location}
+                  </p>
                 </div>
                 <SectionDivider />
                 <div className="flex flex-wrap gap-6 pt-4">
@@ -141,8 +157,18 @@ const Contact = () => {
               aria-busy={submitting}
             >
               {[
-                { name: "name", label: "Name", type: "text", placeholder: "Your name" },
-                { name: "email", label: "Email", type: "email", placeholder: "your@email.com" },
+                {
+                  name: "name",
+                  label: "Name",
+                  type: "text",
+                  placeholder: "Your name",
+                },
+                {
+                  name: "email",
+                  label: "Email",
+                  type: "email",
+                  placeholder: "your@email.com",
+                },
               ].map((field) => (
                 <div key={field.name}>
                   <label className="text-xs font-detail text-text-dim tracking-widest uppercase block mb-3">
@@ -177,7 +203,7 @@ const Contact = () => {
                 <MagneticButton
                   type="submit"
                   disabled={submitting}
-                  className="w-full py-5 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium tracking-wide"
+                  className="w-full py-5 rounded-lg bg-primary text-primary-foreground font-body text-sm font-medium tracking-wide"
                 >
                   {submitting ? "Sending…" : "Send Message"}
                 </MagneticButton>

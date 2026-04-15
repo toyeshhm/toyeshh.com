@@ -15,6 +15,15 @@ import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
 const SITE_URL = "https://toyeshh.com";
+const SITE_THEME_STORAGE_KEY = "site-theme";
+const SITE_THEME_IDS = new Set([
+  "site",
+  "light",
+  "dark-blue",
+  "dark-gray",
+  "warm",
+  "midnight",
+]);
 
 const getCanonicalPath = (pathname: string) => {
   if (pathname.length > 1 && pathname.endsWith("/")) {
@@ -61,18 +70,35 @@ const AnimatedRoutes = () => {
   );
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <CanonicalManager />
-        <FloatingNav />
-        <AnimatedRoutes />
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  useEffect(() => {
+    const savedThemeId = window.localStorage.getItem(SITE_THEME_STORAGE_KEY);
+
+    if (!savedThemeId || !SITE_THEME_IDS.has(savedThemeId)) {
+      return;
+    }
+
+    if (savedThemeId === "site") {
+      document.documentElement.removeAttribute("data-theme");
+      return;
+    }
+
+    document.documentElement.setAttribute("data-theme", savedThemeId);
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <CanonicalManager />
+          <FloatingNav />
+          <AnimatedRoutes />
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

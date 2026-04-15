@@ -141,12 +141,12 @@ const Index = () => {
                     className="flex gap-4 mt-10"
                   >
                     <Link to="/work">
-                      <MagneticButton className="px-8 py-4 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium tracking-wide">
+                      <MagneticButton className="px-8 py-4 rounded-lg bg-primary text-primary-foreground font-body text-sm font-medium tracking-wide">
                         View Work
                       </MagneticButton>
                     </Link>
                     <Link to="/contact">
-                      <MagneticButton className="px-8 py-4 rounded-full border border-border text-foreground font-body text-sm font-medium tracking-wide hover:border-primary/40 transition-colors">
+                      <MagneticButton className="px-8 py-4 rounded-lg border border-border text-foreground font-body text-sm font-medium tracking-wide hover:border-primary/40 transition-colors">
                         Get in Touch
                       </MagneticButton>
                     </Link>
@@ -164,7 +164,7 @@ const Index = () => {
                   }}
                   className="hidden lg:block relative"
                 >
-                  <div className="w-[320px] h-[400px] rounded-[2rem] overflow-hidden relative">
+                  <div className="w-[320px] h-[400px] rounded-[1.5rem] overflow-hidden relative">
                     <img
                       src={profileImg}
                       alt="Profile"
@@ -172,22 +172,6 @@ const Index = () => {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
                   </div>
-                  <motion.div
-                    animate={{ y: [0, -8, 0] }}
-                    transition={{
-                      duration: 4,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                    className="absolute -bottom-6 -left-8 glass-panel px-5 py-3"
-                  >
-                    <span className="text-xs font-detail text-text-subtle">
-                      Based in
-                    </span>
-                    <p className="text-sm font-body text-foreground">
-                      Frisco, TX
-                    </p>
-                  </motion.div>
                 </motion.div>
               </div>
             </div>
@@ -198,7 +182,9 @@ const Index = () => {
         <footer className="py-12 px-6 md:px-12 lg:px-20 max-w-7xl mx-auto">
           <SectionDivider />
           <div className="mt-8 flex flex-col gap-4 md:grid md:grid-cols-3 md:items-center">
-            <span className="text-sm font-detail text-text-dim">© 2026 Toyeshh Medikonda.</span>
+            <span className="text-sm font-detail text-text-dim">
+              © 2026 Toyeshh Medikonda.
+            </span>
             <div className="flex items-center justify-center gap-4">
               <a
                 href="https://api.jolteon.me/webring/prevlink"

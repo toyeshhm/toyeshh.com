@@ -24,7 +24,8 @@ const experience = [
   {
     role: "Research Team Lead & UI/UX Designer",
     company: "The New York Academy of Sciences",
-    projectSlug: "nyas-nanochar-initiative",
+    logo: "public/logos/nyas.png",
+    projectSlug: "nyas-nanochar-research",
     period: "Mar 2025 — Present",
     type: "Internship + Seasonal · Remote",
     points: [
@@ -36,6 +37,7 @@ const experience = [
   {
     role: "Summer Research Intern & First Author",
     company: "The University of Texas at Dallas",
+    logo: "public/logos/utd.png",
     projectSlug: "utd-nlp-art-critique-framework",
     period: "Jun 2025 — Sep 2025",
     type: "Internship · On-site",
@@ -48,6 +50,7 @@ const experience = [
   {
     role: "Paid Founding Technical Engineer & UI/UX Lead",
     company: "Ultra (YC W24)",
+    logo: "public/logos/ultra.png",
     projectSlug: "ultra-yc-w24-ai-college-guidance",
     period: "Jan 2025 — Aug 2025",
     type: "Internship · Remote",
@@ -60,6 +63,7 @@ const experience = [
   {
     role: "Quantum Machine Learning Researcher",
     company: "Non-Trivial",
+    logo: "public/logos/nontrivial.png",
     projectSlug: "quantum-ml-crop-disease-detection",
     period: "Mar 2025 — Jul 2025",
     type: "Part-time · Remote",
@@ -127,7 +131,7 @@ const About = () => (
               transition={{ delay: 0.15, duration: 0.7 }}
               className="relative mx-auto w-full max-w-[420px] lg:max-w-[460px] xl:max-w-[500px]"
             >
-              <div className="relative rounded-[2.25rem] md:rounded-[2.5rem] overflow-hidden border border-border/60 bg-card aspect-[3/4] shadow-[0_24px_80px_-20px_rgba(0,0,0,0.55)]">
+              <div className="relative rounded-[1.5rem] md:rounded-[1.75rem] overflow-hidden border border-border/60 bg-card aspect-[3/4] shadow-[0_24px_80px_-20px_rgba(0,0,0,0.55)]">
                 <TerminalWindow className="h-full w-full" />
               </div>
             </motion.div>
@@ -156,6 +160,8 @@ const About = () => (
                   exploring the latest tech or generating ideas for an
                   innovative startup.
                 </p>
+                <p className="text-[0.9375rem] md:text-base text-muted-foreground font-detail leading-relaxed"></p>
+                <p className="text-[0.9375rem] md:text-base text-muted-foreground font-detail leading-relaxed"></p>
               </div>
 
               <div className="grid grid-cols-2 gap-x-8 gap-y-8 md:gap-y-10 mt-10 md:mt-12 pt-10 border-t border-border/80">
@@ -173,6 +179,7 @@ const About = () => (
                     </p>
                   </div>
                 ))}
+                <p className="text-[0.9375rem] md:text-base text-muted-foreground font-detail leading-relaxed"></p>
               </div>
 
               <div className="grid grid-cols-2 gap-4 md:gap-5 mt-8 md:mt-10 pt-8 md:pt-10 border-t border-border/50">
@@ -226,16 +233,31 @@ const About = () => (
 
                     <Link
                       to={`/work/${exp.projectSlug}`}
-                      className="group block p-5 -m-5 rounded-xl transition-colors duration-500 hover:bg-surface-hover/30"
+                      className="group block p-5 -m-5 rounded-lg transition-colors duration-500 hover:bg-surface-hover/30"
                     >
                       <div className="flex flex-col md:flex-row md:items-start justify-between gap-1">
-                        <div>
-                          <h3 className="text-lg font-display font-semibold group-hover:text-primary transition-colors">
-                            {exp.role}
-                          </h3>
-                          <p className="text-sm font-detail text-text-subtle mt-0.5">
-                            {exp.company}
-                          </p>
+                        <div className="flex items-start gap-3">
+                          <div className="h-11 w-11 shrink-0 overflow-hidden rounded-lg border border-border/70 bg-card/70 flex items-center justify-center">
+                            {exp.logo ? (
+                              <img
+                                src={exp.logo}
+                                alt={`${exp.company} logo`}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <span className="text-[11px] font-detail text-text-dim uppercase tracking-wide">
+                                Logo
+                              </span>
+                            )}
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-display font-semibold group-hover:text-primary transition-colors">
+                              {exp.role}
+                            </h3>
+                            <p className="text-sm font-detail text-text-subtle mt-0.5">
+                              {exp.company}
+                            </p>
+                          </div>
                         </div>
                         <div className="text-right mt-1 md:mt-0 shrink-0">
                           <span className="text-xs font-detail text-text-dim tracking-wider block">
@@ -283,7 +305,7 @@ const About = () => (
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.08, duration: 0.45 }}
-                  className="rounded-2xl border border-border bg-card/60 p-6 backdrop-blur-sm"
+                  className="rounded-xl border border-border bg-card/60 p-6 backdrop-blur-sm"
                 >
                   <h3 className="text-lg md:text-xl font-display font-semibold text-primary">
                     {termInfo.term}
@@ -315,30 +337,30 @@ const About = () => (
               </h2>
             </RevealText>
 
-            <div className="grid sm:grid-cols-2 gap-5 mt-12">
+            <div className="mt-12 divide-y divide-border/70 border-y border-border/70">
               {awards.map((award, i) => (
                 <motion.div
                   key={award.title}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.1, duration: 0.5 }}
+                  transition={{ delay: i * 0.08, duration: 0.45 }}
                   className="group"
                 >
                   <Link
                     to={`/work/${award.projectSlug}`}
-                    className="flex items-start gap-4 p-5 rounded-xl border border-border hover:border-primary/30 transition-colors duration-500"
+                    className="flex items-start gap-4 py-5 md:py-6 transition-colors duration-300 hover:bg-surface-hover/20"
                   >
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                      <span className="text-primary text-sm font-display font-bold">
+                    <div className="w-8 h-8 rounded-full border border-primary/30 bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="text-primary text-xs font-display font-bold">
                         ★
                       </span>
                     </div>
-                    <div>
-                      <h3 className="text-sm font-display font-semibold group-hover:text-primary transition-colors">
+                    <div className="min-w-0">
+                      <h3 className="text-sm md:text-base font-display font-semibold group-hover:text-primary transition-colors">
                         {award.title}
                       </h3>
-                      <p className="text-xs font-detail text-text-dim mt-1">
+                      <p className="text-xs md:text-sm font-detail text-text-dim mt-1 leading-relaxed">
                         {award.detail}
                       </p>
                       <span className="text-xs font-detail text-text-dim/60 mt-1 block">

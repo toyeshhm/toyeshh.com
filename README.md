@@ -15,13 +15,13 @@ Personal portfolio and terminal-style website built with Vite, React, and TypeSc
 
 - Vite
 - React + TypeScript
-- React Router
+- React Router 
 - Tailwind CSS
 - Framer Motion
 - Vitest + Testing Library
 - Playwright
 - Cloudflare Workers (Wrangler)
-
+  
 ## Getting Started
 
 1. Install dependencies:
