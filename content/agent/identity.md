@@ -7,7 +7,7 @@
 - Focused on AI/ML, quant, and full-stack engineering
 - Experience across startup product work, NLP research, and quantum ML research
 - Worked with Ultra (YC W24), Non-Trivial, UTD research, and NYAS NanoChar initiative
-- NYAS finalist (2nd/119), M3 MathWorks finalist (6th/770+), BPA international placements
+- USACO Platinum, NYAS finalist (2nd/119), M3 MathWorks finalist (6th/770+) presented @ Jane Street for $5,000, BPA international placements (1st/200+ Financial Portfolio Management, 12th/901 Java Programming)
 - Based in Frisco, TX
 
 ## Bio
@@ -43,19 +43,23 @@ He is an incoming freshman at UT Austin in the Turing Scholars CS Honors track a
 
 Entering UT Austin as a Turing Scholar in Computer Science Honors.
 
-### Research + Product Track
+### Ultra (YC W24)
 
-Continuing to build AI-native product systems while extending research depth in NLP and ML evaluation.
+Paid Founding Technical Engineer & UI/UX Lead co-building frontend & AI for accessible college-guidance platform helping 10K+ students. Worked 1:1 with CEO on product strategy, shipped performance and accessibility upgrades, grew Discord community from 20 to 2,500+ members (won $3K+ value prize for impact).
 
-### Website + Agent Infrastructure
+### WearItForward (Nonprofit)
 
-Maintaining a terminal-first personal site experience with structured content and agent context.
+Co-founder & UI/UX Designer for humanitarian nonprofit partnered with Frisco Threads. Designed website and media assets for initiative that has donated 160K+ pieces of clothing to underserved communities; led team of 20+; presented to Frisco PTA (24K+ members); featured on Fox News and 5+ news outlets.
 
 ## Fun Facts
 
-- Enjoys turning interfaces into interactive narratives
-- Treats terminal UX as both design and systems engineering
-- Likes building products that feel opinionated instead of generic
+- loves to play volleyball, table-tennis, and soccer
+- photography with a Kodak Fz55 digicam
+- Started coding at 12 through Swift Playground
+
+## Personal
+
+- Born in Illinois, moved to Texas in 7th grade
 
 ## Interests
 
@@ -63,3 +67,4 @@ Maintaining a terminal-first personal site experience with structured content an
 - AI/ML systems and evaluation
 - Startup product execution
 - Quantitative and computational problem solving
+- Hackathons
