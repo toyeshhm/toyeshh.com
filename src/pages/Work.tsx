@@ -18,6 +18,10 @@ const MIN_LOOP_SEGMENT_ITEMS = 6;
 const TOP_ROW_BASE_DURATION = 44;
 const BOTTOM_ROW_BASE_DURATION = 48;
 const HOVER_SLOWDOWN_MULTIPLIER = 2.1;
+const HIDDEN_WORK_SLUGS = new Set([
+  "bpa-nlc-competitor",
+  "texas-deca-icdc-alternate",
+]);
 
 const buildLoopingRow = (items: Project[]) => {
   if (items.length === 0) {
@@ -51,14 +55,18 @@ const ProjectTile = ({
   const card = (
     <div className="group relative w-[16.5rem] sm:w-[18.5rem] md:w-[20.5rem] lg:w-[23.5rem] rounded-[1.85rem] overflow-hidden border border-border/70 bg-card/80 shadow-[0_30px_90px_-24px_rgba(0,0,0,0.65)] backdrop-blur-sm transition-colors duration-300 hover:border-border/90">
       <div className="relative aspect-[16/9] overflow-hidden">
-        <img
-          src={project.image}
-          alt={project.title}
-          loading="lazy"
-          width={1400}
-          height={788}
-          className="h-full w-full object-cover"
-        />
+        {project.image ? (
+          <img
+            src={project.image}
+            alt={project.title}
+            loading="lazy"
+            width={1400}
+            height={788}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="h-full w-full bg-gradient-to-br from-primary/15 via-card to-primary/5" />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-background/45 via-background/10 to-transparent" />
         <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-background/25 to-transparent" />
       </div>
@@ -116,11 +124,17 @@ const Work = () => {
   );
 
   const visibleProjects = useMemo(
-    () => getProjectsByFilter(activeFilter),
+    () =>
+      getProjectsByFilter(activeFilter).filter(
+        (project) => !HIDDEN_WORK_SLUGS.has(project.slug),
+      ),
     [activeFilter],
   );
 
-  const baseProjects = useMemo(() => projects, []);
+  const baseProjects = useMemo(
+    () => projects.filter((project) => !HIDDEN_WORK_SLUGS.has(project.slug)),
+    [],
+  );
 
   const topRowProjects = useMemo(() => {
     const evenItems = baseProjects.filter((_, index) => index % 2 === 0);

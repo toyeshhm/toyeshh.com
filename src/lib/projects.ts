@@ -21,7 +21,7 @@ export type Project = {
   title: string;
   category: string;
   type: Exclude<ProjectFilter, "everything">;
-  image: string;
+  image?: string;
   year: string;
   desc: string;
   details: string[];
@@ -34,6 +34,42 @@ export type Project = {
 };
 
 export const projects: Project[] = [
+  {
+    slug: "bpa-nlc-competitor",
+    title: "BPA National Leadership Conference",
+    category: "Business + Technology Competition",
+    type: "competitions",
+    year: "2025",
+    desc: "Placed 1st/200+ internationally in Financial Portfolio Management and 12th internationally in Java Programming (3rd in Texas).",
+    details: [
+      "Qualified through regional and state rounds to compete at BPA Nationals.",
+      "Built finance and technical preparation workflows spanning quantitative portfolio strategy and Java problem solving.",
+      "Delivered top placements across both business and programming tracks in a high-volume international field.",
+    ],
+    highlights: [
+      "1st/200+ Financial Portfolio",
+      "12th international Java",
+      "3rd in Texas",
+    ],
+  },
+  {
+    slug: "texas-deca-icdc-alternate",
+    title: "Texas DECA ICDC Alternate",
+    category: "Business Case Competition",
+    type: "competitions",
+    year: "2025",
+    desc: "Placed 2nd in Texas at state level (ICDC Alternate) and qualified for state competition across four consecutive years.",
+    details: [
+      "Prepared across case studies, roleplays, and presentation drills over multiple competitive seasons.",
+      "Competed through one of the most competitive Texas district pipelines before advancing to state.",
+      "Applied real-time business analysis, marketing strategy, and communication under strict timed judging formats.",
+    ],
+    highlights: [
+      "2nd in Texas",
+      "ICDC Alternate",
+      "4x consecutive state qualification",
+    ],
+  },
   {
     slug: "m3-mathworks-math-modeling-challenge-finalist",
     title: "M3 Math Modeling Challenge",

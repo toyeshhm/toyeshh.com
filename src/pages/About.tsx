@@ -76,18 +76,14 @@ const awards = [
     title: "NYAS Research Finalist",
     detail: "2nd/119 teams. Associated with The New York Academy of Sciences.",
     year: "Issued by New York Academy of Sciences · Jul 2025",
-    projectSlug: "nyas-nanochar-initiative",
+    projectSlug: "nyas-nanochar-research",
   },
   {
     title: "BPA NLC Competitor",
     detail:
       "Financial Portfolio Management: 1st/200+ internationally. Java Programming: 12th internationally and 3rd in Texas.",
     year: "Issued by BPA · May 2025",
-  },
-  {
-    title: "USACO Platinum Division",
-    detail: "Top <1% internationally; in contention for USACO camp.",
-    year: "Competitive Programming Achievement",
+    projectSlug: "bpa-nlc-competitor",
   },
   {
     title: "SIAM International M3 MathWorks Math Modeling Challenge Finalist",
@@ -100,6 +96,7 @@ const awards = [
     detail:
       "Qualified for state in the Marketing Cluster 4 consecutive years (2023-2026); State Finalist 2025 (ICDC Alternate).",
     year: "Issued by DECA · Jan 2025",
+    projectSlug: "texas-deca-icdc-alternate",
   },
 ];
 
@@ -328,48 +325,27 @@ const About = () => (
                   transition={{ delay: i * 0.1, duration: 0.5 }}
                   className="group"
                 >
-                  {award.projectSlug ? (
-                    <Link
-                      to={`/work/${award.projectSlug}`}
-                      className="flex items-start gap-4 p-5 rounded-xl border border-border hover:border-primary/30 transition-colors duration-500"
-                    >
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                        <span className="text-primary text-sm font-display font-bold">
-                          ★
-                        </span>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-display font-semibold group-hover:text-primary transition-colors">
-                          {award.title}
-                        </h3>
-                        <p className="text-xs font-detail text-text-dim mt-1">
-                          {award.detail}
-                        </p>
-                        <span className="text-xs font-detail text-text-dim/60 mt-1 block">
-                          {award.year}
-                        </span>
-                      </div>
-                    </Link>
-                  ) : (
-                    <div className="flex items-start gap-4 p-5 rounded-xl border border-border hover:border-primary/30 transition-colors duration-500">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                        <span className="text-primary text-sm font-display font-bold">
-                          ★
-                        </span>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-display font-semibold group-hover:text-primary transition-colors">
-                          {award.title}
-                        </h3>
-                        <p className="text-xs font-detail text-text-dim mt-1">
-                          {award.detail}
-                        </p>
-                        <span className="text-xs font-detail text-text-dim/60 mt-1 block">
-                          {award.year}
-                        </span>
-                      </div>
+                  <Link
+                    to={`/work/${award.projectSlug}`}
+                    className="flex items-start gap-4 p-5 rounded-xl border border-border hover:border-primary/30 transition-colors duration-500"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
+                      <span className="text-primary text-sm font-display font-bold">
+                        ★
+                      </span>
                     </div>
-                  )}
+                    <div>
+                      <h3 className="text-sm font-display font-semibold group-hover:text-primary transition-colors">
+                        {award.title}
+                      </h3>
+                      <p className="text-xs font-detail text-text-dim mt-1">
+                        {award.detail}
+                      </p>
+                      <span className="text-xs font-detail text-text-dim/60 mt-1 block">
+                        {award.year}
+                      </span>
+                    </div>
+                  </Link>
                 </motion.div>
               ))}
             </div>

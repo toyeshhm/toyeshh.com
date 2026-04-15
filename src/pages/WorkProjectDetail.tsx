@@ -161,12 +161,22 @@ const WorkProjectDetail = () => {
                 transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
                 className="relative overflow-hidden rounded-[2rem] border border-border/70 bg-card/80 shadow-[0_30px_90px_-24px_rgba(0,0,0,0.65)]"
               >
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="h-full w-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/35 via-transparent to-transparent" />
+                {project.image ? (
+                  <>
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className="h-full w-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/35 via-transparent to-transparent" />
+                  </>
+                ) : (
+                  <div className="flex min-h-[22rem] items-center justify-center bg-gradient-to-br from-primary/15 via-card to-primary/5 p-8 text-center">
+                    <p className="text-sm font-detail text-text-subtle">
+                      No cover image for this achievement.
+                    </p>
+                  </div>
+                )}
               </motion.div>
             )}
 
