@@ -707,7 +707,7 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
             className="min-w-0 text-center text-[11px] md:text-xs font-detail tracking-[0.18em] uppercase truncate"
             style={{ color: theme.muted }}
           >
-            toyshh@about · {formatTerminalPromptPath(cwd)}
+            toyeshh@about · {formatTerminalPromptPath(cwd)}
           </div>
 
           <div

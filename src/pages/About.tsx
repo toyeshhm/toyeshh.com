@@ -13,41 +13,48 @@ const infoCards = [
   { label: "STATUS", value: "Available for work", highlight: true },
 ];
 
+const calLinks = {
+  calLink15:
+    "https://cal.com/toyeshh-medikonda-imd7i7/15min?overlayCalendar=true",
+  calLink30:
+    "https://cal.com/toyeshh-medikonda-imd7i7/30min?overlayCalendar=true",
+};
+
 const experience = [
   {
-    role: "Research Team Lead & Alumni Officer",
+    role: "Research Team Lead & UI/UX Designer",
     company: "The New York Academy of Sciences",
     projectSlug: "nyas-nanochar-initiative",
     period: "Mar 2025 — Present",
     type: "Internship + Seasonal · Remote",
     points: [
       "Selected in the top 10% of global applicants and led a 6-person international team on NanoChar.",
-      "Directed modeling and prototype design, surveyed 100+ users, and achieved a 63% reduction in average cellular damage.",
-      "Project placed 2nd/119 and was showcased at the 2025 International Student Symposium; later recognized as a NYAS Young Member and invited to the JCSVEI alumni network.",
+      "Sketched 30+ designs and created project website; directed modeling and prototype design; achieved 63% reduction in average cellular damage.",
+      "Project placed 2nd/119 and was showcased at the 2025 International Student Symposium; recognized as NYAS Young Member and invited to JCSVEI alumni network.",
     ],
   },
   {
-    role: "Research Intern",
+    role: "Summer Research Intern & First Author",
     company: "The University of Texas at Dallas",
     projectSlug: "utd-nlp-art-critique-framework",
     period: "Jun 2025 — Sep 2025",
     type: "Internship · On-site",
     points: [
-      "Built NLP and multimodal pipelines under Dr. Chris Davis for large-scale language and art-critique analysis.",
-      "Introduced the Creative Coherence Score (CCS) and created the ArtCriq dataset with 850+ annotated critiques.",
+      "Developed NLP framework for evaluating AI-generated art critiques; paper published @ UTD.",
+      "Created the ArtCriq dataset with 840+ annotated critiques and introduced the Creative Coherence Score (CCS).",
       "Reduced cultural bias by 38% through LoRA fine-tuning across GPT-4, Claude 3, and Llama-3.",
     ],
   },
   {
-    role: "Frontend Engineer",
-    company: "Ultra",
+    role: "Paid Founding Technical Engineer & UI/UX Lead",
+    company: "Ultra (YC W24)",
     projectSlug: "ultra-yc-w24-ai-college-guidance",
     period: "Jan 2025 — Aug 2025",
     type: "Internship · Remote",
     points: [
-      "Built and optimized Ultra's landing experience to improve conversion and retention.",
-      "Shipped performance and accessibility upgrades across the frontend architecture.",
-      "Integrated GPT-powered roadmap features with full CRUD and prototyped a RAG-based startup guidance assistant.",
+      "Co-built frontend & AI systems for accessible college-guidance platform helping 10K+ students.",
+      "Worked 1:1 with CEO on product strategy; shipped performance and accessibility upgrades across the frontend.",
+      "Grew Discord community from 20 to 2,500+ members; won $3K+ prize for community impact.",
     ],
   },
   {
@@ -76,6 +83,11 @@ const awards = [
     detail:
       "Financial Portfolio Management: 1st/200+ internationally. Java Programming: 12th internationally and 3rd in Texas.",
     year: "Issued by BPA · May 2025",
+  },
+  {
+    title: "USACO Platinum Division",
+    detail: "Top <1% internationally; in contention for USACO camp.",
+    year: "Competitive Programming Achievement",
   },
   {
     title: "SIAM International M3 MathWorks Math Modeling Challenge Finalist",
@@ -164,6 +176,25 @@ const About = () => (
                     </p>
                   </div>
                 ))}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 md:gap-5 mt-8 md:mt-10 pt-8 md:pt-10 border-t border-border/50">
+                <a
+                  href={calLinks.calLink15}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center px-4 py-3 md:py-3.5 rounded-lg border border-primary/40 bg-primary/5 hover:bg-primary/10 hover:border-primary/60 transition-colors duration-300 font-detail text-sm md:text-[0.95rem] font-medium text-primary hover:text-primary/90"
+                >
+                  Quick call (15 min)
+                </a>
+                <a
+                  href={calLinks.calLink30}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center px-4 py-3 md:py-3.5 rounded-lg border border-primary/40 bg-primary/5 hover:bg-primary/10 hover:border-primary/60 transition-colors duration-300 font-detail text-sm md:text-[0.95rem] font-medium text-primary hover:text-primary/90"
+                >
+                  Deep dive (30 min+)
+                </a>
               </div>
             </motion.div>
           </div>
