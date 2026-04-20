@@ -47,7 +47,7 @@ describe("terminal commands", () => {
     const catResult = executeTerminalCommand("/", "cat welcome.md");
     expect(catResult.kind).toBe("stream");
     if (catResult.kind === "stream") {
-      expect(catResult.output).toContain("welcome to the toyeshh terminal");
+      expect(catResult.output).toContain("# Toyeshh Terminal");
     }
 
     const cdResult = executeTerminalCommand("/", "cd projects");

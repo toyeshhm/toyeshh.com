@@ -6,7 +6,7 @@ Personal portfolio and terminal-style website built with Vite, React, and TypeSc
 
 - Animated, multi-page portfolio (Home, About, Work, Contact)
 - Work detail pages powered by slug-based project data
-- Terminal feature with live AI agent chatbot powered by Minstral API
+- Terminal feature with a server-side AI agent proxy using Gemini first and Mistral as fallback
 - Structured long-form content under the content directory
 - Unit and E2E test coverage
 - Cloudflare Workers deployment support
@@ -71,3 +71,5 @@ Cloudflare Worker configuration lives in `wrangler.toml`.
 ```bash
 npm run deploy
 ```
+
+For production secrets, configure `GEMINI_API_KEY` and optionally `MISTRAL_API_KEY` with Wrangler secrets.

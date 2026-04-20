@@ -2,9 +2,12 @@
 # Must match the Worker name in Cloudflare (Dashboard → Workers → this project).
 name = "personalwebsite"
 compatibility_date = "2026-04-04"
+main = "./worker/index.ts"
 
 [assets]
 directory = "./dist"
+binding = "ASSETS"
 # Default html_handling adds redirects that conflict with SPA not_found_handling (API 10021).
 html_handling = "none"
 not_found_handling = "single-page-application"
+run_worker_first = ["/api/*"]
