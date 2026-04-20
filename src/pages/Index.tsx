@@ -182,24 +182,10 @@ const Index = () => {
         {/* Footer */}
         <footer className="py-12 px-6 md:px-12 lg:px-20 max-w-7xl mx-auto">
           <SectionDivider />
-          <div className="mt-8 flex flex-col gap-4 md:grid md:grid-cols-3 md:items-center">
+          <div className="mt-8 flex flex-col gap-4 md:grid md:grid-cols-2 md:items-center">
             <span className="text-sm font-detail text-text-dim">
               © 2026 Toyeshh Medikonda.
             </span>
-            <div className="flex items-center justify-center gap-4">
-              <a
-                href="https://api.jolteon.me/webring/prevlink"
-                className="text-sm font-detail text-text-dim hover:text-primary transition-colors"
-              >
-                ← prev
-              </a>
-              <a
-                href="https://api.jolteon.me/webring/nextlink"
-                className="text-sm font-detail text-text-dim hover:text-primary transition-colors"
-              >
-                next →
-              </a>
-            </div>
             <div className="flex flex-wrap items-center justify-center md:justify-end gap-6">
               {socialLinks.map((s) => (
                 <a
