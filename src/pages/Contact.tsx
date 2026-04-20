@@ -98,8 +98,7 @@ const Contact = () => {
                 transition={{ delay: 0.4, duration: 0.8 }}
                 className="mt-6 text-text-subtle font-detail text-base leading-relaxed max-w-md"
               >
-                Have a project in mind? I'd love to hear about it. Drop me a
-                message and let's create something unforgettable together.
+                Have a project or idea in mind? I'd love to hear about it.
               </motion.p>
 
               <motion.div

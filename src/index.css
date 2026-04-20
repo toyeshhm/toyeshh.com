@@ -33,7 +33,7 @@
     --border: 20 10% 16%;
     --input: 20 10% 16%;
     --ring: 28 80% 52%;
-    --radius: 0.5rem;
+    --radius: 0;
 
     /* Custom tokens */
     --glow: 28 80% 52%;
@@ -312,6 +312,33 @@
     @apply border-border;
   }
 
+  /* Force square corners for all Tailwind rounded utilities, including arbitrary values. */
+  [class*="rounded"] {
+    border-radius: 0 !important;
+  }
+
+  .terminal-rounded-shell {
+    border-radius: 1.5rem !important;
+  }
+
+  .terminal-rounded-scope .terminal-traffic-light {
+    border-radius: 9999px !important;
+  }
+
+  .terminal-rounded-scope .terminal-rounded-md {
+    border-radius: 0.375rem !important;
+  }
+
+  .terminal-frame-rounded {
+    border-radius: 1.5rem !important;
+  }
+
+  @media (min-width: 768px) {
+    .terminal-frame-rounded {
+      border-radius: 1.75rem !important;
+    }
+  }
+
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-body);
@@ -341,7 +368,7 @@
   }
   ::-webkit-scrollbar-thumb {
     background: hsl(20 10% 16%);
-    border-radius: 3px;
+    border-radius: 0;
   }
   ::-webkit-scrollbar-thumb:hover {
     background: hsl(28 80% 52% / 0.4);

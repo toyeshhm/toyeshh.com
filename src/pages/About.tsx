@@ -131,7 +131,7 @@ const About = () => (
               transition={{ delay: 0.15, duration: 0.7 }}
               className="relative mx-auto w-full max-w-[420px] lg:max-w-[460px] xl:max-w-[500px]"
             >
-              <div className="relative rounded-[1.5rem] md:rounded-[1.75rem] overflow-hidden border border-border/60 bg-card aspect-[3/4] shadow-[0_24px_80px_-20px_rgba(0,0,0,0.55)]">
+              <div className="terminal-frame-rounded relative rounded-[1.5rem] md:rounded-[1.75rem] overflow-hidden border border-border/60 bg-card aspect-[3/4] shadow-[0_24px_80px_-20px_rgba(0,0,0,0.55)]">
                 <TerminalWindow className="h-full w-full" />
               </div>
             </motion.div>

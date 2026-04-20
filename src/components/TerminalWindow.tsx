@@ -774,7 +774,7 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, ease: [0.23, 1, 0.32, 1] }}
       className={cn(
-        "relative overflow-hidden rounded-[1.5rem] border shadow-[0_24px_80px_-20px_rgba(0,0,0,0.65)]",
+        "terminal-rounded-scope terminal-rounded-shell relative overflow-hidden rounded-[1.5rem] border shadow-[0_24px_80px_-20px_rgba(0,0,0,0.65)]",
         isMaximized ? "fixed inset-4 z-[90] md:inset-8" : "",
         className,
       )}
@@ -803,7 +803,7 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
               onClick={handleCloseWindow}
               title="Close"
               aria-label="Close terminal"
-              className="h-3 w-3 rounded-full bg-[#ff5f57] shadow-[0_0_0_1px_rgba(0,0,0,0.25)_inset] transition-transform duration-150 hover:scale-110"
+              className="terminal-traffic-light h-3 w-3 rounded-full bg-[#ff5f57] shadow-[0_0_0_1px_rgba(0,0,0,0.25)_inset] transition-transform duration-150 hover:scale-110"
             />
             <button
               type="button"
@@ -812,14 +812,14 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
               aria-label={
                 isMinimized ? "Restore terminal" : "Minimize terminal"
               }
-              className="h-3 w-3 rounded-full bg-[#febc2e] shadow-[0_0_0_1px_rgba(0,0,0,0.25)_inset] transition-transform duration-150 hover:scale-110"
+              className="terminal-traffic-light h-3 w-3 rounded-full bg-[#febc2e] shadow-[0_0_0_1px_rgba(0,0,0,0.25)_inset] transition-transform duration-150 hover:scale-110"
             />
             <button
               type="button"
               onClick={handleZoomWindow}
               title={isMaximized ? "Exit zoom" : "Zoom"}
               aria-label={isMaximized ? "Exit terminal zoom" : "Zoom terminal"}
-              className="h-3 w-3 rounded-full bg-[#28c840] shadow-[0_0_0_1px_rgba(0,0,0,0.25)_inset] transition-transform duration-150 hover:scale-110"
+              className="terminal-traffic-light h-3 w-3 rounded-full bg-[#28c840] shadow-[0_0_0_1px_rgba(0,0,0,0.25)_inset] transition-transform duration-150 hover:scale-110"
             />
           </div>
 
@@ -976,7 +976,7 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
                   <button
                     type="button"
                     onClick={handleReopenWindow}
-                    className="mt-4 rounded-md border px-3 py-1.5 text-xs uppercase tracking-[0.16em] transition-colors hover:bg-white/10"
+                    className="terminal-rounded-md mt-4 rounded-md border px-3 py-1.5 text-xs uppercase tracking-[0.16em] transition-colors hover:bg-white/10"
                     style={{
                       borderColor: theme.border,
                       color: theme.foreground,

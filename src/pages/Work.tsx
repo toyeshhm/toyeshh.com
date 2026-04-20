@@ -188,8 +188,7 @@ const Work = () => {
               transition={{ delay: 0.25, duration: 0.6 }}
               className="mt-6 text-text-subtle font-detail text-base md:text-lg leading-relaxed"
             >
-              A couple of the works that have shaped who I am. I’ve done a lot
-              of different things, but here are some highlights.
+              A couple of the works that have shaped who I am. 
             </motion.p>
           </div>
 
