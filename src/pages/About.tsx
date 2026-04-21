@@ -74,35 +74,6 @@ const experience = [
   },
 ];
 
-const awards = [
-  {
-    title: "NYAS Research Finalist",
-    detail: "2nd/119 teams. Associated with The New York Academy of Sciences.",
-    year: "Issued by New York Academy of Sciences · Jul 2025",
-    projectSlug: "nyas-nanochar-research",
-  },
-  {
-    title: "BPA NLC Competitor",
-    detail:
-      "Financial Portfolio Management: 1st/200+ internationally. Java Programming: 12th internationally and 3rd in Texas.",
-    year: "Issued by BPA · May 2025",
-    projectSlug: "bpa-nlc-competitor",
-  },
-  {
-    title: "SIAM International M3 MathWorks Math Modeling Challenge Finalist",
-    detail: "6th/770+ teams in 2026 ($5,000 prize); Top 150 teams in 2025.",
-    year: "Issued by SIAM · Mar 2025",
-    projectSlug: "m3-mathworks-math-modeling-challenge-finalist",
-  },
-  {
-    title: "Texas DECA ICDC Alternate",
-    detail:
-      "Qualified for state in the Marketing Cluster 4 consecutive years (2023-2026); State Finalist 2025 (ICDC Alternate).",
-    year: "Issued by DECA · Jan 2025",
-    projectSlug: "texas-deca-icdc-alternate",
-  },
-];
-
 const coursesByTerm = [
   {
     term: "Fall 2026",
@@ -208,7 +179,7 @@ const About = () => (
               <div className="absolute left-[7px] md:left-[9px] top-3 bottom-3 w-px bg-border" />
 
               <div className="space-y-10">
-                {experience.map((exp, i) => (
+                {experience.map((exp) => (
                   <div
                     key={exp.role + exp.company}
                     className="relative pl-10"
@@ -283,7 +254,7 @@ const About = () => (
             </RevealText>
 
             <div className="mt-12 grid gap-5">
-              {coursesByTerm.map((termInfo, i) => (
+              {coursesByTerm.map((termInfo) => (
                 <div
                   key={termInfo.term}
                   className="rounded-xl border border-border bg-card/60 p-6 backdrop-blur-sm"
@@ -308,48 +279,6 @@ const About = () => (
           </div>
         </div>
 
-        {/* Awards & Honors */}
-        <div className="mt-32">
-          <SectionDivider />
-          <div className="mt-16">
-            <RevealText>
-              <h2 className="text-3xl md:text-4xl font-display font-bold">
-                <span className="text-gradient">Awards</span>
-              </h2>
-            </RevealText>
-
-            <div className="mt-12 divide-y divide-border/70 border-y border-border/70">
-              {awards.map((award, i) => (
-                <div
-                  key={award.title}
-                  className="group"
-                >
-                  <Link
-                    to={`/work/${award.projectSlug}`}
-                    className="flex items-start gap-4 py-5 md:py-6 transition-colors duration-300 hover:bg-surface-hover/20"
-                  >
-                    <div className="w-8 h-8 rounded-full border border-primary/30 bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                      <span className="text-primary text-xs font-display font-bold">
-                        ★
-                      </span>
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="text-sm md:text-base font-display font-semibold group-hover:text-primary transition-colors">
-                        {award.title}
-                      </h3>
-                      <p className="text-xs md:text-sm font-detail text-text-dim mt-1 leading-relaxed">
-                        {award.detail}
-                      </p>
-                      <span className="text-xs font-detail text-text-dim/60 mt-1 block">
-                        {award.year}
-                      </span>
-                    </div>
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </PageTransition>
