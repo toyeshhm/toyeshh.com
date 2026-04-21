@@ -312,6 +312,14 @@
     @apply border-border;
   }
 
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+
   /* Force square corners for all Tailwind rounded utilities, including arbitrary values. */
   [class*="rounded"] {
     border-radius: 0 !important;
@@ -403,13 +411,9 @@
     @apply rounded-2xl border border-border overflow-hidden;
     background: hsl(20 12% 8% / 0.8);
     backdrop-filter: blur(12px);
-    transition:
-      transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
-      box-shadow 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   }
 
   .floating-card:hover {
-    transform: translateY(-8px) scale(1.01);
     box-shadow:
       0 20px 60px hsl(28 80% 52% / 0.08),
       0 8px 24px hsl(0 0% 0% / 0.3);
@@ -417,12 +421,10 @@
 
   .magnetic-btn {
     @apply relative overflow-hidden;
-    transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
   }
 
   .organic-blob {
     border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-    animation: morph 8s ease-in-out infinite;
   }
 
   .line-reveal {
@@ -433,7 +435,6 @@
       hsl(28 80% 52%),
       transparent
     );
-    transition: width 1.2s cubic-bezier(0.23, 1, 0.32, 1);
   }
 
   .line-reveal.active {
@@ -469,11 +470,6 @@
     pointer-events: none;
     border-radius: 9999px;
     will-change: transform, opacity;
-    transition:
-      opacity 180ms ease,
-      width 220ms ease,
-      height 220ms ease,
-      background 220ms ease;
   }
 
   .cursor-aura-core {
@@ -494,31 +490,6 @@
       radial-gradient(circle, hsl(var(--glow) / 0.2) 0%, hsl(var(--glow) / 0.08) 38%, transparent 72%);
     filter: blur(10px);
     opacity: 0.85;
-  }
-}
-
-@keyframes morph {
-  0% {
-    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  }
-  50% {
-    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
-  }
-  100% {
-    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  }
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  33% {
-    transform: translateY(-10px) rotate(1deg);
-  }
-  66% {
-    transform: translateY(5px) rotate(-1deg);
   }
 }
 

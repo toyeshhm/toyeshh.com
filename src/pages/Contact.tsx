@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Github, Linkedin } from "lucide-react";
 import { useState } from "react";
 import PageTransition from "@/components/PageTransition";
@@ -92,21 +91,11 @@ const Contact = () => {
                   <span className="text-gradient">together</span>
                 </h1>
               </RevealText>
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.8 }}
-                className="mt-6 text-text-subtle font-detail text-base leading-relaxed max-w-md"
-              >
+              <p className="mt-6 text-text-subtle font-detail text-base leading-relaxed max-w-md">
                 Have a project or idea in mind? I'd love to hear about it.
-              </motion.p>
+              </p>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6, duration: 0.8 }}
-                className="mt-12 space-y-6"
-              >
+              <div className="mt-12 space-y-6">
                 <div>
                   <span className="text-xs font-detail text-text-dim tracking-widest uppercase">
                     Email
@@ -131,14 +120,11 @@ const Contact = () => {
                 <SectionDivider />
                 <div className="flex flex-wrap gap-6 pt-4">
                   {socialLinks.map((s, i) => (
-                    <motion.a
+                    <a
                       key={s.label}
                       href={s.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.8 + i * 0.1 }}
                       className="inline-flex items-center gap-1.5 text-sm font-detail text-text-dim hover:text-primary transition-colors"
                     >
                       {s.label === "GitHub" ? (
@@ -148,16 +134,13 @@ const Contact = () => {
                         <Linkedin className="h-4 w-4" aria-hidden="true" />
                       ) : null}
                       {s.label}
-                    </motion.a>
+                    </a>
                   ))}
                 </div>
-              </motion.div>
+              </div>
             </div>
 
-            <motion.form
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4, duration: 0.8 }}
+            <form
               className="space-y-6"
               onSubmit={handleSubmit}
               aria-busy={submitting}
@@ -214,7 +197,7 @@ const Contact = () => {
                   {submitting ? "Sending…" : "Send Message"}
                 </MagneticButton>
               </div>
-            </motion.form>
+            </form>
           </div>
         </div>
       </div>

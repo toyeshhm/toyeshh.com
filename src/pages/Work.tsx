@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
@@ -17,7 +17,6 @@ const filters = projectFilters;
 const MIN_LOOP_SEGMENT_ITEMS = 6;
 const TOP_ROW_BASE_DURATION = 44;
 const BOTTOM_ROW_BASE_DURATION = 48;
-const HOVER_SLOWDOWN_MULTIPLIER = 2.1;
 const HIDDEN_WORK_SLUGS = new Set([
   "bpa-nlc-competitor",
   "texas-deca-icdc-alternate",
@@ -42,15 +41,11 @@ const buildLoopingRow = (items: Project[]) => {
 const ProjectTile = ({
   project,
   overview,
-  rowIndex,
   index,
-  onOverviewHoverChange,
 }: {
   project: Project;
   overview: boolean;
-  rowIndex?: number;
   index: number;
-  onOverviewHoverChange?: (isHovering: boolean) => void;
 }) => {
   const card = (
     <div className="group relative w-[16.5rem] sm:w-[18.5rem] md:w-[20.5rem] lg:w-[23.5rem] rounded-[1.25rem] overflow-hidden border border-border/70 bg-card/80 shadow-[0_30px_90px_-24px_rgba(0,0,0,0.65)] backdrop-blur-sm transition-colors duration-300 hover:border-border/90">
@@ -94,17 +89,11 @@ const ProjectTile = ({
 
   if (overview) {
     return (
-      <motion.article
-        key={`${project.title}-${rowIndex}-${index}`}
-        className="shrink-0 will-change-transform"
-        whileHover={{ y: -6, scale: 1.01 }}
-        onHoverStart={() => onOverviewHoverChange?.(true)}
-        onHoverEnd={() => onOverviewHoverChange?.(false)}
-      >
+      <article key={`${project.title}-${index}`} className="shrink-0">
         <Link to={`/work/${project.slug}`} className="block">
           {card}
         </Link>
-      </motion.article>
+      </article>
     );
   }
 
@@ -116,12 +105,7 @@ const ProjectTile = ({
 };
 
 const Work = () => {
-  const shouldReduceMotion = useReducedMotion();
   const [activeFilter, setActiveFilter] = useState<ProjectFilter>("everything");
-  const [overviewNonce, setOverviewNonce] = useState(0);
-  const [hoveredOverviewRow, setHoveredOverviewRow] = useState<number | null>(
-    null,
-  );
 
   const visibleProjects = useMemo(
     () =>
@@ -148,20 +132,7 @@ const Work = () => {
     return buildLoopingRow(source);
   }, [baseProjects]);
 
-  const handleOverviewHoverChange = (rowIndex: number, isHovering: boolean) => {
-    if (isHovering) {
-      setHoveredOverviewRow(rowIndex);
-      return;
-    }
-
-    setHoveredOverviewRow((prev) => (prev === rowIndex ? null : prev));
-  };
-
   const handleFilterClick = (filter: ProjectFilter) => {
-    if (filter === "everything") {
-      setOverviewNonce((value) => value + 1);
-    }
-
     setActiveFilter(filter);
   };
 
@@ -182,14 +153,9 @@ const Work = () => {
                 <span className="text-gradient">Work</span>
               </h1>
             </RevealText>
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25, duration: 0.6 }}
-              className="mt-6 text-text-subtle font-detail text-base md:text-lg leading-relaxed"
-            >
+            <p className="mt-6 text-text-subtle font-detail text-base md:text-lg leading-relaxed">
               A couple of the works that have shaped who I am. 
-            </motion.p>
+            </p>
           </div>
 
           <div className="mt-8 md:mt-10 flex justify-center">
@@ -223,90 +189,45 @@ const Work = () => {
               <div className="w-[34rem] h-[34rem] md:w-[48rem] md:h-[48rem] rounded-full bg-primary/6 blur-3xl" />
             </div>
 
-            <AnimatePresence mode="wait">
               {activeFilter === "everything" ? (
-                <motion.div
-                  key={`everything-${overviewNonce}`}
-                  className="relative overflow-hidden py-2 space-y-4 md:space-y-5 px-2 sm:px-4 md:px-6 lg:px-8"
-                  initial={
-                    shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 16 }
-                  }
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={
-                    shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -16 }
-                  }
-                  transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
-                >
-                  {[topRowProjects, bottomRowProjects].map(
-                    (rowProjects, rowIndex) => (
-                      <motion.div
-                        key={rowIndex}
-                        className="flex items-stretch gap-4 md:gap-5 w-max py-1"
-                        initial={
-                          shouldReduceMotion
-                            ? undefined
-                            : { x: rowIndex === 0 ? "0%" : "-33.333%" }
-                        }
-                        animate={
-                          shouldReduceMotion
-                            ? undefined
-                            : {
-                                x:
-                                  rowIndex === 0
-                                    ? ["0%", "-33.333%"]
-                                    : ["-33.333%", "0%"],
-                              }
-                        }
-                        transition={
-                          shouldReduceMotion
-                            ? undefined
-                            : {
-                                duration:
-                                  hoveredOverviewRow === rowIndex
-                                    ? (rowIndex === 0
-                                        ? TOP_ROW_BASE_DURATION
-                                        : BOTTOM_ROW_BASE_DURATION) *
-                                      HOVER_SLOWDOWN_MULTIPLIER
-                                    : rowIndex === 0
-                                      ? TOP_ROW_BASE_DURATION
-                                      : BOTTOM_ROW_BASE_DURATION,
-                                repeat: Infinity,
-                                repeatType: "loop",
-                                ease: "linear",
-                              }
-                        }
-                        style={{ willChange: "transform" }}
-                      >
-                        {rowProjects.map((project, index) => (
-                          <ProjectTile
-                            key={`${project.title}-${rowIndex}-${index}`}
-                            project={project}
-                            overview
-                            rowIndex={rowIndex}
-                            index={index}
-                            onOverviewHoverChange={(isHovering) =>
-                              handleOverviewHoverChange(rowIndex, isHovering)
-                            }
-                          />
-                        ))}
-                      </motion.div>
-                    ),
-                  )}
-                </motion.div>
+                <div className="relative overflow-hidden py-2 space-y-4 md:space-y-5 px-2 sm:px-4 md:px-6 lg:px-8">
+                  {[topRowProjects, bottomRowProjects].map((rowProjects, rowIndex) => (
+                    <motion.div
+                      key={rowIndex}
+                      className="flex items-stretch gap-4 md:gap-5 w-max py-1"
+                      initial={{
+                        x: rowIndex === 0 ? "0%" : "-33.333%",
+                      }}
+                      animate={{
+                        x:
+                          rowIndex === 0
+                            ? ["0%", "-33.333%"]
+                            : ["-33.333%", "0%"],
+                      }}
+                      transition={{
+                        duration:
+                          rowIndex === 0
+                            ? TOP_ROW_BASE_DURATION
+                            : BOTTOM_ROW_BASE_DURATION,
+                        repeat: Infinity,
+                        repeatType: "loop",
+                        ease: "linear",
+                      }}
+                      style={{ willChange: "transform" }}
+                    >
+                      {rowProjects.map((project, index) => (
+                        <ProjectTile
+                          key={`${project.title}-${rowIndex}-${index}`}
+                          project={project}
+                          overview
+                          index={index}
+                        />
+                      ))}
+                    </motion.div>
+                  ))}
+                </div>
               ) : (
-                <motion.div
-                  key={activeFilter}
-                  className="relative py-2 px-2 sm:px-4 md:px-6 lg:px-8 overflow-x-auto overflow-y-hidden"
-                  initial={
-                    shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: 28 }
-                  }
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={
-                    shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: -28 }
-                  }
-                  transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
-                  style={{ willChange: "transform" }}
-                >
+                <div className="relative py-2 px-2 sm:px-4 md:px-6 lg:px-8 overflow-x-auto overflow-y-hidden">
                   <div className="flex w-max gap-4 md:gap-5 pr-2 snap-x snap-mandatory">
                     {visibleProjects.map((project, index) => (
                       <div key={project.slug} className="snap-start shrink-0">
@@ -318,9 +239,8 @@ const Work = () => {
                       </div>
                     ))}
                   </div>
-                </motion.div>
+                </div>
               )}
-            </AnimatePresence>
           </div>
 
           <div className="mt-14 md:mt-16 flex flex-col sm:flex-row items-center justify-center gap-4">

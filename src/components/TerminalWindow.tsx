@@ -1,4 +1,3 @@
-import { motion, useReducedMotion } from "framer-motion";
 import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
@@ -142,7 +141,7 @@ const getCommonPrefix = (values: string[]) => {
 };
 
 const TerminalWindow = ({ className = "" }: { className?: string }) => {
-  const reducedMotion = useReducedMotion();
+  const reducedMotion = true;
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const nextIdRef = useRef(0);
@@ -769,10 +768,7 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
   const isMaximized = windowMode === "maximized";
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, ease: [0.23, 1, 0.32, 1] }}
+    <div
       className={cn(
         "terminal-rounded-scope terminal-rounded-shell relative overflow-hidden rounded-[1.5rem] border shadow-[0_24px_80px_-20px_rgba(0,0,0,0.65)]",
         isMaximized ? "fixed inset-4 z-[90] md:inset-8" : "",
@@ -990,7 +986,7 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
           </>
         ) : null}
       </div>
-    </motion.div>
+    </div>
   );
 };
 

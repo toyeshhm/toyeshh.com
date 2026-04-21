@@ -1,4 +1,3 @@
-import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -64,7 +63,6 @@ const PdfViewer = ({ pdfUrl, title }: { pdfUrl: string; title: string }) => {
 };
 
 const WorkProjectDetail = () => {
-  const shouldReduceMotion = useReducedMotion();
   const { projectSlug } = useParams();
   const project = projectSlug ? getProjectBySlug(projectSlug) : undefined;
   const openPdfUrl = project?.pdfUrl ?? project?.pdfEmbedUrl;
@@ -124,14 +122,7 @@ const WorkProjectDetail = () => {
 
           <div className="mt-10 grid gap-10 lg:grid-cols-[1.1fr_0.9fr] items-start">
             {openPdfUrl ? (
-              <motion.section
-                initial={
-                  shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 18 }
-                }
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-                className="rounded-[1.5rem] border border-border/70 bg-card/80 backdrop-blur-sm p-4 md:p-6"
-              >
+              <section className="rounded-[1.5rem] border border-border/70 bg-card/80 backdrop-blur-sm p-4 md:p-6">
                 <h2 className="px-2 text-xl md:text-2xl font-display font-bold text-foreground">
                   Project PDF
                 </h2>
@@ -151,16 +142,9 @@ const WorkProjectDetail = () => {
                     <PdfViewer pdfUrl={project.pdfUrl} title={project.title} />
                   ) : null}
                 </div>
-              </motion.section>
+              </section>
             ) : (
-              <motion.div
-                initial={
-                  shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 18 }
-                }
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-                className="relative overflow-hidden rounded-[1.5rem] border border-border/70 bg-card/80 shadow-[0_30px_90px_-24px_rgba(0,0,0,0.65)]"
-              >
+              <div className="relative overflow-hidden rounded-[1.5rem] border border-border/70 bg-card/80 shadow-[0_30px_90px_-24px_rgba(0,0,0,0.65)]">
                 {project.image ? (
                   <>
                     <img
@@ -177,22 +161,11 @@ const WorkProjectDetail = () => {
                     </p>
                   </div>
                 )}
-              </motion.div>
+              </div>
             )}
 
             <div className="space-y-8">
-              <motion.section
-                initial={
-                  shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 18 }
-                }
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.5,
-                  delay: 0.05,
-                  ease: [0.23, 1, 0.32, 1],
-                }}
-                className="rounded-[1.5rem] border border-border/70 bg-card/80 backdrop-blur-sm p-6 md:p-8"
-              >
+              <section className="rounded-[1.5rem] border border-border/70 bg-card/80 backdrop-blur-sm p-6 md:p-8">
                 <h2 className="text-xl md:text-2xl font-display font-bold text-foreground">
                   Project Overview
                 </h2>
@@ -241,20 +214,9 @@ const WorkProjectDetail = () => {
                     </MagneticButton>
                   </div>
                 ) : null}
-              </motion.section>
+              </section>
 
-              <motion.section
-                initial={
-                  shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 18 }
-                }
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.5,
-                  delay: 0.1,
-                  ease: [0.23, 1, 0.32, 1],
-                }}
-                className="rounded-[1.5rem] border border-border/70 bg-card/80 backdrop-blur-sm p-6 md:p-8"
-              >
+              <section className="rounded-[1.5rem] border border-border/70 bg-card/80 backdrop-blur-sm p-6 md:p-8">
                 <h2 className="text-xl md:text-2xl font-display font-bold text-foreground">
                   What I Did
                 </h2>
@@ -269,7 +231,7 @@ const WorkProjectDetail = () => {
                     </li>
                   ))}
                 </ul>
-              </motion.section>
+              </section>
             </div>
           </div>
 

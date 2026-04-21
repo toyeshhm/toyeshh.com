@@ -23,7 +23,7 @@ const jsonResponse = (body: unknown, init?: ResponseInit) =>
     headers: {
       ...JSON_HEADERS,
       ...(init?.headers ?? {}),
-    },
+    }, 
   });
 
 const parseBody = async (request: Request): Promise<TerminalAgentBody> => {

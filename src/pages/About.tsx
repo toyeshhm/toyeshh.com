@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 import RevealText from "@/components/RevealText";
@@ -125,23 +124,13 @@ const About = () => (
         {/* Hero — editorial two-column (reference layout) */}
         <section className="pb-4">
           <div className="mt-2 lg:mt-6 grid lg:grid-cols-[minmax(320px,460px)_1fr] gap-10 lg:gap-14 xl:gap-20 items-start">
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15, duration: 0.7 }}
-              className="relative mx-auto w-full max-w-[420px] lg:max-w-[460px] xl:max-w-[500px]"
-            >
+            <div className="relative mx-auto w-full max-w-[420px] lg:max-w-[460px] xl:max-w-[500px]">
               <div className="terminal-frame-rounded relative rounded-[1.5rem] md:rounded-[1.75rem] overflow-hidden border border-border/60 bg-card aspect-[3/4] shadow-[0_24px_80px_-20px_rgba(0,0,0,0.55)]">
                 <TerminalWindow className="h-full w-full" />
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.28, duration: 0.75 }}
-              className="space-y-0"
-            >
+            <div className="space-y-0">
               <p className="font-detail text-lg md:text-xl lg:text-[1.35rem] text-foreground leading-relaxed">
                 Hey, I&apos;m Toyeshh, a freshman at UT Austin.
               </p>
@@ -200,7 +189,7 @@ const About = () => (
                   Deep dive (30 min+)
                 </a>
               </div>
-            </motion.div>
+            </div>
           </div>
         </section>
 
@@ -220,12 +209,8 @@ const About = () => (
 
               <div className="space-y-10">
                 {experience.map((exp, i) => (
-                  <motion.div
+                  <div
                     key={exp.role + exp.company}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.1, duration: 0.6 }}
                     className="relative pl-10"
                   >
                     {/* Timeline dot */}
@@ -280,7 +265,7 @@ const About = () => (
                         ))}
                       </ul>
                     </Link>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             </div>
@@ -299,12 +284,8 @@ const About = () => (
 
             <div className="mt-12 grid gap-5">
               {coursesByTerm.map((termInfo, i) => (
-                <motion.div
+                <div
                   key={termInfo.term}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.08, duration: 0.45 }}
                   className="rounded-xl border border-border bg-card/60 p-6 backdrop-blur-sm"
                 >
                   <h3 className="text-lg md:text-xl font-display font-semibold text-primary">
@@ -321,7 +302,7 @@ const About = () => (
                       </li>
                     ))}
                   </ul>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
@@ -339,12 +320,8 @@ const About = () => (
 
             <div className="mt-12 divide-y divide-border/70 border-y border-border/70">
               {awards.map((award, i) => (
-                <motion.div
+                <div
                   key={award.title}
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.08, duration: 0.45 }}
                   className="group"
                 >
                   <Link
@@ -368,7 +345,7 @@ const About = () => (
                       </span>
                     </div>
                   </Link>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>

@@ -1,6 +1,4 @@
-import { motion, useScroll, useTransform } from "framer-motion";
 import { Github, Linkedin } from "lucide-react";
-import { useRef } from "react";
 import { Link } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 import RevealText from "@/components/RevealText";
@@ -11,38 +9,22 @@ import heroBg from "@/assets/hero-bg.jpg";
 import { socialLinks } from "@/lib/contact";
 
 const Index = () => {
-  const heroRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
-  const heroY = useTransform(scrollYProgress, [0, 1], [0, 200]);
-  const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
-
   return (
     <PageTransition>
       <div className="noise-overlay">
         {/* Hero Section */}
-        <section
-          ref={heroRef}
-          className="relative min-h-screen flex flex-col overflow-hidden"
-        >
-          <motion.div
-            style={{ y: heroY, scale: heroScale }}
-            className="absolute inset-0"
-          >
+        <section className="relative min-h-screen flex flex-col overflow-hidden">
+          <div className="absolute inset-0">
             <img
               src={heroBg}
               alt=""
               className="w-full h-full object-cover opacity-20"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/80 to-background" />
-          </motion.div>
+          </div>
 
           {/* Floating organic blob */}
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+          <div
             className="absolute top-1/4 right-[10%] w-[400px] h-[400px] organic-blob opacity-[0.04]"
             style={{
               background:
@@ -50,7 +32,7 @@ const Index = () => {
             }}
           />
 
-          <motion.div className="relative z-10 flex flex-1 flex-col w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-20 min-h-0">
+          <div className="relative z-10 flex flex-1 flex-col w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-20 min-h-0">
             <div className="flex-1 flex items-center pt-28 pb-8 lg:py-0 min-h-0">
               <div className="grid lg:grid-cols-[1fr_auto] gap-12 items-end w-full">
                 <div className="pt-4 lg:pt-0">
@@ -62,21 +44,11 @@ const Index = () => {
                     </h1>
                   </RevealText>
 
-                  <motion.p
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.45, duration: 0.6 }}
-                    className="mt-3 text-sm md:text-base font-detail text-text-subtle"
-                  >
+                  <p className="mt-3 text-sm md:text-base font-detail text-text-subtle">
                     Turing Scholar (CS Honors) + Math @ UT Austin
-                  </motion.p>
+                  </p>
 
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.6, duration: 0.8 }}
-                    className="mt-8 max-w-2xl text-text-subtle font-detail text-base leading-relaxed"
-                  >
+                  <div className="mt-8 max-w-2xl text-text-subtle font-detail text-base leading-relaxed">
                     <p className="font-medium text-foreground/90 lowercase">
                       Quick overview of me:
                     </p>
@@ -133,14 +105,9 @@ const Index = () => {
                         alumni community by the U.S. Dept. of State
                       </li>
                     </ul>
-                  </motion.div>
+                  </div>
 
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.8, duration: 0.8 }}
-                    className="flex gap-4 mt-10"
-                  >
+                  <div className="flex gap-4 mt-10">
                     <Link to="/work">
                       <MagneticButton className="px-8 py-4 rounded-lg bg-primary text-primary-foreground font-body text-sm font-medium tracking-wide">
                         View Work
@@ -151,20 +118,11 @@ const Index = () => {
                         Get in Touch
                       </MagneticButton>
                     </Link>
-                  </motion.div>
+                  </div>
                 </div>
 
                 {/* Profile image - asymmetric placement */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9, rotate: 3 }}
-                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                  transition={{
-                    delay: 0.4,
-                    duration: 1,
-                    ease: [0.23, 1, 0.32, 1],
-                  }}
-                  className="hidden lg:block relative"
-                >
+                <div className="hidden lg:block relative">
                   <div className="w-[320px] h-[400px] rounded-[1.5rem] overflow-hidden relative">
                     <img
                       src={profileImg}
@@ -173,10 +131,10 @@ const Index = () => {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
                   </div>
-                </motion.div>
+                </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         </section>
 
         {/* Footer */}
