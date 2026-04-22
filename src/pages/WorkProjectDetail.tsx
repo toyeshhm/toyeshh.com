@@ -152,7 +152,6 @@ const WorkProjectDetail = () => {
                       alt={project.title}
                       className="h-full w-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/35 via-transparent to-transparent" />
                   </>
                 ) : (
                   <div className="flex min-h-[22rem] items-center justify-center bg-gradient-to-br from-primary/15 via-card to-primary/5 p-8 text-center">

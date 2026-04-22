@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
@@ -19,10 +20,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["Syne", "sans-serif"],
-        body: ["Inter", "sans-serif"],
-        detail: ["Inter", "sans-serif"],
-        editorial: ["Playfair Display", "Georgia", "serif"],
+        display: ["Fraunces", "serif"],
+        body: ["DM Sans", "sans-serif"],
+        detail: ["DM Sans", "sans-serif"],
+        editorial: ["Fraunces", "Georgia", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -120,5 +121,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 } satisfies Config;

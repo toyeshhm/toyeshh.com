@@ -5,7 +5,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useEffect } from "react";
 import FloatingNav from "@/components/FloatingNav";
-import CursorAura from "@/components/CursorAura";
 import Index from "./pages/Index.tsx";
 import About from "./pages/About.tsx";
 import Work from "./pages/Work.tsx";
@@ -90,7 +89,6 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <CanonicalManager />
-          <CursorAura />
           <FloatingNav />
           <AnimatedRoutes />
         </BrowserRouter>

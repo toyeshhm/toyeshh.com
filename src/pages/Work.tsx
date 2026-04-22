@@ -62,8 +62,6 @@ const ProjectTile = ({
         ) : (
           <div className="h-full w-full bg-gradient-to-br from-primary/15 via-card to-primary/5" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-background/45 via-background/10 to-transparent" />
-        <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-background/25 to-transparent" />
       </div>
 
       <div className="p-3.5 md:p-4 border-t border-border/60 bg-background/75 backdrop-blur-md">

@@ -11,24 +11,25 @@ import { socialLinks } from "@/lib/contact";
 const Index = () => {
   return (
     <PageTransition>
-      <div className="noise-overlay">
+      <div className="relative noise-overlay overflow-hidden">
+        <div className="absolute inset-0">
+          <img
+            src={heroBg}
+            alt=""
+            className="w-full h-full object-cover opacity-[0.12] mix-blend-multiply"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/75 to-background" />
+        </div>
+
         {/* Hero Section */}
         <section className="relative min-h-screen flex flex-col overflow-hidden">
-          <div className="absolute inset-0">
-            <img
-              src={heroBg}
-              alt=""
-              className="w-full h-full object-cover opacity-20"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/80 to-background" />
-          </div>
 
           {/* Floating organic blob */}
           <div
             className="absolute top-1/4 right-[10%] w-[400px] h-[400px] organic-blob opacity-[0.04]"
             style={{
               background:
-                "linear-gradient(135deg, hsl(28 80% 52%), hsl(15 85% 45%))",
+                "linear-gradient(135deg, hsl(32 58% 77%), hsl(20 48% 45%))",
             }}
           />
 
@@ -129,7 +130,6 @@ const Index = () => {
                       alt="Profile"
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
                   </div>
                 </div>
               </div>
@@ -138,7 +138,7 @@ const Index = () => {
         </section>
 
         {/* Footer */}
-        <footer className="py-12 px-6 md:px-12 lg:px-20 max-w-7xl mx-auto">
+        <footer className="relative z-10 py-12 px-6 md:px-12 lg:px-20 max-w-7xl mx-auto">
           <SectionDivider />
           <div className="mt-8 flex flex-col gap-4 md:grid md:grid-cols-2 md:items-center">
             <span className="text-sm font-detail text-text-dim">

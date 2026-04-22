@@ -31,7 +31,6 @@ export type TerminalCommandResult =
   | { kind: "text"; output: string; nextPath?: string }
   | { kind: "stream"; output: string; nextPath?: string }
   | { kind: "open"; output: string; url: string; nextPath?: string }
-  | { kind: "theme"; output: string; nextPath?: string; themeArg?: string }
   | { kind: "agent"; output: string; nextPath?: string }
   | { kind: "clear"; nextPath?: string };
 
@@ -62,7 +61,6 @@ const COMMANDS = [
   "man",
   "open",
   "pwd",
-  "theme",
   "whoami",
 ];
 
@@ -72,8 +70,6 @@ const MANUAL = {
   pwd: "pwd\n  print current working directory",
   cat: "cat <file>\n  print file contents",
   open: "open <file>\n  open the mapped url for a file",
-  theme:
-    "theme [name]\n  cycle themes or set one directly: site, light, dark-blue, dark-gray, warm, midnight",
   agent:
     "agent | claude | codex\n  enter agent chat mode. use 'exit' to leave chat mode",
   whoami: "whoami\n  print a quick profile summary",
@@ -379,7 +375,7 @@ export const executeTerminalCommand = (
       kind: "text",
       output: [
         "available commands:",
-        "ls, ll, cd, pwd, cat, open, theme, agent, man, whoami, clear",
+        "ls, ll, cd, pwd, cat, open, agent, man, whoami, clear",
         "use `man <command>` for details",
       ].join("\n"),
       nextPath: cwd,
@@ -393,7 +389,7 @@ export const executeTerminalCommand = (
       return {
         kind: "text",
         output:
-          "man <command>\navailable: ls, cd, pwd, cat, open, theme, agent, whoami, clear",
+          "man <command>\navailable: ls, cd, pwd, cat, open, agent, whoami, clear",
         nextPath: cwd,
       };
     }
@@ -424,17 +420,6 @@ export const executeTerminalCommand = (
         "focus: ai/ml, quant, and full-stack engineering",
       ].join("\n"),
       nextPath: cwd,
-    };
-  }
-
-  if (command === "theme") {
-    return {
-      kind: "theme",
-      output: argument
-        ? `switching theme to ${argument}`
-        : "cycling terminal theme",
-      nextPath: cwd,
-      themeArg: argument || undefined,
     };
   }
 
@@ -535,6 +520,6 @@ export const executeTerminalCommand = (
 
 export const terminalHelpText = [
   "available commands:",
-  "ls, ll, cd, pwd, cat, open, theme, agent, man, whoami, clear",
+  "ls, ll, cd, pwd, cat, open, agent, man, whoami, clear",
   "use `man <command>` for details",
 ].join("\n");

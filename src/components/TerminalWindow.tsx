@@ -34,8 +34,6 @@ type TerminalTheme = {
 
 type TerminalWindowMode = "normal" | "minimized" | "maximized" | "closed";
 
-const SITE_THEME_STORAGE_KEY = "site-theme";
-
 const INTRO_COMMAND = "cat welcome.md";
 const INTRO_COMMAND_SPEED = 42;
 const INTRO_OUTPUT_SPEED = 9;
@@ -50,13 +48,13 @@ const TERMINAL_THEMES: TerminalTheme[] = [
     id: "site",
     label: "site",
     surface:
-      "linear-gradient(180deg, rgba(27, 21, 16, 0.97), rgba(15, 12, 10, 0.99))",
-    header: "rgba(36, 28, 21, 0.76)",
-    input: "rgba(18, 13, 10, 0.92)",
-    border: "rgba(93, 64, 41, 0.48)",
-    foreground: "#f2e9df",
-    muted: "#c8b6a3",
-    prompt: "#f0a45a",
+      "linear-gradient(180deg, rgba(250, 243, 234, 0.98), rgba(239, 226, 212, 0.98))",
+    header: "rgba(244, 234, 223, 0.92)",
+    input: "rgba(255, 250, 244, 0.96)",
+    border: "rgba(155, 123, 92, 0.26)",
+    foreground: "#3a271d",
+    muted: "#7d614d",
+    prompt: "#a95b31",
   },
   {
     id: "light",
@@ -151,18 +149,6 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
   const commandHistoryRef = useRef<string[]>([]);
   const commandHistoryIndexRef = useRef(-1);
   const mountedRef = useRef(true);
-  const [themeIndex, setThemeIndex] = useState(() => {
-    if (typeof window === "undefined") {
-      return 0;
-    }
-
-    const savedThemeId = window.localStorage.getItem(SITE_THEME_STORAGE_KEY);
-    const matchedThemeIndex = TERMINAL_THEMES.findIndex(
-      (candidateTheme) => candidateTheme.id === savedThemeId,
-    );
-
-    return matchedThemeIndex >= 0 ? matchedThemeIndex : 0;
-  });
   const [agentMode, setAgentMode] = useState(false);
   const [agentHistory, setAgentHistory] = useState<AgentMessage[]>([]);
   const [isBusy, setIsBusy] = useState(false);
@@ -171,23 +157,7 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
   const [history, setHistory] = useState<TerminalHistoryEntry[]>([]);
   const [intro, setIntro] = useState<IntroState | null>(null);
   const [windowMode, setWindowMode] = useState<TerminalWindowMode>("normal");
-  const theme = TERMINAL_THEMES[themeIndex] ?? TERMINAL_THEMES[0];
-
-  const applySiteTheme = (themeId: TerminalTheme["id"]) => {
-    const root = document.documentElement;
-
-    if (themeId === "site") {
-      root.removeAttribute("data-theme");
-    } else {
-      root.setAttribute("data-theme", themeId);
-    }
-
-    try {
-      window.localStorage.setItem(SITE_THEME_STORAGE_KEY, themeId);
-    } catch {
-      // Ignore storage failures; theme still applies for current session.
-    }
-  };
+  const theme = TERMINAL_THEMES[0];
 
   useEffect(() => {
     cwdRef.current = cwd;
@@ -212,10 +182,6 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
       behavior: "auto",
     });
   }, [history, intro, cwd, inputValue]);
-
-  useEffect(() => {
-    applySiteTheme(theme.id);
-  }, [theme.id]);
 
   useEffect(() => {
     if (windowMode !== "maximized") {
@@ -349,26 +315,6 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
     } catch {
       // Ignore storage failures; terminal still works without persistence.
     }
-  };
-
-  const setThemeFromArg = (themeArg?: string) => {
-    if (!themeArg) {
-      const nextThemeIndex = (themeIndex + 1) % TERMINAL_THEMES.length;
-      const nextTheme = TERMINAL_THEMES[nextThemeIndex];
-      setThemeIndex(nextThemeIndex);
-      return `theme changed to ${nextTheme.label}`;
-    }
-
-    const matchedIndex = TERMINAL_THEMES.findIndex(
-      (candidateTheme) => candidateTheme.id === themeArg,
-    );
-
-    if (matchedIndex === -1) {
-      return `theme: unknown theme '${themeArg}'. available: ${TERMINAL_THEMES.map((candidateTheme) => candidateTheme.id).join(", ")}`;
-    }
-
-    setThemeIndex(matchedIndex);
-    return `theme changed to ${TERMINAL_THEMES[matchedIndex].label}`;
   };
 
   const pushOutput = (text: string, cwdPath = cwdRef.current) => {
@@ -540,14 +486,6 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
     if (result.kind === "open") {
       window.open(result.url, "_blank", "noopener,noreferrer");
       pushOutput(result.output);
-      processingRef.current = false;
-      setIsBusy(false);
-      void processNextCommand();
-      return;
-    }
-
-    if (result.kind === "theme") {
-      pushOutput(setThemeFromArg(result.themeArg));
       processingRef.current = false;
       setIsBusy(false);
       void processNextCommand();
@@ -835,8 +773,8 @@ const TerminalWindow = ({ className = "" }: { className?: string }) => {
               : isMinimized
                 ? "minimized"
                 : isMaximized
-                  ? `${theme.label} · zoomed`
-                  : theme.label}
+                  ? "terminal · zoomed"
+                  : "terminal"}
           </div>
         </div>
 
