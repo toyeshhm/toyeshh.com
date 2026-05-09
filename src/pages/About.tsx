@@ -4,6 +4,7 @@ import RevealText from "@/components/RevealText";
 import SectionDivider from "@/components/SectionDivider";
 import TerminalWindow from "@/components/TerminalWindow";
 import { CONTACT } from "@/lib/contact";
+import { buildBookingGatePath } from "@/lib/booking";
 
 const infoCards = [
   { label: "LOCATION", value: CONTACT.location },
@@ -11,13 +12,6 @@ const infoCards = [
   { label: "FOCUS", value: "Quant, AI/ML, & SWE" },
   { label: "STATUS", value: "Available for work", highlight: true },
 ];
-
-const calLinks = {
-  calLink15:
-    "https://cal.com/toyeshh-medikonda-imd7i7/15min?overlayCalendar=true",
-  calLink30:
-    "https://cal.com/toyeshh-medikonda-imd7i7/30min?overlayCalendar=true",
-};
 
 const experience = [
   {
@@ -143,22 +137,18 @@ const About = () => (
               </div>
 
               <div className="grid grid-cols-2 gap-4 md:gap-5 mt-8 md:mt-10 pt-8 md:pt-10 border-t border-border/50">
-                <a
-                  href={calLinks.calLink15}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  to={buildBookingGatePath("15")}
                   className="flex items-center justify-center px-4 py-3 md:py-3.5 rounded-lg border border-primary/40 bg-primary/5 hover:bg-primary/10 hover:border-primary/60 transition-colors duration-300 font-detail text-sm md:text-[0.95rem] font-medium text-primary hover:text-primary/90"
                 >
                   Quick call (15 min)
-                </a>
-                <a
-                  href={calLinks.calLink30}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                </Link>
+                <Link
+                  to={buildBookingGatePath("30")}
                   className="flex items-center justify-center px-4 py-3 md:py-3.5 rounded-lg border border-primary/40 bg-primary/5 hover:bg-primary/10 hover:border-primary/60 transition-colors duration-300 font-detail text-sm md:text-[0.95rem] font-medium text-primary hover:text-primary/90"
                 >
                   Deep dive (30 min+)
-                </a>
+                </Link>
               </div>
             </div>
           </div>

@@ -73,3 +73,11 @@ npm run deploy
 ```
 
 For production secrets, configure `GEMINI_API_KEY` and optionally `MISTRAL_API_KEY` with Wrangler secrets.
+
+If you enable the booking gate, also configure these secrets for Google sign-in:
+
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`
+- `BOOKING_SESSION_SECRET`
+
+Optionally set `SITE_URL` when you want the OAuth callback to resolve against a fixed public origin.

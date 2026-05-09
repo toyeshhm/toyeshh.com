@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import FloatingNav from "@/components/FloatingNav";
 import Index from "./pages/Index.tsx";
 import About from "./pages/About.tsx";
+import Book from "./pages/Book.tsx";
 import Work from "./pages/Work.tsx";
 import WorkProjectDetail from "./pages/WorkProjectDetail.tsx";
 import Contact from "./pages/Contact.tsx";
@@ -58,6 +59,7 @@ const AnimatedRoutes = () => {
     <Routes>
       <Route path="/" element={<Index />} />
       <Route path="/about" element={<About />} />
+      <Route path="/book" element={<Book />} />
       <Route path="/work" element={<Work />} />
       <Route path="/work/:projectSlug" element={<WorkProjectDetail />} />
       <Route path="/contact" element={<Contact />} />
