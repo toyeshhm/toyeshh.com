@@ -2,6 +2,10 @@ import * as React from "react";
 import * as RechartsPrimitive from "recharts";
 
 import { cn } from "@/lib/utils";
+import {
+  sanitizeCssIdentifier,
+  sanitizeCssValue,
+} from "@/lib/security";
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const;
@@ -60,6 +64,7 @@ ChartContainer.displayName = "Chart";
 
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   const colorConfig = Object.entries(config).filter(([_, config]) => config.theme || config.color);
+  const safeChartId = sanitizeCssIdentifier(id) || "chart";
 
   if (!colorConfig.length) {
     return null;
@@ -71,11 +76,15 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
         __html: Object.entries(THEMES)
           .map(
             ([theme, prefix]) => `
-${prefix} [data-chart=${id}] {
+${prefix} [data-chart=${safeChartId}] {
 ${colorConfig
   .map(([key, itemConfig]) => {
-    const color = itemConfig.theme?.[theme as keyof typeof itemConfig.theme] || itemConfig.color;
-    return color ? `  --color-${key}: ${color};` : null;
+    const color = sanitizeCssValue(
+      itemConfig.theme?.[theme as keyof typeof itemConfig.theme] || itemConfig.color,
+    );
+    const safeKey = sanitizeCssIdentifier(key) || "value";
+
+    return color ? `  --color-${safeKey}: ${color};` : null;
   })
   .join("\n")}
 }

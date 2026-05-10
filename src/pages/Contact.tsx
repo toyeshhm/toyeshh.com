@@ -6,9 +6,15 @@ import MagneticButton from "@/components/MagneticButton";
 import SectionDivider from "@/components/SectionDivider";
 import { toast } from "@/components/ui/sonner";
 import { CONTACT, FORMSPREE_FORM_URL, socialLinks } from "@/lib/contact";
+import { sanitizeUrl } from "@/lib/security";
 
 const FORMSPREE_URL =
   import.meta.env.VITE_FORMSPREE_URL?.trim() || FORMSPREE_FORM_URL;
+
+const EMAIL_HREF = sanitizeUrl(`mailto:${CONTACT.email}`, {
+  allowedProtocols: ["mailto:"],
+  allowRelative: false,
+});
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -102,7 +108,7 @@ const Contact = () => {
                   </span>
                   <p className="text-foreground font-body mt-1">
                     <a
-                      href={`mailto:${CONTACT.email}`}
+                      href={EMAIL_HREF ?? undefined}
                       className="hover:text-primary transition-colors underline-offset-4 hover:underline"
                     >
                       {CONTACT.email}
@@ -122,7 +128,12 @@ const Contact = () => {
                   {socialLinks.map((s, i) => (
                     <a
                       key={s.label}
-                      href={s.href}
+                      href={
+                        sanitizeUrl(s.href, {
+                          allowedProtocols: ["http:", "https:"],
+                          allowRelative: false,
+                        }) ?? undefined
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 text-sm font-detail text-text-dim hover:text-primary transition-colors"

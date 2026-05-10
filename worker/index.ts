@@ -3,6 +3,10 @@ import {
   type BookingDuration,
   parseBookingDuration,
 } from "../src/lib/booking";
+import {
+  sanitizeBookingReturnTo,
+  sanitizeInternalPath,
+} from "../src/lib/security";
 
 const BOOKING_REDIRECTS: Record<BookingDuration, string> = {
   "15": "https://cal.com/toyeshh-medikonda-imd7i7/15min?overlayCalendar=true",
@@ -77,14 +81,52 @@ const createRedirectResponse = (location: string, cookie?: string) => {
   if (cookie) {
     headers.append("Set-Cookie", cookie);
   }
-  return new Response(null, { status: 302, headers });
+  return withSecurityHeaders(new Response(null, { status: 302, headers }));
+};
+
+const SECURITY_HEADER_VALUES = {
+  "Content-Security-Policy": [
+    "default-src 'self'",
+    "base-uri 'self'",
+    "object-src 'none'",
+    "frame-ancestors 'none'",
+    "form-action 'self' https://formspree.io https://accounts.google.com",
+    "img-src 'self' data: https:",
+    "media-src 'self' https:",
+    "font-src 'self' data:",
+    "script-src 'self'",
+    "style-src 'self' 'unsafe-inline'",
+    "worker-src 'self' blob:",
+    "connect-src 'self' https://generativelanguage.googleapis.com https://api.mistral.ai https://formspree.io",
+    "frame-src https://drive.google.com",
+  ].join("; "),
+  "Permissions-Policy": "camera=(), geolocation=(), microphone=()",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+} as const;
+
+const withSecurityHeaders = (response: Response) => {
+  const headers = new Headers(response.headers);
+
+  for (const [name, value] of Object.entries(SECURITY_HEADER_VALUES)) {
+    headers.set(name, value);
+  }
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
 };
 
 const jsonResponse = (body: unknown, init?: ResponseInit) =>
-  new Response(JSON.stringify(body), {
-    headers: { "Content-Type": "application/json" },
-    ...init,
-  });
+  withSecurityHeaders(
+    new Response(JSON.stringify(body), {
+      headers: { "Content-Type": "application/json" },
+      ...init,
+    }),
+  );
 
 const signPayload = async (payload: string, secret: string) => {
   const key = await crypto.subtle.importKey(
@@ -155,11 +197,6 @@ const buildCookie = (
 ) =>
   `${name}=${encodeURIComponent(value)}; Path=/; HttpOnly;${secure ? " Secure;" : ""} SameSite=Lax; Max-Age=${maxAgeSeconds}`;
 
-const buildRedirectUrl = (origin: string, returnTo: string) => {
-  const normalizedReturnTo = returnTo.startsWith("/") ? returnTo : "/book";
-  return new URL(normalizedReturnTo, origin).toString();
-};
-
 const readSession = async (request: Request, env: WorkerEnv) => {
   const secret = env.BOOKING_SESSION_SECRET?.trim();
   if (!secret) {
@@ -188,10 +225,10 @@ const readSession = async (request: Request, env: WorkerEnv) => {
   return { authenticated: true, email: session.email, name: session.name };
 };
 
-const createState = async (origin: string, returnTo: string, secret: string) =>
+const createState = async (returnTo: string, secret: string) =>
   createSignedToken(
     {
-      returnTo: buildRedirectUrl(origin, returnTo),
+      returnTo: sanitizeBookingReturnTo(returnTo),
       nonce: crypto.randomUUID(),
       issuedAt: Date.now(),
     } satisfies SignedState,
@@ -231,7 +268,7 @@ const handleGoogleLoginStart = async (
 
   const origin = getAppOrigin(request, env);
   const returnTo = url.searchParams.get("returnTo") ?? "/book";
-  const state = await createState(origin, returnTo, sessionSecret);
+  const state = await createState(returnTo, sessionSecret);
   const redirectUri = `${origin}/api/auth/google/callback`;
   const authUrl = new URL(GOOGLE_AUTH_URL);
 
@@ -381,7 +418,7 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname === "/api/terminal-agent") {
-      return handleTerminalAgentApi(request, env);
+      return withSecurityHeaders(await handleTerminalAgentApi(request, env));
     }
 
     if (url.pathname === "/api/auth/google/start") {
@@ -400,6 +437,6 @@ export default {
       return handleBookingRedirect(request, env, url);
     }
 
-    return env.ASSETS.fetch(request);
+    return withSecurityHeaders(await env.ASSETS.fetch(request));
   },
 };

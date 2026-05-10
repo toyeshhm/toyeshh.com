@@ -7,6 +7,7 @@ import SectionDivider from "@/components/SectionDivider";
 import profileImg from "@/assets/profile.jpg";
 import heroBg from "@/assets/hero-bg.jpg";
 import { socialLinks } from "@/lib/contact";
+import { sanitizeUrl } from "@/lib/security";
 
 const Index = () => {
   return (
@@ -148,7 +149,12 @@ const Index = () => {
               {socialLinks.map((s) => (
                 <a
                   key={s.label}
-                  href={s.href}
+                  href={
+                    sanitizeUrl(s.href, {
+                      allowedProtocols: ["http:", "https:"],
+                      allowRelative: false,
+                    }) ?? undefined
+                  }
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-sm font-detail text-text-dim hover:text-primary transition-colors"

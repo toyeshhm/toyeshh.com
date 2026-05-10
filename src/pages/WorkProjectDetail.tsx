@@ -6,6 +6,7 @@ import MagneticButton from "@/components/MagneticButton";
 import PageTransition from "@/components/PageTransition";
 import SectionDivider from "@/components/SectionDivider";
 import { getProjectBySlug } from "@/lib/projects";
+import { sanitizeUrl } from "@/lib/security";
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerSrc;
 
@@ -65,7 +66,23 @@ const PdfViewer = ({ pdfUrl, title }: { pdfUrl: string; title: string }) => {
 const WorkProjectDetail = () => {
   const { projectSlug } = useParams();
   const project = projectSlug ? getProjectBySlug(projectSlug) : undefined;
-  const openPdfUrl = project?.pdfUrl ?? project?.pdfEmbedUrl;
+  const iframeSrc = sanitizeUrl(project?.pdfEmbedUrl, {
+    allowedProtocols: ["http:", "https:"],
+    allowRelative: false,
+  });
+  const openPdfUrl =
+    sanitizeUrl(project?.pdfUrl, {
+      allowedProtocols: ["http:", "https:"],
+      allowRelative: false,
+    }) ?? iframeSrc;
+  const projectUrl = sanitizeUrl(project?.projectUrl, {
+    allowedProtocols: ["http:", "https:"],
+    allowRelative: false,
+  });
+  const imageSrc = sanitizeUrl(project?.image, {
+    allowedProtocols: ["http:", "https:"],
+    allowRelative: true,
+  });
 
   if (!project) {
     return (
@@ -131,24 +148,24 @@ const WorkProjectDetail = () => {
                 </p>
 
                 <div className="mt-4 max-h-[85vh] overflow-y-auto overflow-x-hidden rounded-[1.125rem] border border-border/70 bg-background/80">
-                  {project.pdfEmbedUrl ? (
+                  {iframeSrc ? (
                     <iframe
-                      src={project.pdfEmbedUrl}
+                      src={iframeSrc}
                       title={`${project.title} PDF`}
                       className="h-[80vh] min-h-[36rem] w-full"
                       allow="autoplay"
                     />
-                  ) : project.pdfUrl ? (
-                    <PdfViewer pdfUrl={project.pdfUrl} title={project.title} />
+                  ) : openPdfUrl ? (
+                    <PdfViewer pdfUrl={openPdfUrl} title={project.title} />
                   ) : null}
                 </div>
               </section>
             ) : (
               <div className="relative overflow-hidden rounded-[1.5rem] border border-border/70 bg-card/80 shadow-[0_30px_90px_-24px_rgba(0,0,0,0.65)]">
-                {project.image ? (
+                {imageSrc ? (
                   <>
                     <img
-                      src={project.image}
+                      src={imageSrc}
                       alt={project.title}
                       className="h-full w-full object-cover"
                     />
@@ -196,17 +213,11 @@ const WorkProjectDetail = () => {
                   </div>
                 ) : null}
 
-                {project.projectUrl ? (
+                {projectUrl ? (
                   <div className="mt-4">
                     <MagneticButton
                       type="button"
-                      onClick={() =>
-                        window.open(
-                          project.projectUrl,
-                          "_blank",
-                          "noopener,noreferrer",
-                        )
-                      }
+                      onClick={() => window.open(projectUrl, "_blank", "noopener,noreferrer")}
                       className="px-6 py-3 rounded-lg border border-border text-foreground font-body text-sm font-medium tracking-wide hover:border-primary/40 transition-colors"
                     >
                       {project.projectUrlLabel ?? "Visit project website"}

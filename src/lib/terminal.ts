@@ -1,3 +1,5 @@
+import { sanitizeUrl } from "@/lib/security";
+
 type TerminalFileMeta = {
   title?: string;
   url?: string;
@@ -146,7 +148,9 @@ const parseFrontmatter = (content: string) => {
     }
 
     if (key === "url") {
-      meta.url = value;
+      meta.url =
+        sanitizeUrl(value, { allowedProtocols: ["http:", "https:"] }) ??
+        undefined;
     }
 
     if (key === "description") {
