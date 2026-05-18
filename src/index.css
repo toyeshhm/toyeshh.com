@@ -362,6 +362,55 @@
     background-attachment: fixed;
   }
 
+  /* Ensure `.dark` class maps to the dark-gray variable set so Tailwind `.dark` works */
+  .dark {
+    --background: 220 4% 10%;
+    --foreground: 0 0% 92%;
+
+    --card: 220 4% 13%;
+    --card-foreground: 0 0% 92%;
+
+    --popover: 220 4% 13%;
+    --popover-foreground: 0 0% 92%;
+
+    --primary: 31 86% 62%;
+    --primary-foreground: 220 4% 10%;
+
+    --secondary: 220 3% 18%;
+    --secondary-foreground: 0 0% 84%;
+
+    --muted: 220 3% 16%;
+    --muted-foreground: 0 0% 62%;
+
+    --accent: 31 86% 62%;
+    --accent-foreground: 220 4% 10%;
+
+    --border: 220 3% 28%;
+    --input: 220 3% 28%;
+    --ring: 31 86% 62%;
+
+    --glow: 31 86% 62%;
+    --surface: 220 4% 12%;
+    --surface-hover: 220 3% 17%;
+    --text-dim: 0 0% 58%;
+    --text-subtle: 0 0% 69%;
+    --gradient-warm: linear-gradient(135deg, hsl(31 86% 62%), hsl(19 84% 56%));
+    --gradient-surface: linear-gradient(
+      180deg,
+      hsl(220 4% 13%),
+      hsl(220 4% 10%)
+    );
+
+    --sidebar-background: 220 4% 12%;
+    --sidebar-foreground: 0 0% 92%;
+    --sidebar-primary: 31 86% 62%;
+    --sidebar-primary-foreground: 220 4% 10%;
+    --sidebar-accent: 220 3% 17%;
+    --sidebar-accent-foreground: 0 0% 92%;
+    --sidebar-border: 220 3% 28%;
+    --sidebar-ring: 31 86% 62%;
+  }
+
   h1,
   h2,
   h3,
