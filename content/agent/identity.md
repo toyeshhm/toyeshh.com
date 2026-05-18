@@ -18,7 +18,7 @@ He is an incoming freshman at UT Austin in the Turing Scholars CS Honors track a
 ## Contact
 
 - Website: https://toyeshh.com
-- GitHub: https://github.com/Doomtsu
+- GitHub: https://github.com/toyeshhm
 - LinkedIn: https://www.linkedin.com/in/toyeshh-medikonda/
 - Email: toyeshhm@gmail.com
 

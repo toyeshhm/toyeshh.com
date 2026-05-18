@@ -2,7 +2,7 @@
 
 **Frisco, TX**
 
-toyeshh.com | linkedin.com/in/toyeshh-medikonda | github.com/Doomtsu | toyeshhm@gmail.com
+toyeshh.com | linkedin.com/in/toyeshh-medikonda | github.com/toyeshhm | toyeshhm@gmail.com
 
 ---
 

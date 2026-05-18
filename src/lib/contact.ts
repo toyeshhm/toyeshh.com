@@ -1,7 +1,7 @@
 export const CONTACT = {
   email: "toyeshhm@gmail.com",
   location: "Frisco, TX",
-  github: "https://github.com/Doomtsu",
+  github: "https://github.com/toyeshhm",
   linkedin: "https://www.linkedin.com/in/toyeshh-medikonda/",
 } as const;
 

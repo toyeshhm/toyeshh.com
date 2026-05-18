@@ -60,7 +60,7 @@ const Index = () => {
                         <span className="rounded-sm border border-primary/35 bg-primary/20 px-1 text-foreground">
                           Ultra (YC W24)
                         </span>
-                        ; 10k+ users
+                        ; scaled 10k+ users
                       </li>
                       <li>
                         researched at{" "}
@@ -82,7 +82,7 @@ const Index = () => {
                         <span className="rounded-sm border border-secondary-foreground/30 bg-secondary/80 px-1 text-foreground">
                           M3 Math Modeling
                         </span>
-                        {""}; won $5,000, and presented at Jane Street
+                        {""}; won $5,500, and presented at Jane Street
                       </li>
                       <li>
                         researched at{" "}
