@@ -1,4 +1,4 @@
-# toyeshh.com
+ # toyeshh.com
 
 Personal portfolio and terminal-style website built with Vite, React, and TypeScript.
 
