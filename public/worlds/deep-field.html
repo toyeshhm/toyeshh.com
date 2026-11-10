@@ -1,0 +1,739 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deep Field</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Nothing+You+Could+Do&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --glass:#cdd6d8; --label:#e4e9e8; --emul:#172024; --emul-2:#3a474c;
+  --ink:#8a1c22; --ink-2:rgba(138,28,34,.45); --line:rgba(23,32,36,.2);
+  --halo:rgba(205,214,216,.9); --shadow:0 12px 32px -14px rgba(18,28,33,.5);
+  --f-serif:"Old Standard TT","Iowan Old Style","Times New Roman",serif;
+  --f-hand:"Nothing You Could Do","Bradley Hand","Segoe Print",cursive;
+  --f-type:"Courier Prime","Courier New",Courier,monospace;
+  color-scheme:light;
+}
+body[data-mode="positive"]{
+  --glass:#060912; --label:#0b111d; --emul:#e2e6e9; --emul-2:#a7b2bb;
+  --ink:#e8b47c; --ink-2:rgba(232,180,124,.45); --line:rgba(226,230,233,.16);
+  --halo:rgba(6,9,18,.85); --shadow:0 16px 40px -14px rgba(0,0,0,.8);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden}
+body{background:var(--glass);color:var(--emul);font:17px/1.5 var(--f-serif);
+  transition:background-color .6s,color .6s;-webkit-font-smoothing:antialiased;
+  scrollbar-color:var(--ink-2) transparent;scrollbar-width:thin}
+::selection{background:var(--ink);color:var(--label)}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:var(--ink-2);border-radius:0}
+::-webkit-scrollbar-track{background:transparent}
+:focus-visible{outline:2px dashed var(--ink);outline-offset:3px}
+a{color:var(--ink);text-decoration-thickness:1px;text-underline-offset:3px}
+a:hover{text-decoration-thickness:2px}
+button{font:inherit;color:inherit;caret-color:var(--ink)}
+
+#stage{position:fixed;inset:0;cursor:crosshair;touch-action:none;outline:none}
+#stage.drag{cursor:grabbing}
+#stage:focus-visible{outline:2px dashed var(--ink);outline-offset:-8px}
+#sky,#ink{position:absolute;inset:0;width:100%;height:100%;display:block}
+body.nogl #sky{display:none}
+#marks{position:absolute;inset:0;pointer-events:none}
+.obj{position:absolute;left:0;top:0;width:44px;height:44px;margin:-22px 0 0 -22px;padding:0;border:0;
+  border-radius:50%;background:transparent;pointer-events:auto;cursor:pointer;transition:opacity .3s}
+.obj.off{opacity:0;pointer-events:none}
+.obj .lab{position:absolute;left:calc(22px + var(--r,20px) + 6px);top:50%;transform:translateY(-55%);
+  white-space:nowrap;text-align:left;color:var(--ink);pointer-events:none;
+  text-shadow:0 0 3px var(--halo),0 0 6px var(--halo),0 0 10px var(--halo)}
+.obj .d{display:block;font:700 12px/1.1 var(--f-type);letter-spacing:.02em;color:var(--emul)}
+.obj .n{display:block;font:19px/1.1 var(--f-hand)}
+body.far .obj:not(:hover):not(:focus-visible):not(.sel) .n{display:none}
+.obj.me .n{font-size:24px}
+
+.plate{position:fixed;top:16px;left:16px;width:min(29rem,calc(100vw - 32px));padding:16px 20px 14px;
+  background:var(--label);border:1px solid var(--line);box-shadow:var(--shadow);transform:rotate(-.5deg);
+  transition:background-color .6s,opacity .3s}
+.plate h1{margin:0 0 6px;font-weight:700;font-size:clamp(2rem,3.4vw,2.9rem);line-height:1;letter-spacing:-.01em;text-wrap:balance}
+.plate p{margin:0;text-wrap:pretty}
+.plate .now{margin-top:4px;color:var(--emul-2);font-size:15px;line-height:1.4}
+.plate .hint{margin-top:10px;font:18px/1.35 var(--f-hand);color:var(--ink);transform:rotate(-1deg)}
+
+.bar{position:fixed;top:16px;right:16px;display:flex;gap:4px;padding:5px;background:var(--label);
+  border:1px solid var(--line);box-shadow:var(--shadow);transition:background-color .6s;z-index:5}
+.bar button{font:15px/1 var(--f-serif);background:transparent;border:1px solid transparent;padding:10px 12px;cursor:pointer;white-space:nowrap}
+.bar button:hover{border-color:var(--line)}
+.bar button[aria-expanded="true"]{text-decoration:underline;text-decoration-color:var(--ink);text-underline-offset:4px}
+.bar .hatch{color:var(--ink);border-color:var(--ink-2)}
+.bar .hatch:hover{border-color:var(--ink)}
+.short{display:none}
+body.cat .plate{opacity:0;pointer-events:none}
+
+.scale{position:fixed;left:16px;bottom:14px;font:13px/1.5 var(--f-type);color:var(--emul);
+  text-shadow:0 0 3px var(--halo),0 0 8px var(--halo);pointer-events:none}
+.scale i{display:block;height:6px;border:1.5px solid var(--emul);border-top:0;margin-bottom:3px;transition:width .15s}
+.inscr{position:fixed;right:22px;bottom:44px;font:20px/1.2 var(--f-hand);color:var(--ink);transform:rotate(-3deg);
+  pointer-events:none;text-shadow:0 0 4px var(--halo)}
+.back{position:fixed;right:16px;bottom:14px;font-size:14px;color:var(--emul);text-shadow:0 0 4px var(--halo)}
+
+#readout{position:fixed;top:84px;right:16px;bottom:16px;width:min(410px,calc(100vw - 32px));overflow:auto;
+  padding:20px 24px 22px;background:var(--label);border:1px solid var(--line);box-shadow:var(--shadow);z-index:4;
+  transform:translateX(calc(100% + 28px));visibility:hidden;
+  transition:transform .55s cubic-bezier(.16,1,.3,1),visibility 0s .55s,background-color .6s}
+#readout.open{transform:none;visibility:visible;transition:transform .55s cubic-bezier(.16,1,.3,1),visibility 0s,background-color .6s}
+.r-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.r-top .desig{font:700 14px var(--f-type);color:var(--ink)}
+.txtbtn{background:transparent;border:1px solid var(--line);padding:6px 10px;cursor:pointer;font-size:15px}
+.txtbtn:hover{border-color:var(--emul)}
+#readout h2{margin:14px 0 2px;font-size:2rem;line-height:1.05;font-weight:700;text-wrap:balance;outline:none}
+.r-sub{margin:0 0 12px;color:var(--emul-2);font-style:italic}
+.r-text{margin:0 0 16px;max-width:65ch}
+.meas{border-collapse:collapse;margin:0 0 18px;width:100%}
+.meas td{padding:6px 0;border-top:1px solid var(--line);vertical-align:baseline}
+.meas td:first-child{font:700 16px var(--f-type);padding-right:14px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.spec{margin:0 0 16px}
+.spec canvas{display:block;width:100%}
+.spec figcaption{font-size:14px;color:var(--emul-2);margin-top:4px}
+.pos{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:0 0 12px;font-size:15px}
+.pos dt{color:var(--emul-2)}
+.pos dd{margin:0;font:14px/1.6 var(--f-type)}
+.foot{font-size:13.5px;color:var(--emul-2);margin:0 0 16px;line-height:1.45}
+.r-nav{display:flex;gap:8px;flex-wrap:wrap}
+.r-nav .txtbtn{flex:1;text-align:left;font-size:14px;line-height:1.3}
+.r-nav .txtbtn b{display:block;font:700 12px var(--f-type);color:var(--ink)}
+.notes{margin:0 0 16px;padding-left:1.1em}
+
+#catalog{position:fixed;top:84px;left:16px;right:16px;bottom:16px;overflow:auto;z-index:4;
+  padding:24px clamp(16px,3vw,40px) 32px;background:var(--label);border:1px solid var(--line);box-shadow:var(--shadow)}
+#catalog[hidden]{display:none}
+.c-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+#catalog h2{margin:0;font-size:2.2rem;line-height:1.05}
+.c-intro{margin:6px 0 20px;max-width:65ch;color:var(--emul-2)}
+.obs{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:6px 32px;margin:0 0 24px;max-width:72rem}
+.obs dt{font-style:italic;color:var(--emul-2);font-size:15px}
+.obs dd{margin:0 0 10px}
+table.cat{border-collapse:collapse;width:100%;font-size:15.5px}
+.cat th{text-align:left;font-weight:700;padding:8px 14px 8px 0;border-bottom:1.5px solid var(--emul);white-space:nowrap}
+.cat td{padding:11px 14px 11px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.cat td.m{font:14px/1.5 var(--f-type);white-space:nowrap;font-variant-numeric:tabular-nums}
+.cat .go{font:700 14px var(--f-type);color:var(--ink);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.cat .rec{max-width:62ch}
+.cat .rec small{display:block;color:var(--emul-2);font-size:14px;margin-top:3px}
+
+dialog{border:1px solid var(--line);background:var(--label);color:var(--emul);box-shadow:var(--shadow);
+  padding:28px 30px 26px;width:min(34rem,calc(100vw - 32px));max-height:calc(100vh - 32px)}
+dialog::backdrop{background:rgba(8,12,15,.5)}
+dialog h2{margin:0 0 6px;font-size:2.2rem;line-height:1.05}
+dialog p{margin:0 0 4px}
+.contact{display:grid;grid-template-columns:auto 1fr;gap:10px 18px;margin:20px 0 22px;align-items:baseline}
+.contact dt{font-style:italic;color:var(--emul-2)}
+.contact dd{margin:0;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;min-width:0}
+.mail{font:16px var(--f-type);user-select:all;overflow-wrap:anywhere}
+.copied{font:16px var(--f-hand);color:var(--ink)}
+
+@media (max-width:700px){
+  .plate{top:10px;left:10px;width:calc(100vw - 20px);padding:12px 14px 10px;transform:none}
+  .plate h1{font-size:1.85rem}
+  .plate .line{font-size:15px;line-height:1.35}
+  .plate .now{font-size:13.5px}
+  .plate .hint{font-size:16px;margin-top:6px}
+  body.reading .plate{opacity:0;pointer-events:none}
+  .bar{top:auto;bottom:10px;left:10px;right:10px}
+  .bar button{flex:1;padding:11px 2px;font-size:14px}
+  .long,.scale,.inscr,.plate .hint{display:none}
+  .short{display:inline}
+  .back{top:auto;bottom:66px;right:12px;font-size:13px}
+  #readout{top:auto;left:0;right:0;bottom:62px;width:auto;height:56vh;border-left:0;border-right:0;
+    transform:translateY(calc(100% + 70px));padding:16px 18px 20px}
+  #catalog{top:0;left:0;right:0;bottom:62px;border:0;padding:18px 16px 28px}
+  .cat thead{display:none}
+  .cat,.cat tbody,.cat tr,.cat td{display:block;width:100%}
+  .cat tr{padding:12px 0;border-bottom:1px solid var(--line)}
+  .cat td{border:0;padding:2px 0}
+  .cat td.m{display:inline-block;width:auto;margin-right:14px;color:var(--emul-2)}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:0s!important}
+}
+</style>
+</head>
+<body data-mode="plate">
+
+<div id="stage" tabindex="0" role="application" aria-label="Survey plate. Drag or use arrow keys to pan, scroll, pinch or plus and minus to zoom.">
+  <canvas id="sky" aria-hidden="true"></canvas>
+  <canvas id="ink" aria-hidden="true"></canvas>
+  <div id="marks"></div>
+</div>
+
+<header class="plate">
+  <h1 id="name"></h1>
+  <p class="line" id="line"></p>
+  <p class="now" id="now"></p>
+  <p class="hint">Drag the plate to pan, scroll or pinch to zoom. Every circled object is catalogued.</p>
+</header>
+
+<nav class="bar" aria-label="Survey controls">
+  <button type="button" id="b-home" title="Show the whole plate (0)"><span class="long">Whole plate</span><span class="short">Plate</span></button>
+  <button type="button" id="b-cat" aria-expanded="false" aria-controls="catalog" title="Survey catalog (C)"><span class="long">Survey catalog</span><span class="short">Catalog</span></button>
+  <button type="button" id="b-mode" title="Switch between the glass negative and a print (P)"></button>
+  <button type="button" id="b-obs" class="hatch" title="Contact the observer (O)">Contact<span class="long"> the observer</span></button>
+</nav>
+
+<aside id="readout" aria-label="Object readout" aria-live="polite"></aside>
+
+<section id="catalog" hidden aria-labelledby="cat-h">
+  <div class="c-head">
+    <h2 id="cat-h">Survey catalog</h2>
+    <button type="button" class="txtbtn" id="cat-close">Close catalog</button>
+  </div>
+  <p class="c-intro" id="cat-intro"></p>
+  <dl class="obs" id="cat-obs"></dl>
+  <table class="cat">
+    <thead><tr><th>Designation</th><th>Object</th><th>Type</th><th>Constellation</th><th>RA, Dec</th><th>Mag.</th><th>Record</th></tr></thead>
+    <tbody id="cat-rows"></tbody>
+  </table>
+</section>
+
+<dialog id="observer" aria-labelledby="obs-h">
+  <h2 id="obs-h"></h2>
+  <p id="obs-line"></p>
+  <p id="obs-now" style="color:var(--emul-2)"></p>
+  <dl class="contact">
+    <dt>Email</dt><dd><span class="mail" id="obs-mail"></span><button type="button" class="txtbtn" id="obs-copy">Copy</button><span class="copied" id="obs-copied" aria-live="polite"></span></dd>
+    <dt>GitHub</dt><dd><a id="obs-gh" target="_blank" rel="noopener"></a></dd>
+    <dt>LinkedIn</dt><dd><a id="obs-li" target="_blank" rel="noopener"></a></dd>
+    <dt>Resume</dt><dd><a id="obs-cv">Resume (PDF)</a></dd>
+  </dl>
+  <form method="dialog"><button class="txtbtn" type="submit">Back to the sky</button></form>
+</dialog>
+
+<div class="scale" aria-hidden="true"><i id="sc-bar"></i><span id="sc-txt"></span><br><span id="sc-pos"></span></div>
+<p class="inscr" id="inscr" aria-hidden="true"></p>
+<a class="back" href="index.html">← all boards</a>
+
+<script src="data.js"></script>
+<script>
+(() => {
+"use strict";
+const D = window.TOYESHH;
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const RM = matchMedia("(prefers-reduced-motion: reduce)");
+let reduce = RM.matches;
+RM.addEventListener("change", e => { reduce = e.matches; });
+
+/* ---------- catalogue: every object comes from data.js ---------- */
+const POS = {
+  [D.name]: [0, 0],
+  "Non-Trivial": [-130, -420], "UT Dallas": [240, -520], "New York Academy of Sciences": [40, -640], "The Survivorship Tax": [110, -330],
+  "Ultra (YC W24)": [400, -120], "Toyo Brain": [620, -330], "YC Intel": [880, -220], "Lecture Notes": [830, 60], "Probe": [560, 180],
+  "Leetposter": [-440, 480], "StudyAtlas": [-200, 300], "learnDSA": [-60, 570], "Longhorn Macros": [140, 390], "Doe Clicker": [340, 610],
+  "BPA Nationals, Financial Portfolio Management": [-1020, 40], "BPA Nationals, Java Programming": [-860, -120],
+  "USACO Platinum": [-700, 110], "M3 Math Modeling finalist": [-900, 280], "WearItForward": [-690, 380], "ExcelAcademe": [-470, 200]
+};
+const SHORT = { "New York Academy of Sciences": "NYAS", "Ultra (YC W24)": "Ultra", "BPA Nationals, Financial Portfolio Management": "BPA, portfolio",
+  "BPA Nationals, Java Programming": "BPA, Java", "M3 Math Modeling finalist": "M3 Modeling" };
+// spectrum lines for records without a stack, taken from the words of each record
+const TAGS = {
+  "Ultra (YC W24)": ["Frontend", "AI features", "UI/UX"], "Non-Trivial": ["Quantum ML", "CNN", "Crop disease"],
+  "UT Dallas": ["NLP", "CCS", "GPT-4", "Claude 3", "Llama 3"], "New York Academy of Sciences": ["Biochar", "Nanocellulose", "Air filtration"],
+  "USACO Platinum": ["Competitive programming"], "M3 Math Modeling finalist": ["Math modeling", "Presenting"],
+  "BPA Nationals, Financial Portfolio Management": ["Portfolio management"], "BPA Nationals, Java Programming": ["Java"],
+  "WearItForward": ["Cofounder", "Fundraising", "Press"], "ExcelAcademe": ["Outreach", "Sponsorships"]
+};
+const CONS = [
+  { name: "Research", at: [-120, -730], chain: ["New York Academy of Sciences", "UT Dallas", "The Survivorship Tax", "Non-Trivial", "New York Academy of Sciences"] },
+  { name: "Engineering", at: [770, -470], chain: ["Ultra (YC W24)", "Toyo Brain", "YC Intel", "Lecture Notes", "Probe", "Ultra (YC W24)"] },
+  { name: "Apps & games", at: [-130, 720], chain: ["Leetposter", "learnDSA", "Doe Clicker", "Longhorn Macros", "StudyAtlas", "Leetposter"] },
+  { name: "Wins", at: [-1060, 420], chain: ["BPA Nationals, Financial Portfolio Management", "BPA Nationals, Java Programming", "USACO Platinum", "M3 Math Modeling finalist", "WearItForward", "ExcelAcademe"] }
+];
+const LINKS = ["The Survivorship Tax", "Ultra (YC W24)", "StudyAtlas", "ExcelAcademe"]; // observer to each constellation
+
+// magnitude: 6.5 - log10(largest figure in the record); no figure gives 5.5
+function magOf(texts) {
+  let m = 0;
+  for (const t of texts) for (const s of (t.replace(/,/g, "").match(/\d+(\.\d+)?/g) || [])) m = Math.max(m, parseFloat(s));
+  return m ? Math.round((6.5 - Math.log10(m)) * 10) / 10 : 5.5;
+}
+const OBJ = [], BY = {};
+function add(o) { [o.x, o.y] = POS[o.title]; o.i = OBJ.length; o.short = SHORT[o.title] || o.title; OBJ.push(o); BY[o.title] = o; }
+add({ desig: "TM-000", title: D.name, type: "observer", cls: "Reference star", sub: D.now, text: D.line,
+  lines: [...D.skills.languages, ...D.skills.areas], numbers: [], mag: -1.0 });
+D.experience.forEach((e, i) => add({ desig: "TM-" + (101 + i), title: e.org, type: "role", cls: "Galaxy",
+  sub: e.role + ", " + e.when, text: e.did, numbers: e.numbers, lines: TAGS[e.org] || [],
+  mag: magOf([e.did, ...e.numbers.map(n => n[0])]) }));
+D.projects.forEach((p, i) => add({ desig: "TM-" + (201 + i), title: p.name, type: "project", cls: "Star",
+  sub: "Project, " + p.kind, text: p.one, numbers: [], lines: p.stack, mag: magOf([p.one]) }));
+D.wins.forEach((w, i) => add({ desig: "TM-" + (301 + i), title: w.what, type: "win", cls: "Cluster",
+  sub: "Win", text: w.detail, numbers: [], lines: TAGS[w.what] || [], mag: magOf([w.detail]) }));
+for (const c of CONS) for (const t of c.chain) BY[t].cons = c;
+BY[D.name].cons = { name: "Observer", chain: [] };
+const R0 = { observer: 46, role: 40, project: 0, win: 44 };
+for (const o of OBJ) o.r = o.type === "project" ? 16 + (6.5 - o.mag) * 2.2 : R0[o.type];
+
+const pad = n => String(n).padStart(2, "0");
+function radec(x, y) {
+  const ra = ((x / 2600) * 24 + 5.5 + 48) % 24, h = Math.floor(ra), mf = (ra - h) * 60, m = Math.floor(mf), s = Math.floor((mf - m) * 60);
+  const dec = 21 - (y / 2600) * 40, a = Math.abs(dec), d = Math.floor(a), dm = Math.floor((a - d) * 60);
+  return `${pad(h)}h ${pad(m)}m ${pad(s)}s, ${dec < 0 ? "−" : "+"}${pad(d)}° ${pad(dm)}′`;
+}
+const fmtMag = m => (m < 0 ? "−" : "+") + Math.abs(m).toFixed(1);
+function hashStr(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function rng(seed) { return () => { seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+
+/* ---------- static text ---------- */
+$("#name").textContent = D.name;
+$("#line").textContent = D.line;
+$("#now").textContent = D.now + ". " + D.place + ".";
+$("#obs-h").textContent = D.name;
+$("#obs-line").textContent = D.line;
+$("#obs-now").textContent = D.now + ".";
+$("#obs-mail").textContent = D.links.email;
+$("#obs-gh").href = D.links.github; $("#obs-gh").textContent = D.links.github.replace("https://", "");
+$("#obs-li").href = D.links.linkedin; $("#obs-li").textContent = D.links.linkedin.replace("https://www.", "");
+$("#obs-cv").href = D.links.resume;
+$("#inscr").textContent = "Plate TM 2030, exposed " + new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+
+/* ---------- view state ---------- */
+const stage = $("#stage"), skyCv = $("#sky"), inkCv = $("#ink"), ink = inkCv.getContext("2d");
+let W = 0, H = 0, dpr = 1;
+const cam = { x: 0, y: 0 };
+let zoom = 1, dirty = true, anim = null, sel = null;
+let mode = "plate", plateT = 1, modeAnim = null, dev = reduce ? 1 : 0;
+const devStart = performance.now();
+const ZMIN = 0.3, ZMAX = 5;
+const clampZ = z => Math.min(ZMAX, Math.max(ZMIN, z));
+const scr = (x, y) => [(x - cam.x) * zoom + W / 2, (y - cam.y) * zoom + H / 2];
+const mobile = () => W <= 700;
+
+/* ---------- WebGL sky: nebula + 50k stars in four parallax layers, developed as a glass negative ---------- */
+const FW = 5000; // wrap size of the star field, in sky units
+let G = null;
+const VQ = `attribute vec2 aQ;varying vec2 vUv;void main(){vUv=aQ*.5+.5;gl_Position=vec4(aQ,0.,1.);}`;
+const HP = `#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+`;
+const FNEB = HP + `uniform vec2 uRes,uCam;uniform float uZoom,uDpr;
+float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float n(vec2 p){vec2 i=floor(p),f=fract(p),u=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),u.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),u.x),u.y);}
+float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<5;i++){v+=a*n(p);p=p*2.03+vec2(1.7,9.2);a*=.5;}return v;}
+void main(){
+  vec2 fc=vec2(gl_FragCoord.x,uRes.y*uDpr-gl_FragCoord.y)/uDpr;
+  float k=.3,z=pow(uZoom,k);
+  vec2 w=(fc-uRes*.5)/z+uCam*k, p=w/560.;
+  float band=exp(-pow(dot(w,normalize(vec2(.45,-1.)))/650.,2.));
+  float glow=exp(-dot(w,w)/(520.*520.));
+  float q=fbm(p+fbm(p*.6+4.)*1.6);
+  float dust=smoothstep(.48,.78,fbm(p*1.8+3.));
+  float m=fbm(p*.7+10.);
+  vec3 ha=vec3(.55,.11,.2),o3=vec3(.05,.3,.34),rf=vec3(.1,.14,.34);
+  vec3 c=mix(o3,ha,smoothstep(.38,.62,m))*pow(q,2.4)*(.15+.85*band+.6*glow);
+  c+=rf*.22*(band+glow)*fbm(p*3.1);
+  c*=1.-.8*dust*(band*.8+.2);
+  c+=vec3(.01,.013,.025);
+  gl_FragColor=vec4(c,1.);
+}`;
+const VSTAR = `attribute vec2 aPos;attribute vec4 aA;attribute vec2 aB;
+uniform vec2 uRes,uCam;uniform float uZoom,uW,uWrap,uDpr;
+varying float vB,vT,vS,vAng;
+void main(){
+  float k=aA.x;vec2 r=aPos-uCam*k;
+  if(uWrap>.5)r=mod(r+uW*.5,uW)-uW*.5;
+  float z=pow(uZoom,k);vec2 s=r*z;
+  gl_Position=vec4(s.x/(uRes.x*.5),-s.y/(uRes.y*.5),0.,1.);
+  float sz=aA.y*pow(z,.6);
+  gl_PointSize=max(sz,1.6)*uDpr;
+  vB=aA.z*min(1.,sz/1.6);vT=aA.w;vS=aB.x;vAng=aB.y;
+}`;
+const FSTAR = `precision mediump float;varying float vB,vT,vS,vAng;
+void main(){
+  vec2 p=gl_PointCoord*2.-1.;float L=length(p);
+  vec3 c=mix(vec3(1.,.76,.52),vec3(.6,.74,1.),vT);float a;
+  if(vS<.5){float r2=dot(p,p);a=exp(-r2*9.)+.1*exp(-r2*2.2);}
+  else if(vS<1.5){
+    float ca=cos(vAng),sa=sin(vAng);vec2 q=vec2(ca*p.x-sa*p.y,sa*p.x+ca*p.y);q.y*=2.5;
+    float r=length(q),th=atan(q.y,q.x);float arms=.5+.5*sin(2.*th-9.*r);
+    a=exp(-r*r*5.)*(.35+.65*arms)*.8+exp(-r*r*70.);c=mix(c,vec3(1.,.92,.82),.5);
+  }else{
+    float r2=dot(p,p);a=exp(-r2*14.)*1.4+.18*exp(-r2*2.);
+    a+=.5*(exp(-abs(p.x)*60.)*exp(-abs(p.y)*2.6)+exp(-abs(p.y)*60.)*exp(-abs(p.x)*2.6));
+  }
+  a*=1.-smoothstep(.82,1.,L);
+  gl_FragColor=vec4(c*a*vB,1.);
+}`;
+const FPOST = `precision mediump float;uniform sampler2D uTex;uniform float uPlate,uDev;varying vec2 vUv;
+float h(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}
+void main(){
+  vec3 c=texture2D(uTex,vUv).rgb;
+  vec3 pos=1.-exp(-c*1.7);
+  float L=dot(pos,vec3(.3,.55,.15));
+  float g=clamp(uDev*1.6-(1.-L)*.6,0.,1.);pos*=g;L*=g;
+  vec2 q=vUv-.5;float vig=dot(q,q);
+  vec3 glass=vec3(.80,.845,.858)-vig*vec3(.17,.14,.11);
+  vec3 neg=mix(glass,vec3(.07,.085,.095),smoothstep(0.,.8,pow(L,.72)));
+  float gr=h(gl_FragCoord.xy)-.5;
+  neg+=gr*.035;pos=pos*(1.-vig*.55)+gr*.012;
+  gl_FragColor=vec4(mix(pos,neg,uPlate),1.);
+}`;
+
+function initGL() {
+  const gl = skyCv.getContext("webgl", { antialias: false, alpha: false, premultipliedAlpha: false });
+  if (!gl) throw new Error("no webgl");
+  const shader = (t, src) => { const s = gl.createShader(t); gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; };
+  const prog = (vs, fs) => { const p = gl.createProgram(); gl.attachShader(p, shader(gl.VERTEX_SHADER, vs)); gl.attachShader(p, shader(gl.FRAGMENT_SHADER, fs));
+    gl.linkProgram(p); if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+    const u = {}, n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+    for (let i = 0; i < n; i++) { const a = gl.getActiveUniform(p, i); u[a.name] = gl.getUniformLocation(p, a.name); }
+    return { p, u, a: name => gl.getAttribLocation(p, name) }; };
+  const neb = prog(VQ, FNEB), star = prog(VSTAR, FSTAR), post = prog(VQ, FPOST);
+  const quad = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, quad);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+
+  // background field: four depth layers, denser along a diagonal band
+  const r = rng(2030), bg = [];
+  const LAY = [[0.35, 24000, 0.55], [0.6, 14000, 0.8], [0.85, 7000, 1], [1.0, 3600, 1.15]];
+  for (const [k, count, s] of LAY) {
+    let n = 0;
+    while (n < count) {
+      const x = r() * FW - FW / 2, y = r() * FW - FW / 2;
+      const d = x * 0.912 + y * 0.41; // distance from the band's centre line
+      if (r() > 0.3 + 0.7 * Math.exp(-((d / 1000) ** 2))) continue;
+      const b = r();
+      bg.push(x, y, k, (1.5 + 6 * b ** 7) * s, (0.22 + 1.1 * b ** 3) * s, r(), 0, 0); n++;
+    }
+  }
+  // catalogued objects at the reference plane (k = 1), not wrapped
+  const ob = [];
+  for (const o of OBJ) {
+    const rr = rng(hashStr(o.title)), lum = 6.5 - o.mag;
+    if (o.type === "observer") ob.push(o.x, o.y, 1, 54, 1.7, 0.55, 2, 0);
+    else if (o.type === "role") ob.push(o.x, o.y, 1, 84, 0.95, 0.25 + rr() * 0.3, 1, rr() * 3.14);
+    else if (o.type === "project") ob.push(o.x, o.y, 1, 12 + lum * 2.6, 0.9 + lum * 0.1, rr(), 0, 0);
+    else {
+      ob.push(o.x, o.y, 1, 13 + lum * 1.5, 1.1, 0.7, 0, 0);
+      for (let i = 0; i < 34; i++) { const a = rr() * 6.283, d = 30 * Math.sqrt(-2 * Math.log(rr() + 1e-6)) * 0.55;
+        ob.push(o.x + Math.cos(a) * d, o.y + Math.sin(a) * d, 1, 2.5 + 5 * rr() ** 4, 0.6 + 0.6 * rr(), 0.5 + rr() * 0.5, 0, 0); }
+    }
+  }
+  const mk = arr => { const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(arr), gl.STATIC_DRAW); return { b, n: arr.length / 8 }; };
+  const bgB = mk(bg), obB = mk(ob);
+  const tex = gl.createTexture(), fbo = gl.createFramebuffer();
+  let fw = 0, fh = 0;
+  function sizeFbo(w, h) {
+    fw = w; fh = h;
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    for (const [p, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, p, v);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  }
+  function drawQuad(P) { const l = P.a("aQ"); gl.bindBuffer(gl.ARRAY_BUFFER, quad); gl.enableVertexAttribArray(l); gl.vertexAttribPointer(l, 2, gl.FLOAT, false, 0, 0); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); gl.disableVertexAttribArray(l); }
+  function drawPts(buf, wrap) {
+    gl.uniform1f(star.u.uWrap, wrap);
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf.b);
+    const L = [["aPos", 2, 0], ["aA", 4, 8], ["aB", 2, 24]].map(([nm, sz, off]) => { const l = star.a(nm); gl.enableVertexAttribArray(l); gl.vertexAttribPointer(l, sz, gl.FLOAT, false, 32, off); return l; });
+    gl.drawArrays(gl.POINTS, 0, buf.n);
+    L.forEach(l => gl.disableVertexAttribArray(l));
+  }
+  return {
+    resize() { skyCv.width = Math.round(W * dpr); skyCv.height = Math.round(H * dpr); sizeFbo(skyCv.width, skyCv.height); },
+    draw() {
+      gl.bindFramebuffer(gl.FRAMEBUFFER, fbo); gl.viewport(0, 0, fw, fh); gl.disable(gl.BLEND);
+      gl.useProgram(neb.p); gl.uniform2f(neb.u.uRes, W, H); gl.uniform2f(neb.u.uCam, cam.x, cam.y); gl.uniform1f(neb.u.uZoom, zoom); gl.uniform1f(neb.u.uDpr, dpr);
+      drawQuad(neb);
+      gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
+      gl.useProgram(star.p); gl.uniform2f(star.u.uRes, W, H); gl.uniform2f(star.u.uCam, cam.x, cam.y);
+      gl.uniform1f(star.u.uZoom, zoom); gl.uniform1f(star.u.uW, FW); gl.uniform1f(star.u.uDpr, dpr);
+      drawPts(bgB, 1); drawPts(obB, 0);
+      gl.disable(gl.BLEND);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.viewport(0, 0, fw, fh);
+      gl.useProgram(post.p); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.uniform1i(post.u.uTex, 0); gl.uniform1f(post.u.uPlate, plateT); gl.uniform1f(post.u.uDev, dev);
+      drawQuad(post);
+    }
+  };
+}
+try { G = initGL(); } catch (e) { console.warn("Deep Field: WebGL unavailable, showing the ink layer only.", e); document.body.classList.add("nogl"); dev = 1; }
+
+/* ---------- ink layer: réseau grid, constellation lines, hand-drawn circles ---------- */
+const INK = { plate: { ink: "#8a1c22", grid: "rgba(23,32,36,.10)", link: "rgba(138,28,34,.55)" },
+              pos: { ink: "#e8b47c", grid: "rgba(200,215,255,.07)", link: "rgba(232,180,124,.5)" } };
+function wob(x, y, r, seed) {
+  ink.beginPath();
+  const n = 44, ph = seed * 1.7;
+  for (let i = 0; i <= n + 4; i++) {
+    const t = (i / n) * 6.2832 + ph, rr = r * (1 + 0.05 * Math.sin(t * 3 + seed) + 0.025 * Math.sin(t * 5 + seed * 2)) + i * 0.09;
+    i ? ink.lineTo(x + Math.cos(t) * rr, y + Math.sin(t) * rr) : ink.moveTo(x + Math.cos(t) * rr, y + Math.sin(t) * rr);
+  }
+  ink.stroke();
+}
+function drawInk() {
+  ink.setTransform(dpr, 0, 0, dpr, 0, 0); ink.clearRect(0, 0, W, H);
+  const P = plateT > 0.5 ? INK.plate : INK.pos, f = Math.min(1.8, Math.max(0.6, Math.sqrt(zoom)));
+  ink.globalAlpha = Math.min(1, Math.max(0, (dev - 0.5) / 0.45));
+  if (!ink.globalAlpha) return;
+  ink.strokeStyle = P.grid; ink.lineWidth = 1;
+  const step = 250, x0 = cam.x - W / 2 / zoom, x1 = cam.x + W / 2 / zoom, y0 = cam.y - H / 2 / zoom, y1 = cam.y + H / 2 / zoom;
+  ink.beginPath();
+  for (let g = Math.ceil(x0 / step) * step; g <= x1; g += step) { const sx = Math.round((g - cam.x) * zoom + W / 2) + 0.5; ink.moveTo(sx, 0); ink.lineTo(sx, H); }
+  for (let g = Math.ceil(y0 / step) * step; g <= y1; g += step) { const sy = Math.round((g - cam.y) * zoom + H / 2) + 0.5; ink.moveTo(0, sy); ink.lineTo(W, sy); }
+  ink.stroke();
+  const seg = (a, b) => {
+    const [ax, ay] = scr(a.x, a.y), [bx, by] = scr(b.x, b.y), dx = bx - ax, dy = by - ay, L = Math.hypot(dx, dy);
+    const ra = a.r * f + 6, rb = b.r * f + 6; if (L < ra + rb + 4) return;
+    ink.moveTo(ax + dx / L * ra, ay + dy / L * ra); ink.lineTo(bx - dx / L * rb, by - dy / L * rb);
+  };
+  ink.strokeStyle = P.ink; ink.lineWidth = 1.3; ink.setLineDash([8, 6]); ink.beginPath();
+  for (const c of CONS) for (let j = 1; j < c.chain.length; j++) seg(BY[c.chain[j - 1]], BY[c.chain[j]]);
+  ink.stroke();
+  ink.strokeStyle = P.link; ink.setLineDash([2, 6]); ink.beginPath();
+  for (const t of LINKS) seg(OBJ[0], BY[t]);
+  ink.stroke(); ink.setLineDash([]);
+  ink.strokeStyle = P.ink; ink.lineWidth = 1.6;
+  for (const o of OBJ) {
+    const [x, y] = scr(o.x, o.y), r = o.r * f;
+    if (x < -r - 10 || x > W + r + 10 || y < -r - 10 || y > H + r + 10) continue;
+    wob(x, y, r, o.i + 1);
+    if (o === sel) {
+      wob(x, y, r + 7, o.i + 9);
+      ink.beginPath(); ink.moveTo(x - r - 30, y); ink.lineTo(x - r - 12, y); ink.moveTo(x, y - r - 30); ink.lineTo(x, y - r - 12); ink.stroke();
+    }
+  }
+  ink.fillStyle = P.ink; ink.font = `${Math.round(26 * f)}px ${getComputedStyle(document.body).getPropertyValue("--f-hand")}`;
+  for (const c of CONS) { const [x, y] = scr(c.at[0], c.at[1]); ink.save(); ink.translate(x, y); ink.rotate(-0.05); ink.fillText(c.name, 0, 0); ink.restore(); }
+}
+
+/* ---------- DOM marks: one real button per catalogued object ---------- */
+const marks = $("#marks");
+for (const o of OBJ) {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "obj" + (o.type === "observer" ? " me" : "");
+  b.setAttribute("aria-label", `${o.desig}, ${o.title}. ${o.cls}. Open readout.`);
+  b.innerHTML = `<span class="lab" aria-hidden="true"><span class="d">${o.desig}</span><span class="n">${esc(o.type === "observer" ? D.name : o.short)}</span></span>`;
+  b.addEventListener("click", () => { if (!moved) select(o); });
+  b.addEventListener("focus", () => { const [x, y] = scr(o.x, o.y); if (x < 40 || x > W - 40 || y < 40 || y > H - 40) flyTo(o.x, o.y, zoom, 700); });
+  o.el = b; marks.appendChild(b);
+}
+function placeMarks() {
+  const f = Math.min(1.8, Math.max(0.6, Math.sqrt(zoom)));
+  document.body.classList.toggle("far", zoom < 0.4);
+  for (const o of OBJ) {
+    const [x, y] = scr(o.x, o.y);
+    o.el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;
+    o.el.style.setProperty("--r", (o.r * f).toFixed(1) + "px");
+    o.el.classList.toggle("off", x < -60 || x > W + 60 || y < -60 || y > H + 60);
+    o.el.classList.toggle("sel", o === sel);
+  }
+}
+function drawHud() {
+  const pxPerArcmin = zoom * 30; // 1 sky unit = 2 arcseconds
+  const opts = [1, 2, 5, 10, 20, 30, 60]; let v = opts.find(a => a * pxPerArcmin >= 60) || 60;
+  $("#sc-bar").style.width = (v * pxPerArcmin).toFixed(0) + "px";
+  $("#sc-txt").textContent = `${v}′   ×${zoom.toFixed(2)}`;
+  $("#sc-pos").textContent = radec(cam.x, cam.y);
+}
+
+/* ---------- camera ---------- */
+const BOX = { x0: -1080, x1: 1080, y0: -770, y1: 760 };
+function homeView() {
+  if (mobile()) return { x: 150, y: 40, z: 0.62 };
+  const top = 30, pad = 40, aw = W - pad * 2, ah = H - top - 70;
+  const z = clampZ(Math.min(aw / (BOX.x1 - BOX.x0), ah / (BOX.y1 - BOX.y0)));
+  const cx = (BOX.x0 + BOX.x1) / 2, cy = (BOX.y0 + BOX.y1) / 2;
+  return { x: cx - (W / 2 - (pad + aw / 2)) / z, y: cy - (H / 2 - (top + ah / 2)) / z, z };
+}
+function clampCam() { cam.x = Math.min(2200, Math.max(-2400, cam.x)); cam.y = Math.min(2000, Math.max(-2000, cam.y)); }
+function flyTo(x, y, z, dur = 1300) {
+  z = clampZ(z);
+  if (reduce) { cam.x = x; cam.y = y; zoom = z; dirty = true; return; }
+  const dist = Math.hypot(x - cam.x, y - cam.y) * Math.min(zoom, z);
+  anim = { x0: cam.x, y0: cam.y, z0: zoom, x1: x, y1: y, z1: z, t0: performance.now(), dur, dip: Math.min(0.9, dist / 1300) };
+}
+function zoomAt(z, mx, my) {
+  z = clampZ(z); const wx = cam.x + (mx - W / 2) / zoom, wy = cam.y + (my - H / 2) / zoom;
+  zoom = z; cam.x = wx - (mx - W / 2) / zoom; cam.y = wy - (my - H / 2) / zoom; clampCam(); dirty = true;
+}
+function resize() {
+  W = innerWidth; H = innerHeight; dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+  inkCv.width = Math.round(W * dpr); inkCv.height = Math.round(H * dpr);
+  if (G) G.resize();
+  dirty = true;
+}
+
+/* ---------- readout ---------- */
+const RO = $("#readout");
+function drawSpectrum(cv, lines) {
+  const w = cv.clientWidth || 360, top = 16, sh = 30, n = lines.length;
+  const c = cv.getContext("2d"), css = getComputedStyle(document.body), font = `11px ${css.getPropertyValue("--f-type")}`;
+  // spread lines across the band with a per-name jitter, then stack labels greedily into rows
+  const pts = lines.map(l => ({ l, hsh: hashStr(l) })).sort((a, b) => a.hsh - b.hsh)
+    .map((p, i) => ({ l: p.l, x: 12 + ((i + 0.2 + 0.6 * ((p.hsh % 997) / 997)) / n) * (w - 24) }));
+  c.font = font; const ends = [];
+  for (const p of pts) { const tw = c.measureText(p.l).width; p.tx = Math.max(0, Math.min(w - tw, p.x - tw / 2));
+    let row = ends.findIndex(e => e < p.tx - 8); if (row < 0) { row = ends.length; ends.push(0); } ends[row] = p.tx + tw; p.row = row; }
+  const h = top + sh + 12 + ends.length * 16;
+  const r = Math.min(window.devicePixelRatio || 1, 2); cv.width = w * r; cv.height = h * r; cv.style.height = h + "px";
+  c.setTransform(r, 0, 0, r, 0, 0);
+  const plate = mode === "plate", g = c.createLinearGradient(0, 0, w, 0);
+  const stops = plate ? ["#5d6a6f", "#323c40", "#1d2427", "#2a3337", "#4c585d"] : ["#3a1d66", "#2546b4", "#1c95b8", "#36ad62", "#d8cd48", "#e5862e", "#c52f3a", "#3d0c18"];
+  stops.forEach((s, i) => g.addColorStop(i / (stops.length - 1), s));
+  c.fillStyle = g; c.fillRect(0, top, w, sh);
+  const fg = css.getPropertyValue("--emul").trim(), inkc = css.getPropertyValue("--ink").trim();
+  c.font = font; let lamEnd = -99;
+  pts.forEach(p => {
+    c.fillStyle = plate ? "rgba(214,224,226,.92)" : "rgba(4,5,10,.88)"; c.fillRect(Math.round(p.x) - 1, top, 2, sh);
+    const ty = top + sh + 14 + p.row * 16, lam = Math.round(3900 + (p.x / w) * 3100);
+    c.strokeStyle = inkc; c.lineWidth = 1; c.beginPath(); c.moveTo(p.x, top + sh + 1); c.lineTo(p.x, ty - 10); c.stroke();
+    c.fillStyle = fg; c.fillText(p.l, p.tx, ty);
+    const lt = lam + "Å", lw = c.measureText(lt).width, lx = Math.max(0, Math.min(w - lw, p.x - lw / 2));
+    if (lx > lamEnd + 6) { c.fillStyle = inkc; c.fillText(lt, lx, top - 4); lamEnd = lx + lw; }
+  });
+}
+function readoutHTML(o) {
+  const cons = o.cons, k = cons.chain.filter((t, i, a) => a.indexOf(t) === i).map(t => BY[t]);
+  const idx = k.indexOf(o), prev = k.length ? k[(idx - 1 + k.length) % k.length] : null, next = k.length ? k[(idx + 1) % k.length] : null;
+  const meas = o.numbers.length ? `<table class="meas"><tbody>${o.numbers.map(([v, l]) => `<tr><td>${esc(v)}</td><td>${esc(l)}</td></tr>`).join("")}</tbody></table>` : "";
+  const extra = o.type === "observer" ? `<p class="r-text">${esc(D.place)}.</p><p class="r-sub" style="margin-bottom:4px">Field notes</p><ul class="notes">${D.facts.map(f => `<li>${esc(f)}</li>`).join("")}</ul>
+    <p class="r-text"><button type="button" class="txtbtn" data-act="obs">Contact the observer</button></p>` : "";
+  const nav = o.type === "observer" ? `<div class="r-nav">${LINKS.map(t => `<button type="button" class="txtbtn" data-go="${BY[t].i}"><b>${BY[t].desig}</b>${esc(BY[t].cons.name)}</button>`).join("")}</div>`
+    : `<div class="r-nav"><button type="button" class="txtbtn" data-go="${prev.i}"><b>Previous, ${prev.desig}</b>${esc(prev.short)}</button><button type="button" class="txtbtn" data-go="${next.i}"><b>Next, ${next.desig}</b>${esc(next.short)}</button></div>`;
+  return `<div class="r-top"><span class="desig">${o.desig}</span><button type="button" class="txtbtn" data-act="close">Close</button></div>
+    <h2 tabindex="-1">${esc(o.title)}</h2>
+    <p class="r-sub">${esc(o.cls)}. ${esc(o.sub)}</p>
+    <p class="r-text">${esc(o.text)}</p>${meas}${extra}
+    ${o.lines.length ? `<figure class="spec"><canvas role="img" aria-label="Spectrum lines: ${esc(o.lines.join(", "))}"></canvas><figcaption>Spectrum. Each line is a tool or skill from this record.</figcaption></figure>` : ""}
+    <dl class="pos"><dt>RA, Dec</dt><dd>${radec(o.x, o.y)}</dd><dt>Magnitude</dt><dd>${fmtMag(o.mag)}</dd><dt>Constellation</dt><dd style="font-family:var(--f-serif)">${esc(cons.name)}</dd></dl>
+    <p class="foot">${o.type === "observer" ? "The reference star. Its magnitude is fixed at −1.0 and everything else is measured against it." : "Magnitude is 6.5 minus log₁₀ of the largest figure in the record. Brighter means a bigger number, not a better project."}</p>
+    ${nav}`;
+}
+function select(o, focus = true) {
+  sel = o; RO.innerHTML = readoutHTML(o); RO.classList.add("open"); document.body.classList.add("reading");
+  const cv = RO.querySelector("canvas"); if (cv) drawSpectrum(cv, o.lines);
+  if (focus) RO.querySelector("h2").focus({ preventScroll: true });
+  RO.scrollTop = 0;
+  const z = clampZ(Math.max(zoom, o.type === "project" ? 1.9 : 1.5));
+  const ox = mobile() ? 0 : (Math.min(410, W - 32) + 16) / 2, oy = mobile() ? H * 0.28 : 0;
+  flyTo(o.x + ox / z, o.y + oy / z, z);
+  dirty = true;
+}
+function closeReadout() { if (!sel) return; const o = sel; sel = null; RO.classList.remove("open"); document.body.classList.remove("reading"); o.el.focus({ preventScroll: true }); dirty = true; }
+RO.addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.act === "close") closeReadout();
+  else if (b.dataset.act === "obs") openObserver();
+  else if (b.dataset.go) select(OBJ[+b.dataset.go]);
+});
+
+/* ---------- catalog ---------- */
+const CAT = $("#catalog"), catBtn = $("#b-cat");
+$("#cat-intro").textContent = `All ${OBJ.length} catalogued objects in one table, readable without flying. Pick a designation to find it on the plate.`;
+$("#cat-obs").innerHTML = [["Observer", D.name], ["Now", D.now], ["Based", D.place], ["In one line", D.line],
+  ["Languages", D.skills.languages.join(", ")], ["Areas", D.skills.areas.join(", ")], ["Field notes", D.facts.join(". ") + "."]]
+  .map(([a, b]) => `<div><dt>${a}</dt><dd>${esc(b)}</dd></div>`).join("");
+$("#cat-rows").innerHTML = OBJ.map(o => `<tr><td class="m"><button type="button" class="go" data-go="${o.i}">${o.desig}</button></td>
+  <td><b>${esc(o.title)}</b></td><td>${esc(o.cls)}, ${esc(o.type === "observer" ? "observer" : o.type)}</td><td>${esc(o.cons.name)}</td>
+  <td class="m">${radec(o.x, o.y)}</td><td class="m">${fmtMag(o.mag)}</td>
+  <td class="rec">${esc(o.sub)}. ${esc(o.text)}${o.numbers.length ? " " + o.numbers.map(n => esc(n[0] + " " + n[1])).join("; ") + "." : ""}${o.lines.length ? `<small>Lines: ${esc(o.lines.join(", "))}</small>` : ""}</td></tr>`).join("");
+function setCatalog(open) {
+  CAT.hidden = !open; document.body.classList.toggle("cat", open); catBtn.setAttribute("aria-expanded", String(open));
+  if (open) { closeReadout(); CAT.scrollTop = 0; $("#cat-h").setAttribute("tabindex", "-1"); $("#cat-h").focus(); } else catBtn.focus();
+}
+catBtn.addEventListener("click", () => setCatalog(CAT.hidden));
+$("#cat-close").addEventListener("click", () => setCatalog(false));
+$("#cat-rows").addEventListener("click", e => { const b = e.target.closest("[data-go]"); if (!b) return; CAT.hidden = true; document.body.classList.remove("cat"); catBtn.setAttribute("aria-expanded", "false"); select(OBJ[+b.dataset.go]); });
+
+/* ---------- observer (plain view) ---------- */
+const DLG = $("#observer");
+function openObserver() { if (!DLG.open) DLG.showModal(); }
+$("#b-obs").addEventListener("click", openObserver);
+$("#obs-copy").addEventListener("click", async () => {
+  const done = t => { $("#obs-copied").textContent = t; setTimeout(() => { $("#obs-copied").textContent = ""; }, 2200); };
+  try { await navigator.clipboard.writeText(D.links.email); done("copied"); }
+  catch (e) { const s = getSelection(), rg = document.createRange(); rg.selectNodeContents($("#obs-mail")); s.removeAllRanges(); s.addRange(rg); done("selected, press copy"); }
+});
+
+/* ---------- plate / print toggle ---------- */
+const modeBtn = $("#b-mode");
+const modeLabel = () => { modeBtn.innerHTML = mode === "plate" ? `<span class="long">Print positive</span><span class="short">Print</span>` : `<span class="long">Glass negative</span><span class="short">Glass</span>`; };
+modeLabel();
+modeBtn.addEventListener("click", () => {
+  mode = mode === "plate" ? "positive" : "plate"; document.body.dataset.mode = mode; modeLabel();
+  const to = mode === "plate" ? 1 : 0;
+  if (reduce) plateT = to; else modeAnim = { from: plateT, to, t0: performance.now(), dur: 900 };
+  if (sel) { const cv = RO.querySelector("canvas"); if (cv) setTimeout(() => drawSpectrum(cv, sel.lines), 30); }
+  dirty = true;
+});
+
+/* ---------- input: drag, wheel, pinch, keys ---------- */
+const ptrs = new Map(); let moved = false, downAt = null, pinch0 = null;
+stage.addEventListener("pointerdown", e => {
+  ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY }); anim = null;
+  if (ptrs.size === 1) { moved = false; downAt = { x: e.clientX, y: e.clientY }; }
+  if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch0 = { d: Math.hypot(a.x - b.x, a.y - b.y), z: zoom }; moved = true; }
+});
+addEventListener("pointermove", e => {
+  const p = ptrs.get(e.pointerId); if (!p) return;
+  if (ptrs.size === 1) {
+    if (!moved && Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) > 5) { moved = true; stage.classList.add("drag"); }
+    if (moved) { cam.x -= (e.clientX - p.x) / zoom; cam.y -= (e.clientY - p.y) / zoom; clampCam(); dirty = true; }
+  }
+  p.x = e.clientX; p.y = e.clientY;
+  if (ptrs.size === 2 && pinch0) { const [a, b] = [...ptrs.values()]; zoomAt(pinch0.z * Math.hypot(a.x - b.x, a.y - b.y) / pinch0.d, (a.x + b.x) / 2, (a.y + b.y) / 2); }
+});
+const up = e => {
+  if (!ptrs.delete(e.pointerId)) return;
+  if (ptrs.size < 2) pinch0 = null;
+  if (!ptrs.size) {
+    stage.classList.remove("drag");
+    if (!moved && e.target === inkCv && sel) closeReadout();
+    setTimeout(() => { moved = false; }, 0);
+  }
+};
+addEventListener("pointerup", up); addEventListener("pointercancel", up);
+stage.addEventListener("wheel", e => { e.preventDefault(); anim = null; const k = e.ctrlKey ? 0.01 : 0.0016; zoomAt(zoom * Math.exp(-e.deltaY * k), e.clientX, e.clientY); }, { passive: false });
+stage.addEventListener("keydown", e => {
+  const s = 90 / zoom, m = { ArrowLeft: [-s, 0], ArrowRight: [s, 0], ArrowUp: [0, -s], ArrowDown: [0, s] }[e.key];
+  if (m) { e.preventDefault(); anim = null; cam.x += m[0]; cam.y += m[1]; clampCam(); dirty = true; }
+  else if (e.key === "+" || e.key === "=") zoomAt(zoom * 1.25, W / 2, H / 2);
+  else if (e.key === "-" || e.key === "_") zoomAt(zoom / 1.25, W / 2, H / 2);
+});
+function goHome() { closeReadout(); const v = homeView(); flyTo(v.x, v.y, v.z, 1100); }
+$("#b-home").addEventListener("click", goHome);
+addEventListener("keydown", e => {
+  if (e.key === "Escape") { if (DLG.open) return; if (!CAT.hidden) setCatalog(false); else closeReadout(); return; }
+  if (e.metaKey || e.ctrlKey || e.altKey || DLG.open || /INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
+  const k = e.key.toLowerCase();
+  if (k === "o") openObserver(); else if (k === "c") setCatalog(CAT.hidden); else if (k === "p") modeBtn.click(); else if (k === "0") goHome();
+});
+addEventListener("resize", resize);
+
+/* ---------- frame loop: draw only when something changed ---------- */
+const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+function frame(now) {
+  if (anim) {
+    const t = Math.min(1, (now - anim.t0) / anim.dur), e = ease(t);
+    cam.x = anim.x0 + (anim.x1 - anim.x0) * e; cam.y = anim.y0 + (anim.y1 - anim.y0) * e;
+    zoom = Math.exp(Math.log(anim.z0) + (Math.log(anim.z1) - Math.log(anim.z0)) * e - anim.dip * Math.sin(Math.PI * t));
+    if (t >= 1) anim = null; dirty = true;
+  }
+  if (modeAnim) { const t = Math.min(1, (now - modeAnim.t0) / modeAnim.dur); plateT = modeAnim.from + (modeAnim.to - modeAnim.from) * (1 - Math.pow(1 - t, 3)); if (t >= 1) modeAnim = null; dirty = true; }
+  if (dev < 1) { dev = reduce ? 1 : Math.min(1, (now - devStart - 250) / 2200); dev = Math.max(0, dev); dirty = true; }
+  if (dirty) { dirty = false; if (G) G.draw(); drawInk(); placeMarks(); drawHud(); }
+  requestAnimationFrame(frame);
+}
+resize();
+const v0 = homeView(); cam.x = v0.x; cam.y = v0.y; zoom = v0.z;
+if (document.fonts) document.fonts.ready.then(() => { dirty = true; });
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

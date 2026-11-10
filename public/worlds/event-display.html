@@ -1,0 +1,684 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Event Display</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --vac:#06080B; --panel:#0A0E13; --steel:#4C6A89; --steel-lo:#223246; --ink:#DCE3EA; --mute:#93A2B3;
+  --yel:#F2CF3B; --cyan:#46D2E8; --grn:#8FDB78; --red:#E0443A;
+  --f:"Archivo","Helvetica Neue",Helvetica,Arial,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--vac);scrollbar-color:var(--steel) var(--vac);scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--vac);color:var(--ink);font:400 15px/1.5 var(--f);font-variant-numeric:tabular-nums;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:var(--yel);color:var(--vac)}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:var(--vac)}
+::-webkit-scrollbar-thumb{background:var(--steel-lo);border:2px solid var(--vac)}
+::-webkit-scrollbar-thumb:hover{background:var(--steel)}
+a{color:var(--ink);text-decoration-color:var(--steel);text-underline-offset:3px;text-decoration-thickness:1px}
+a:hover{text-decoration-color:var(--yel)}
+:focus-visible{outline:2px solid var(--yel);outline-offset:2px}
+button{font:inherit;color:inherit}
+.btn{background:var(--vac);border:1px solid var(--steel-lo);color:var(--ink);padding:7px 11px;font-size:12px;font-weight:500;letter-spacing:.02em;cursor:pointer;display:inline-flex;align-items:center;gap:8px;line-height:1;min-height:32px}
+.btn:hover{border-color:var(--steel)}
+.btn[aria-pressed="true"]{border-color:var(--ink)}
+.btn svg{width:12px;height:12px;stroke:currentColor;stroke-width:1.6;fill:none}
+
+/* ---------- event display ---------- */
+#event{position:relative;height:100vh;height:100svh;min-height:600px;overflow:hidden;border-bottom:1px solid var(--steel-lo)}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:crosshair;touch-action:pan-y}
+#cv.grab{cursor:grabbing}#cv.hot{cursor:pointer}
+.hud{position:absolute;pointer-events:none}
+.hud > *{pointer-events:auto}
+.head{left:28px;top:24px;max-width:330px}
+.head h1{margin:0;font-weight:680;font-stretch:112%;font-size:clamp(30px,3.1vw,44px);line-height:1;letter-spacing:-.015em}
+.head .line{margin:12px 0 18px;font-size:15px;line-height:1.45;color:var(--ink);max-width:30ch}
+.run{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;margin:0;font-size:12px;line-height:1.4}
+.run dt{color:var(--mute);font-stretch:88%;text-transform:uppercase;letter-spacing:.06em;font-size:11px;padding-top:1px}
+.run dd{margin:0}
+.top{right:28px;top:24px;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.crew{border-color:var(--steel)}
+.crew i{width:7px;height:7px;background:var(--red);display:block}
+.boards{font-size:12px;color:var(--mute)}
+.readout{right:28px;top:50%;transform:translateY(-50%);width:300px;background:var(--panel);border:1px solid var(--steel-lo);padding:18px 18px 16px;max-height:calc(100% - 200px);overflow:auto}
+.readout h2{margin:0;font-size:20px;font-weight:650;font-stretch:108%;line-height:1.15;letter-spacing:-.005em}
+.readout .rm{margin:6px 0 14px;font-size:12px;color:var(--mute);display:flex;align-items:center;gap:8px}
+.sw{display:inline-block;width:16px;height:2px;flex:none}
+.kin{display:grid;grid-template-columns:repeat(3,1fr);margin:0 0 14px;border-top:1px solid var(--steel-lo);border-bottom:1px solid var(--steel-lo)}
+.kin div{padding:7px 0}
+.kin dt{font-size:11px;color:var(--mute)}
+.kin dd{margin:0;font-size:17px;font-weight:550}
+.readout h3{margin:0 0 6px;font-size:11px;font-weight:600;color:var(--mute);text-transform:uppercase;letter-spacing:.06em;font-stretch:88%}
+.mom{list-style:none;margin:0 0 14px;padding:0}
+.mom li{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:baseline;padding:3px 0;font-size:13px}
+.mom b{font-size:16px;font-weight:650;min-width:5.5ch}
+.readout p{margin:0 0 10px;font-size:13.5px;line-height:1.5}
+.readout .sub{color:var(--mute);font-size:12.5px}
+.readout .x{margin-top:4px}
+.ctl{left:28px;bottom:24px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;max-width:calc(100% - 56px)}
+.ctl .hint{font-size:12px;color:var(--mute);margin-left:8px}
+.legend{left:28px;bottom:70px;display:flex;gap:16px;font-size:12px;color:var(--ink);flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.legend .bar{width:8px;height:12px;background:var(--red)}
+.down{right:28px;bottom:24px}
+.legend .mh{display:none}
+
+/* ---------- summary ---------- */
+.summary{padding:72px 28px 40px;max-width:1180px;margin:0 auto}
+.summary h2{font-size:clamp(28px,3vw,40px);font-weight:680;font-stretch:112%;letter-spacing:-.015em;margin:0 0 12px;line-height:1.05}
+.lede{max-width:68ch;color:var(--ink);margin:0 0 40px}
+.lede span{color:var(--mute)}
+.tw{overflow-x:auto;margin:0 0 48px}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+caption{text-align:left;font-size:17px;font-weight:620;font-stretch:106%;padding:0 0 10px;caption-side:top}
+caption small{display:block;font-weight:400;font-size:12.5px;color:var(--mute);font-stretch:100%;margin-top:3px}
+th{font-weight:550;text-align:left;color:var(--mute);font-size:12px;padding:8px 12px 8px 0;border-bottom:1px solid var(--steel);white-space:nowrap}
+td{padding:9px 12px 9px 0;border-bottom:1px solid var(--steel-lo);vertical-align:top}
+td.n,th.n{text-align:right;white-space:nowrap}
+tr.grp td{color:var(--mute);font-size:11px;text-transform:uppercase;letter-spacing:.06em;font-stretch:88%;padding-top:16px;border-bottom-color:var(--steel)}
+.obj{background:none;border:0;padding:0;cursor:pointer;display:inline-flex;align-items:center;gap:9px;font-weight:580;text-align:left}
+.obj:hover{color:var(--yel)}
+td .s{color:var(--mute)}
+td .fig{white-space:nowrap;font-weight:600}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:0 40px}
+.foot{border-top:1px solid var(--steel-lo);padding:28px;max-width:1180px;margin:0 auto 40px;display:flex;flex-wrap:wrap;gap:14px 28px;align-items:center;font-size:13.5px}
+.foot .grow{flex:1}
+
+/* ---------- plain view ---------- */
+dialog{background:var(--panel);color:var(--ink);border:1px solid var(--steel);padding:28px;max-width:480px;width:calc(100% - 32px)}
+dialog::backdrop{background:rgba(6,8,11,.82)}
+dialog h2{margin:0 0 8px;font-size:26px;font-weight:680;font-stretch:110%;line-height:1.1}
+dialog p{margin:0 0 10px}
+dialog .now{color:var(--mute);font-size:13.5px}
+.mail{display:flex;gap:8px;align-items:center;margin:18px 0 6px;flex-wrap:wrap}
+.mail output{user-select:all;-webkit-user-select:all;font-size:16px;font-weight:560;border-bottom:1px solid var(--steel);padding-bottom:2px}
+.st{font-size:12px;color:var(--mute);min-height:18px;margin:0 0 14px}
+.lk{list-style:none;padding:0;margin:0 0 20px;display:grid;gap:6px}
+.lk a{font-weight:520}
+
+@media (max-width:900px){
+  .readout{width:270px}
+}
+@media (max-width:700px){
+  .head{left:16px;top:16px;max-width:200px}
+  .head h1{font-size:28px}
+  .head .line{font-size:13px;margin:8px 0 10px}
+  .run{font-size:11px;gap:1px 10px}
+  .run .hm{display:none}
+  .top{right:16px;top:16px;gap:8px}
+  .crew{padding:7px 9px;font-size:11px;white-space:nowrap;gap:6px}
+  .picked .run{display:none}
+  .picked .legend{display:none}
+  .readout{left:16px;right:16px;width:auto;top:auto;bottom:62px;transform:none;max-height:40%;padding:14px}
+  .readout.idle{display:none}
+  .legend{left:16px;bottom:64px;gap:6px 12px;font-size:11.5px;max-width:calc(100% - 32px)}
+  .legend .mh{display:inline;color:var(--mute);flex-basis:100%}
+  .ctl{left:16px;bottom:16px;max-width:calc(100% - 32px)}
+  .ctl .hint{display:none}
+  .ctl .vw{display:none}
+  .down{right:16px;bottom:16px}
+  .summary{padding:48px 16px 24px}
+  .cols2{grid-template-columns:1fr}
+  .ang{display:none}
+  table{font-size:13px}
+  .foot{padding:24px 16px}
+}
+</style>
+</head>
+<body>
+<section id="event" aria-label="Event display">
+  <canvas id="cv" tabindex="0" aria-label="Collision event display. Drag or use arrow keys to rotate, plus and minus to zoom, brackets to step through objects, Escape to clear."></canvas>
+
+  <header class="hud head">
+    <h1 id="nm"></h1>
+    <p class="line" id="ln"></p>
+    <dl class="run">
+      <dt>Run</dt><dd>2026</dd>
+      <dt>Event</dt><dd>17</dd>
+      <dt>Now</dt><dd id="now"></dd>
+      <dt class="hm">Origin</dt><dd class="hm" id="plc"></dd>
+    </dl>
+  </header>
+
+  <div class="hud top">
+    <button class="btn crew" id="crewBtn" aria-haspopup="dialog"><i aria-hidden="true"></i>Contact the shift crew</button>
+    <a class="boards" href="index.html">← all boards</a>
+  </div>
+
+  <aside class="hud readout idle" id="ro" aria-live="polite"></aside>
+
+  <div class="hud legend" id="lg" aria-hidden="true"></div>
+
+  <div class="hud ctl" role="toolbar" aria-label="View controls">
+    <button class="btn vw" data-v="tilt" aria-pressed="true">Oblique</button>
+    <button class="btn vw" data-v="end" aria-pressed="false">End view</button>
+    <button class="btn vw" data-v="side" aria-pressed="false">Side view</button>
+    <button class="btn" id="zo" aria-label="Zoom out"><svg viewBox="0 0 12 12"><path d="M2 6h8"/></svg></button>
+    <button class="btn" id="zi" aria-label="Zoom in"><svg viewBox="0 0 12 12"><path d="M2 6h8M6 2v8"/></svg></button>
+    <button class="btn" id="rp">Replay event</button>
+    <span class="hint" id="hint">Drag to rotate. Ctrl + scroll to zoom. Click a track.</span>
+  </div>
+
+  <a class="hud btn down" href="#summary">Event summary <svg viewBox="0 0 12 12"><path d="M2 4l4 4 4-4"/></svg></a>
+</section>
+
+<main class="summary" id="summary">
+  <h2>Event summary</h2>
+  <p class="lede" id="lede"></p>
+  <div class="tw"><table id="tTracks"></table></div>
+  <div class="tw"><table id="tDeps"></table></div>
+  <div class="cols2">
+    <div class="tw"><table id="tLang"></table></div>
+    <div class="tw"><table id="tArea"></table></div>
+  </div>
+  <div class="tw"><table id="tCond"></table></div>
+</main>
+
+<footer class="foot">
+  <span class="grow" id="fmail"></span>
+  <a id="fgh" href="#">GitHub</a>
+  <a id="fli" href="#">LinkedIn</a>
+  <a id="fcv" href="#">Resume</a>
+  <a href="index.html">← all boards</a>
+</footer>
+
+<dialog id="crew" aria-labelledby="cName">
+  <h2 id="cName"></h2>
+  <p id="cLine"></p>
+  <p class="now" id="cNow"></p>
+  <div class="mail"><output id="cMail"></output><button class="btn" id="copy">Copy email</button></div>
+  <p class="st" id="cSt" aria-live="polite"></p>
+  <ul class="lk">
+    <li><a id="cGh" href="#" target="_blank" rel="noopener">GitHub</a></li>
+    <li><a id="cLi" href="#" target="_blank" rel="noopener">LinkedIn</a></li>
+    <li><a id="cCv" href="#">Resume</a></li>
+  </ul>
+  <button class="btn" id="cClose">Back to the event</button>
+</dialog>
+
+<script src="data.js"></script>
+<script>
+(() => {
+const T = window.TOYESHH;
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const TAU = Math.PI * 2;
+
+/* ---------- content into the page ---------- */
+$('nm').textContent = T.name; $('ln').textContent = T.line; $('now').textContent = T.now; $('plc').textContent = T.place;
+$('cName').textContent = T.name; $('cLine').textContent = T.line; $('cNow').textContent = T.now; $('cMail').textContent = T.links.email;
+for (const [a, b] of [['cGh','github'],['cLi','linkedin'],['cCv','resume'],['fgh','github'],['fli','linkedin'],['fcv','resume']]) $(a).href = T.links[b];
+
+/* ---------- detector geometry (display units) ---------- */
+const COL = { engineering:'#F2CF3B', research:'#46D2E8', venture:'#8FDB78', competition:'#E0443A' };
+const KLAB = { engineering:'Engineering', research:'Research', venture:'Venture', competition:'Competition' };
+const LANG = T.skills.languages.map((n, i) => ({ name:n, r:18 + i * 15 }));
+const AREAS = T.skills.areas;
+const R_TRK = 106, R_SOL = [112, 118], R_ECAL = [128, 170], R_HCAL = [170, 212], R_MU = [232, 254], R_OUT = 290;
+const Z_TRK = 150, Z_CAL = 200, Z_MU = 250, CAM = 1600;
+
+const MON = 'JanFebMarAprMayJunJulAugSepOctNovDec';
+function months(when) {
+  const [a, b] = when.split('–').map(s => s.trim());
+  const ya = +((a.match(/\d{4}/) || b.match(/\d{4}/))[0]), ma = MON.indexOf(a.slice(0, 3)) / 3;
+  let yb, mb;
+  if (b === 'now') { const d = new Date(); yb = d.getFullYear(); mb = d.getMonth(); }
+  else { yb = +b.match(/\d{4}/)[0]; mb = MON.indexOf(b.slice(0, 3)) / 3; }
+  return (yb - ya) * 12 + mb - ma + 1;
+}
+console.assert(months('Jan–Aug 2025') === 8 && months('Jun–Sep 2025') === 4, 'month parser');
+
+// Each role and project is a charged track. pT is display scale: months on the record for roles,
+// stack size plus description length for projects. Real figures live in the readout only.
+const tracks = [];
+T.experience.forEach(e => {
+  const m = months(e.when);
+  tracks.push({ type:'track', group:'Roles', name:e.org, sub:`${e.role}, ${e.when}`, kind:/YC/.test(e.org) ? 'engineering' : 'research',
+    pT: 2 + m * 1.6, rEnd: Math.min(R_OUT - 6, 150 + m * 7), figs:e.numbers, text:e.did, basis:`${m} months on the record` });
+});
+T.projects.forEach(p => {
+  tracks.push({ type:'track', group:'Projects', name:p.name, sub:p.stack.join(', '), kind:p.kind === 'quant' ? 'research' : p.kind === 'venture' ? 'venture' : 'engineering',
+    pT: p.stack.length + p.one.length / 70, rEnd: R_ECAL[0], figs:[], stack:p.stack, text:p.one, basis:`${p.stack.length} constituents` });
+});
+
+function helix(t, R, q, phi, eta, rEnd, aMax, step) {
+  const pts = [], hits = [], sh = Math.sinh(eta), da = step / R;
+  let prev = 0;
+  for (let a = 0; a <= aMax; a += da) {
+    const x = q * R * (Math.sin(phi + q * a) - Math.sin(phi));
+    const y = q * R * (Math.cos(phi) - Math.cos(phi + q * a));
+    const z = R * a * sh, rho = Math.hypot(x, y);
+    pts.push(x, y, z);
+    if (t) for (const L of LANG) if ((prev - L.r) * (rho - L.r) < 0) hits.push(x, y, z);
+    if (rho >= rEnd) break;
+    prev = rho;
+  }
+  return { pts, hits };
+}
+tracks.forEach((t, i) => {
+  t.id = 'T' + String(i + 1).padStart(2, '0');
+  t.q = i % 2 ? -1 : 1;
+  t.phi = (i * 2.39996 + 0.4) % TAU;
+  t.eta = Math.sin(i * 1.7 + 0.5) * 0.72;
+  t.R = t.pT * 22;
+  Object.assign(t, helix(t, t.R, t.q, t.phi, t.eta, t.rEnd, 1.85 * Math.PI, 2.5));
+  const n = t.pts.length; t.end = [t.pts[n - 3], t.pts[n - 2], t.pts[n - 1]];
+  t.loops = Math.hypot(t.end[0], t.end[1]) < t.rEnd - 1;
+});
+
+// Wins are calorimeter deposits. Tower height from the real placing where the detail states one.
+const deps = T.wins.map((w, i) => {
+  const m = w.detail.match(/(\d+)(?:st|nd|rd|th) of ([\d,]+)/);
+  const h = /Top division/.test(w.detail) ? 62 : m ? 20 + 14 * Math.log10(parseInt(m[2].replace(/,/g, ''), 10) / parseInt(m[1], 10)) : 34;
+  return { type:'dep', id:'D' + (i + 1), name:w.what, text:w.detail, kind:'competition', phi:(i * Math.PI / 3 + 0.52) % TAU, h, w:0.15,
+    basis: m ? `placed ${m[1]} of ${m[2]}+` : /Top division/.test(w.detail) ? 'top division' : 'listed' };
+});
+const objs = [...tracks, ...deps];
+let SPOKE = -Math.PI / 2, best = 1e9;
+for (let k = -6; k <= 6; k++) for (const base of [-Math.PI / 2, Math.PI / 2]) {
+  const a = base + k * 0.1; let c = 0;
+  for (const t of tracks) for (let i = 0; i < t.pts.length; i += 3) {
+    if (Math.hypot(t.pts[i], t.pts[i + 1]) > 100) continue;
+    let d = Math.abs(Math.atan2(t.pts[i + 1], t.pts[i]) - a) % TAU; d = Math.min(d, TAU - d);
+    if (d < 0.3) c++;
+  }
+  if (c < best) { best = c; SPOKE = a; }
+}
+
+// Underlying event: faint low-momentum pile-up, not selectable, only texture.
+let seed = 17; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const pile = Array.from({ length: 30 }, () => helix(false, (0.5 + rnd() * 1.4) * 22, rnd() < .5 ? 1 : -1, rnd() * TAU, (rnd() - .5) * 1.6, 30 + rnd() * 70, 1.3 * Math.PI, 3).pts);
+
+/* ---------- camera ---------- */
+const VIEWS = { tilt:{ yaw:0.34, pitch:-0.24 }, end:{ yaw:0, pitch:0 }, side:{ yaw:Math.PI / 2, pitch:0 } };
+const cam = { yaw:VIEWS.tilt.yaw, pitch:VIEWS.tilt.pitch, zoom:1 };
+let camAnim = null;
+const cv = $('cv'), ctx = cv.getContext('2d');
+let W = 0, H = 0, cx = 0, cy = 0, S = 1, mob = false;
+let cyw, syw, cpt, spt;
+function P(x, y, z) {
+  const x1 = x * cyw + z * syw, z1 = -x * syw + z * cyw;
+  const y1 = y * cpt - z1 * spt, z2 = y * spt + z1 * cpt;
+  const p = CAM / (CAM - z2);
+  return [cx + x1 * p * S, cy - y1 * p * S, z2];
+}
+function resize() {
+  const dpr = Math.min(devicePixelRatio || 1, 2), r = cv.getBoundingClientRect();
+  W = r.width; H = r.height; mob = W < 700;
+  cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  cx = W * 0.5;
+  request();
+}
+const baseS = () => Math.min(W * (mob ? 0.45 : 0.4), H * (mob ? 0.33 : 0.43)) / R_OUT;
+
+/* ---------- drawing ---------- */
+const FONT = '"Archivo","Helvetica Neue",Arial,sans-serif';
+let sel = null, hov = null, t0 = performance.now(), raf = 0;
+const scr = new Map();
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+const ease = x => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);
+
+function ringPath(r, z, a0 = 0, a1 = TAU, seg = 120) {
+  const n = Math.max(8, Math.ceil(seg * (a1 - a0) / TAU));
+  for (let k = 0; k <= n; k++) {
+    const a = a0 + (a1 - a0) * k / n, p = P(r * Math.cos(a), r * Math.sin(a), z);
+    k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]);
+  }
+}
+function band(r0, r1, z, fill) {
+  ctx.beginPath(); ringPath(r1, z); ctx.closePath(); ringPath(r0, z); ctx.closePath();
+  ctx.fillStyle = fill; ctx.fill('evenodd');
+}
+function stroke(color, w, a) { ctx.strokeStyle = color; ctx.lineWidth = w; ctx.globalAlpha = a; ctx.stroke(); ctx.globalAlpha = 1; }
+function line3(a, b, color, w, al) { const p = P(...a), q = P(...b); ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); stroke(color, w, al); }
+function barrel(r, zL, a) {
+  ctx.beginPath(); ringPath(r, zL); stroke('#4C6A89', 1, a * 0.7);
+  ctx.beginPath(); ringPath(r, -zL); stroke('#4C6A89', 1, a * 0.45);
+  for (let k = 0; k < 8; k++) { const f = k / 8 * TAU; line3([r * Math.cos(f), r * Math.sin(f), -zL], [r * Math.cos(f), r * Math.sin(f), zL], '#4C6A89', 1, a * 0.35); }
+}
+function text(s, x, y, size, color, align = 'left', weight = 500, alpha = 1) {
+  ctx.font = `${weight} ${size}px ${FONT}`; ctx.textAlign = align; ctx.textBaseline = 'middle';
+  ctx.globalAlpha = alpha; ctx.fillStyle = color; ctx.fillText(s, x, y); ctx.globalAlpha = 1;
+}
+
+let placed = [];
+// Greedy label placement: nudge a label up or down until it clears the ones already drawn.
+function label(s, x, y, size, color, align, weight, alpha, force) {
+  ctx.font = `${weight} ${size}px ${FONT}`;
+  const w = ctx.measureText(s).width, x0 = align === 'right' ? x - w : align === 'center' ? x - w / 2 : x;
+  for (const dy of [0, -12, 12, -24, 24]) {
+    const b = [x0 - 2, y + dy - size * 0.6, x0 + w + 2, y + dy + size * 0.6];
+    if (force || !placed.some(o => b[0] < o[2] && b[2] > o[0] && b[1] < o[3] && b[3] > o[1])) {
+      placed.push(b); text(s, x, y + dy, size, color, align, weight, alpha); return;
+    }
+  }
+}
+function draw(now) {
+  raf = 0;
+  if (camAnim) {
+    const k = clamp((now - camAnim.t) / 650), e = ease(k);
+    cam.yaw = camAnim.from.yaw + (camAnim.to.yaw - camAnim.from.yaw) * e;
+    cam.pitch = camAnim.from.pitch + (camAnim.to.pitch - camAnim.from.pitch) * e;
+    if (k >= 1) camAnim = null;
+  }
+  const t = reduce ? 1e5 : now - t0;
+  placed = [];
+  cy = H * (mob ? (sel ? 0.4 : 0.55) : 0.5);
+  S = baseS() * cam.zoom;
+  cyw = Math.cos(cam.yaw); syw = Math.sin(cam.yaw); cpt = Math.cos(cam.pitch); spt = Math.sin(cam.pitch);
+  ctx.fillStyle = '#06080B'; ctx.fillRect(0, 0, W, H);
+  const dim = sel ? 0.45 : 1;
+  // labels on the z=0 plane fade out as that plane turns edge-on (side view)
+  const face = clamp((Math.abs(cyw * cpt) - 0.45) / 0.3);
+
+  // beamline
+  line3([0, 0, -420], [0, 0, 420], '#4C6A89', 1, 0.5);
+
+  // solenoid, calorimeters, muon system, inner layers
+  band(R_SOL[0], R_SOL[1], 0, 'rgba(76,106,137,.16)');
+  band(R_ECAL[0], R_ECAL[1], 0, 'rgba(76,106,137,.10)');
+  band(R_HCAL[0], R_HCAL[1], 0, 'rgba(76,106,137,.055)');
+  barrel(R_ECAL[0], Z_CAL, 0.5 * dim); barrel(R_HCAL[1], Z_CAL, 0.4 * dim);
+  ctx.beginPath();
+  for (let k = 0; k < 72; k++) { const f = k / 72 * TAU, a = P(R_ECAL[0] * Math.cos(f), R_ECAL[0] * Math.sin(f), 0), b = P(R_ECAL[1] * Math.cos(f), R_ECAL[1] * Math.sin(f), 0); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); }
+  for (let k = 0; k < 36; k++) { const f = (k + .5) / 36 * TAU, a = P(R_HCAL[0] * Math.cos(f), R_HCAL[0] * Math.sin(f), 0), b = P(R_HCAL[1] * Math.cos(f), R_HCAL[1] * Math.sin(f), 0); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); }
+  stroke('#4C6A89', 1, 0.28 * dim);
+  for (const r of [R_ECAL[0], R_ECAL[1], R_HCAL[1], R_SOL[0], R_SOL[1]]) { ctx.beginPath(); ringPath(r, 0); stroke('#4C6A89', 1, 0.6 * dim); }
+
+  const gap = 0.07, seg = TAU / AREAS.length;
+  AREAS.forEach((name, i) => {
+    const a0 = i * seg + gap + 0.2, a1 = (i + 1) * seg - gap + 0.2;
+    ctx.beginPath(); ringPath(R_MU[1], 0, a0, a1, 160); ringPath(R_MU[0], 0, a1, a0, 160); ctx.closePath();
+    ctx.fillStyle = 'rgba(76,106,137,.13)'; ctx.fill(); stroke('#4C6A89', 1, 0.75 * dim);
+    for (const z of [-Z_MU, Z_MU]) { ctx.beginPath(); ringPath(R_MU[1], z, a0, a1, 160); stroke('#4C6A89', 1, 0.28 * dim); }
+    if (!mob && face > 0) {
+      const am = (a0 + a1) / 2, p = P((R_MU[1] + 14) * Math.cos(am), (R_MU[1] + 14) * Math.sin(am), 0);
+      label(name, p[0], p[1], 11, '#93A2B3', p[0] < cx - 20 ? 'right' : p[0] > cx + 20 ? 'left' : 'center', 500, dim * face, true);
+    }
+  });
+
+  LANG.forEach(L => {
+    ctx.beginPath(); ringPath(L.r, 0); stroke('#4C6A89', 1, 0.75 * dim);
+    ctx.beginPath(); ringPath(L.r, Z_TRK); stroke('#4C6A89', 1, 0.22 * dim);
+    ctx.beginPath(); ringPath(L.r, -Z_TRK); stroke('#4C6A89', 1, 0.16 * dim);
+  });
+  barrel(R_TRK, Z_TRK, 0.45 * dim);
+  if (!mob && face > 0) {
+    LANG.forEach(L => {
+      const p = P(L.r * Math.cos(SPOKE), L.r * Math.sin(SPOKE), 0);
+      ctx.fillStyle = '#4C6A89'; ctx.globalAlpha = dim; ctx.fillRect(p[0] - 1.5, p[1] - 1.5, 3, 3); ctx.globalAlpha = 1;
+      label(L.name, p[0] + 6, p[1] - 6, 10.5, '#93A2B3', 'left', 500, dim * face, true);
+    });
+  }
+
+  // tracks
+  const tg = clamp((t - 140) / 1300);
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  for (const pts of pile) {
+    const n = Math.floor(pts.length / 3 * ease(tg));
+    ctx.beginPath();
+    for (let k = 0; k < n; k++) { const p = P(pts[3 * k], pts[3 * k + 1], pts[3 * k + 2]); k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); }
+    stroke('#5A6A7C', 1, sel ? 0.12 : 0.38);
+  }
+  tracks.forEach((tr, i) => {
+    const f = ease(clamp((t - 120 - i * 30) / 1150));
+    const total = tr.pts.length / 3, n = Math.max(1, Math.floor(total * f));
+    const sp = new Float32Array(n * 2);
+    ctx.beginPath();
+    for (let k = 0; k < n; k++) { const p = P(tr.pts[3 * k], tr.pts[3 * k + 1], tr.pts[3 * k + 2]); sp[2 * k] = p[0]; sp[2 * k + 1] = p[1]; k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); }
+    scr.set(tr, sp);
+    const on = sel === tr, h = hov === tr;
+    const a = sel && !on ? 0.13 : 1;
+    stroke(COL[tr.kind], on ? 2.6 : h ? 2.4 : tr.group === 'Roles' ? 2 : 1.6, a);
+    if (f >= 1) {
+      ctx.fillStyle = COL[tr.kind]; ctx.globalAlpha = a * 0.95;
+      for (let k = 0; k < tr.hits.length; k += 3) { const p = P(tr.hits[k], tr.hits[k + 1], tr.hits[k + 2]); ctx.fillRect(p[0] - 2, p[1] - 2, 4, 4); }
+      ctx.globalAlpha = 1;
+    }
+  });
+
+  // calorimeter deposits
+  deps.forEach((d, i) => {
+    const g = ease(clamp((t - 950 - i * 70) / 800)), r0 = R_ECAL[0] + 1, r1 = r0 + d.h * g;
+    if (g <= 0.001) return;
+    const a = sel && sel !== d ? 0.18 : 1;
+    const quad = z => [[r0, d.phi - d.w / 2], [r1, d.phi - d.w / 2], [r1, d.phi + d.w / 2], [r0, d.phi + d.w / 2]].map(([r, f]) => P(r * Math.cos(f), r * Math.sin(f), z));
+    const qa = quad(-14), qb = quad(14);
+    ctx.beginPath(); qa.forEach((p, k) => { ctx.moveTo(p[0], p[1]); ctx.lineTo(qb[k][0], qb[k][1]); }); stroke('#E0443A', 1, a * 0.8);
+    for (const q of [qa, qb]) { ctx.beginPath(); q.forEach((p, k) => k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath();
+      ctx.fillStyle = '#E0443A'; ctx.globalAlpha = a * 0.62; ctx.fill(); ctx.globalAlpha = 1;
+      stroke(sel === d || hov === d ? '#F4F1EC' : '#E0443A', sel === d || hov === d ? 1.5 : 1, a);
+    }
+    scr.set(d, quad(0));
+  });
+
+  // labels pinned to track ends and tower tips
+  const la = ease(clamp((t - 1500) / 600));
+  if (la > 0) {
+    deps.forEach(d => {
+      const show = sel ? sel === d : (!mob && face > 0) || hov === d;
+      if (!show) return;
+      const rr = R_ECAL[0] + 1 + d.h + 6, p = P(rr * Math.cos(d.phi), rr * Math.sin(d.phi), 0);
+      const strong = sel === d || hov === d;
+      label(d.name, p[0], p[1], strong ? 12 : 10.5, strong ? '#F4F7FA' : '#E9A39C', p[0] < cx - 6 ? 'right' : 'left', strong ? 640 : 520, la, strong);
+    });
+    const order = o => (o === sel || o === hov ? 0 : o.type === 'dep' ? 1 : 2);
+    [...tracks].sort((a, b) => order(a) - order(b)).forEach(tr => {
+      const show = sel ? sel === tr : !mob || hov === tr;
+      if (!show) return;
+      const n = tr.pts.length / 3, p = P(...tr.end), q = P(tr.pts[3 * (n - 4)], tr.pts[3 * (n - 4) + 1], tr.pts[3 * (n - 4) + 2]);
+      let dx = p[0] - q[0], dy = p[1] - q[1]; const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l;
+      if (tr.loops) { dx = p[0] - cx; dy = p[1] - cy; const m = Math.hypot(dx, dy) || 1; dx /= m; dy /= m; }
+      const x = p[0] + dx * 8, y = p[1] + dy * 8;
+      const strong = sel === tr || hov === tr;
+      label(tr.name, x, y, strong ? 12.5 : 11, strong ? '#F4F7FA' : '#DCE3EA', dx < 0 ? 'right' : 'left', strong ? 640 : 520, la * (hov && !strong && !sel ? 0.4 : 1), strong);
+    });
+  }
+
+  // the collision: flash and shock ring, once
+  if (t < 1100) {
+    const pc = P(0, 0, 0), k = t / 1100;
+    const rad = 8 + 120 * ease(clamp(t / 500));
+    const g = ctx.createRadialGradient(pc[0], pc[1], 0, pc[0], pc[1], rad);
+    g.addColorStop(0, `rgba(255,248,220,${0.95 * (1 - k)})`); g.addColorStop(0.25, `rgba(242,207,59,${0.5 * (1 - k)})`); g.addColorStop(1, 'rgba(242,207,59,0)');
+    ctx.fillStyle = g; ctx.fillRect(pc[0] - rad, pc[1] - rad, rad * 2, rad * 2);
+    ctx.beginPath(); ringPath(R_OUT * ease(k), 0); stroke('#DCE3EA', 1.2, 0.5 * (1 - k));
+  }
+  const pc = P(0, 0, 0); ctx.fillStyle = '#F4F1EC'; ctx.fillRect(pc[0] - 1.5, pc[1] - 1.5, 3, 3);
+
+  if (camAnim || t < 2300) request();
+}
+function request() { if (!raf) raf = requestAnimationFrame(draw); }
+
+/* ---------- picking ---------- */
+function segDist(px, py, ax, ay, bx, by) {
+  const dx = bx - ax, dy = by - ay, l = dx * dx + dy * dy, u = l ? clamp(((px - ax) * dx + (py - ay) * dy) / l) : 0;
+  return Math.hypot(px - ax - u * dx, py - ay - u * dy);
+}
+function inPoly(x, y, q) {
+  let c = false;
+  for (let i = 0, j = q.length - 1; i < q.length; j = i++) if ((q[i][1] > y) !== (q[j][1] > y) && x < (q[j][0] - q[i][0]) * (y - q[i][1]) / (q[j][1] - q[i][1]) + q[i][0]) c = !c;
+  return c;
+}
+function pick(x, y, tol) {
+  for (const d of deps) { const q = scr.get(d); if (q && inPoly(x, y, q)) return d; }
+  let best = null, bd = tol;
+  for (const tr of tracks) {
+    const s = scr.get(tr); if (!s) continue;
+    for (let k = 2; k < s.length; k += 2) { const d = segDist(x, y, s[k - 2], s[k - 1], s[k], s[k + 1]); if (d < bd) { bd = d; best = tr; } }
+  }
+  return best;
+}
+
+/* ---------- readout ---------- */
+const ro = $('ro');
+function swatch(o) { return o.type === 'dep' ? `<span class="sw" style="width:8px;height:11px;background:${COL.competition}"></span>` : `<span class="sw" style="background:${COL[o.kind]}"></span>`; }
+function readout() {
+  const o = sel;
+  ro.classList.toggle('idle', !o);
+  if (!o) {
+    ro.innerHTML = `<h2>One collision, ${tracks.length} tracks</h2>
+      <p class="rm">${deps.length} calorimeter deposits, ${LANG.length + AREAS.length} detector layers</p>
+      <p>Every role and project left a track. Every win left a deposit in the calorimeter.</p>
+      <p class="sub">Select a track to isolate it and read its momentum. The figures in each readout are real.</p>`;
+    return;
+  }
+  if (o.type === 'track') {
+    const mom = o.figs.length
+      ? `<h3>Momentum</h3><ul class="mom">${o.figs.map(([n, l]) => `<li><b>${esc(n)}</b><span>${esc(l)}</span></li>`).join('')}</ul>`
+      : `<h3>Constituents</h3><ul class="mom">${o.stack.map(s => `<li><span>${esc(s)}</span></li>`).join('')}</ul>`;
+    ro.innerHTML = `<h2>${esc(o.name)}</h2>
+      <p class="rm">${swatch(o)}${KLAB[o.kind]} track ${o.id}, charge ${o.q > 0 ? '+' : '−'}${o.loops ? ', looper' : ''}</p>
+      <dl class="kin"><div><dt>pT</dt><dd>${o.pT.toFixed(1)}</dd></div><div><dt>η</dt><dd>${o.eta.toFixed(2)}</dd></div><div><dt>φ</dt><dd>${o.phi.toFixed(2)}</dd></div></dl>
+      ${o.group === 'Roles' ? `<p class="sub">${esc(o.sub)}</p>` : ''}
+      ${mom}<p>${esc(o.text)}</p>
+      <button class="btn x" id="clr">Show all tracks</button>`;
+  } else {
+    ro.innerHTML = `<h2>${esc(o.name)}</h2>
+      <p class="rm">${swatch(o)}Calorimeter deposit ${o.id}, φ ${o.phi.toFixed(2)}</p>
+      <h3>Deposited</h3><p>${esc(o.text)}</p>
+      <button class="btn x" id="clr">Show all tracks</button>`;
+  }
+  $('clr').onclick = () => select(null, true);
+}
+function select(o, focusCanvas) {
+  sel = o; readout(); request();
+  document.body.classList.toggle('picked', !!o);
+  if (focusCanvas) cv.focus({ preventScroll:true });
+}
+
+/* ---------- input ---------- */
+const ptrs = new Map(); let drag = null, pinch = 0, moved = false;
+cv.addEventListener('pointerdown', e => {
+  ptrs.set(e.pointerId, [e.clientX, e.clientY]); moved = false;
+  if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch = Math.hypot(a[0] - b[0], a[1] - b[1]); }
+  drag = { x:e.clientX, y:e.clientY, yaw:cam.yaw, pitch:cam.pitch, touch:e.pointerType === 'touch' };
+});
+cv.addEventListener('pointermove', e => {
+  const r = cv.getBoundingClientRect();
+  if (ptrs.has(e.pointerId)) {
+    ptrs.set(e.pointerId, [e.clientX, e.clientY]);
+    if (ptrs.size === 2) {
+      const [a, b] = [...ptrs.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]);
+      if (pinch) cam.zoom = clamp(cam.zoom * d / pinch, 0.6, 3.5); pinch = d; moved = true; request(); return;
+    }
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (!moved && Math.hypot(dx, dy) > 4) { moved = true; cv.setPointerCapture(e.pointerId); cv.classList.add('grab'); camAnim = null; setView(null); }
+    if (moved) {
+      cam.yaw = drag.yaw + dx * 0.008;
+      if (!drag.touch) cam.pitch = clamp(drag.pitch + dy * 0.008, -1.5, 1.5);
+      request();
+    }
+    return;
+  }
+  const h = pick(e.clientX - r.left, e.clientY - r.top, 9);
+  if (h !== hov) { hov = h; cv.classList.toggle('hot', !!h); request(); }
+});
+function up(e) {
+  const r = cv.getBoundingClientRect();
+  if (ptrs.has(e.pointerId) && !moved && ptrs.size === 1 && e.type === 'pointerup') {
+    const o = pick(e.clientX - r.left, e.clientY - r.top, e.pointerType === 'touch' ? 18 : 9);
+    select(o === sel ? null : o);
+  }
+  ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch = 0;
+  if (!ptrs.size) { cv.classList.remove('grab'); drag = null; }
+}
+cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+cv.addEventListener('pointerleave', () => { if (hov && !ptrs.size) { hov = null; cv.classList.remove('hot'); request(); } });
+cv.addEventListener('wheel', e => {
+  if (!e.ctrlKey && !e.metaKey) return; // plain wheel scrolls the page
+  e.preventDefault(); cam.zoom = clamp(cam.zoom * Math.exp(-e.deltaY * 0.006), 0.6, 3.5); request();
+}, { passive:false });
+cv.addEventListener('keydown', e => {
+  const k = e.key; let used = true;
+  if (k === 'ArrowLeft') cam.yaw -= 0.08; else if (k === 'ArrowRight') cam.yaw += 0.08;
+  else if (k === 'ArrowUp') cam.pitch = clamp(cam.pitch - 0.08, -1.5, 1.5); else if (k === 'ArrowDown') cam.pitch = clamp(cam.pitch + 0.08, -1.5, 1.5);
+  else if (k === '+' || k === '=') cam.zoom = clamp(cam.zoom * 1.15, 0.6, 3.5); else if (k === '-') cam.zoom = clamp(cam.zoom / 1.15, 0.6, 3.5);
+  else if (k === ']' || k === '[') { const i = objs.indexOf(sel), n = objs.length; select(objs[((i < 0 ? (k === ']' ? -1 : 0) : i) + (k === ']' ? 1 : -1) + n) % n]); }
+  else if (k === 'Escape' && sel) select(null);
+  else used = false;
+  if (used) { e.preventDefault(); if (k.startsWith('Arrow')) setView(null); request(); }
+});
+
+function setView(name) {
+  document.querySelectorAll('.vw').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === name)));
+  if (!name) return;
+  const to = { yaw:VIEWS[name].yaw, pitch:VIEWS[name].pitch };
+  if (reduce) { Object.assign(cam, to); request(); return; }
+  camAnim = { t:performance.now(), from:{ yaw:cam.yaw, pitch:cam.pitch }, to }; request();
+}
+document.querySelectorAll('.vw').forEach(b => b.onclick = () => setView(b.dataset.v));
+$('zi').onclick = () => { cam.zoom = clamp(cam.zoom * 1.2, 0.6, 3.5); request(); };
+$('zo').onclick = () => { cam.zoom = clamp(cam.zoom / 1.2, 0.6, 3.5); request(); };
+$('rp').onclick = () => { t0 = performance.now(); request(); };
+if (matchMedia('(pointer: coarse)').matches) $('hint').textContent = 'Swipe sideways to rotate. Pinch to zoom. Tap a track.';
+
+/* ---------- legend and summary tables ---------- */
+const count = k => tracks.filter(t => t.kind === k).length;
+$('lg').innerHTML = ['engineering', 'research', 'venture'].map(k => `<span><span class="sw" style="background:${COL[k]}"></span>${KLAB[k]} ${count(k)}</span>`).join('')
+  + `<span><span class="bar"></span>Competition ${deps.length}</span><span class="mh">Tap a track to read it. Swipe sideways to rotate.</span>`;
+
+$('lede').innerHTML = `Reconstructed objects for Run 2026, Event 17: ${tracks.length} charged tracks, ${deps.length} calorimeter deposits and ${LANG.length + AREAS.length} detector layers. Select any object to isolate it in the display.
+  <span>pT, η and φ are display scale. A role's pT grows with its months on the record; a project's with its stack and scope. The real figures are in the last column.</span>`;
+
+const btn = o => `<button class="obj" data-id="${o.id}">${swatch(o)}${esc(o.name)}</button>`;
+let rows = '', grp = '';
+tracks.forEach(t => {
+  if (t.group !== grp) { grp = t.group; rows += `<tr class="grp"><td colspan="7">${grp}</td></tr>`; }
+  const figs = t.figs.length ? t.figs.map(([n, l]) => `<span class="fig">${esc(n)}</span> <span class="s">${esc(l)}</span>`).join('<br>') : `<span class="s">${esc(t.text)}</span>`;
+  rows += `<tr><td>${btn(t)}<br><span class="s">${esc(t.group === 'Roles' ? t.sub : t.stack.join(', '))}</span></td><td>${KLAB[t.kind]}</td><td class="n ang">${t.q > 0 ? '+' : '−'}</td><td class="n">${t.pT.toFixed(1)}</td><td class="n ang">${t.eta.toFixed(2)}</td><td class="n ang">${t.phi.toFixed(2)}</td><td>${figs}</td></tr>`;
+});
+$('tTracks').innerHTML = `<caption>Charged tracks<small>Roles and projects. Color by kind.</small></caption>
+  <thead><tr><th>Object</th><th>Kind</th><th class="n ang">q</th><th class="n">pT</th><th class="n ang">η</th><th class="n ang">φ</th><th>Real figures</th></tr></thead><tbody>${rows}</tbody>`;
+$('tDeps').innerHTML = `<caption>Calorimeter deposits<small>Wins. Tower height follows the placing.</small></caption>
+  <thead><tr><th>Object</th><th class="n ang">φ</th><th>Deposited</th></tr></thead><tbody>${deps.map(d => `<tr><td>${btn(d)}</td><td class="n ang">${d.phi.toFixed(2)}</td><td>${esc(d.text)}</td></tr>`).join('')}</tbody>`;
+$('tLang').innerHTML = `<caption>Inner tracker<small>Languages, one silicon layer each, innermost first.</small></caption>
+  <thead><tr><th>Layer</th><th>Language</th></tr></thead><tbody>${LANG.map((l, i) => `<tr><td>L${i + 1}</td><td>${esc(l.name)}</td></tr>`).join('')}</tbody>`;
+$('tArea').innerHTML = `<caption>Muon stations<small>Areas of work, the outermost system.</small></caption>
+  <thead><tr><th>Station</th><th>Area</th></tr></thead><tbody>${AREAS.map((a, i) => `<tr><td>M${i + 1}</td><td>${esc(a)}</td></tr>`).join('')}</tbody>`;
+$('tCond').innerHTML = `<caption>Run conditions</caption><tbody>
+  <tr><td>Status</td><td>${esc(T.now)}</td></tr><tr><td>Origin</td><td>${esc(T.place)}</td></tr>
+  ${T.facts.map(f => `<tr><td>Note</td><td>${esc(f)}</td></tr>`).join('')}</tbody>`;
+document.querySelectorAll('.obj').forEach(b => b.onclick = () => {
+  select(objs.find(o => o.id === b.dataset.id));
+  $('event').scrollIntoView({ behavior:reduce ? 'auto' : 'smooth' });
+  setTimeout(() => cv.focus({ preventScroll:true }), reduce ? 0 : 500);
+});
+$('fmail').innerHTML = `Shift crew: <a href="mailto:${esc(T.links.email)}">${esc(T.links.email)}</a>`;
+
+/* ---------- plain view ---------- */
+const dlg = $('crew');
+const openCrew = () => { if (!dlg.open) { $('cSt').textContent = ''; dlg.showModal(); } };
+$('crewBtn').onclick = openCrew;
+$('cClose').onclick = () => dlg.close();
+dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+document.addEventListener('keydown', e => { if ((e.key === 'c' || e.key === 'C') && !e.metaKey && !e.ctrlKey && !e.altKey && !dlg.open) openCrew(); });
+$('copy').onclick = async () => {
+  const st = $('cSt');
+  try { await navigator.clipboard.writeText(T.links.email); st.textContent = 'Copied to the clipboard.'; }
+  catch (err) {
+    const rg = document.createRange(); rg.selectNodeContents($('cMail'));
+    const s = getSelection(); s.removeAllRanges(); s.addRange(rg);
+    st.textContent = document.execCommand('copy') ? 'Copied to the clipboard.' : 'Clipboard blocked here. The address is selected: press Cmd+C or Ctrl+C.';
+  }
+};
+
+/* ---------- start ---------- */
+readout();
+addEventListener('resize', resize);
+resize();
+if (document.fonts) document.fonts.ready.then(request);
+})();
+</script>
+</body>
+</html>

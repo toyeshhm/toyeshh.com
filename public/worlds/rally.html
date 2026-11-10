@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rally</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff;
+  --ink:#141414;
+  --mute:#737373;   /* 4.7:1 on white */
+  --hair:#e6e6e6;
+  --line:#a3a3a3;
+  --dot:#cfcfcf;
+  --mono:"Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --ease:cubic-bezier(.22,1,.36,1);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scrollbar-width:thin;scrollbar-color:var(--hair) var(--bg)}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-thumb{background:var(--hair)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 14px/1.75 var(--mono);text-transform:lowercase;overflow-x:hidden;caret-color:var(--ink);-webkit-font-smoothing:antialiased}
+::selection{background:var(--ink);color:var(--bg)}
+a{color:inherit;text-decoration:underline;text-decoration-color:var(--line);text-decoration-thickness:1px;text-underline-offset:.28em;transition:text-decoration-color .2s}
+a:hover{text-decoration-color:var(--ink)}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-transform:inherit}
+:focus-visible{outline:1px solid var(--ink);outline-offset:4px}
+p,ul{margin:0}
+ul{list-style:none;padding:0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+.page{display:grid;grid-template-columns:minmax(0,35rem) minmax(0,1fr);grid-template-areas:"main game" "foot game";grid-template-rows:1fr auto;column-gap:56px;min-height:100svh;padding:44px 64px 40px}
+main{grid-area:main;min-width:0}
+.back{display:inline-block;color:var(--mute);font-size:12px;text-decoration:none;margin-bottom:40px;letter-spacing:.02em}
+.back:hover{color:var(--ink)}
+.name{font-weight:500}
+.mute{color:var(--mute)}
+.line{margin-top:22px;max-width:46ch}
+.now{margin-top:30px;padding-bottom:28px;border-bottom:1px solid var(--hair)}
+.now li{max-width:52ch}
+
+.secs{margin-top:22px}
+.sec+.sec{margin-top:4px}
+.sec-btn{display:inline-flex;align-items:baseline;gap:.7em;padding:2px 0;text-align:left}
+.sec-btn .ar{display:inline-block;transition:transform .5s var(--ease);color:var(--mute)}
+.sec-btn:hover .lbl{text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:.28em}
+.sec-btn[aria-expanded="true"] .ar{transform:rotate(90deg);color:var(--ink)}
+.panel{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .6s var(--ease),opacity .45s var(--ease)}
+.panel.open{grid-template-rows:1fr;opacity:1}
+.panel>div{overflow:hidden;min-height:0}
+.panel ul{padding:8px 0 16px 1.7em;display:grid;gap:10px}
+.panel li{max-width:56ch;transform:translateY(-4px);opacity:0;transition:transform .6s var(--ease),opacity .5s var(--ease);transition-delay:calc(var(--i) * 40ms)}
+.panel.open li{transform:none;opacity:1}
+.past li{display:grid;grid-template-columns:9ch minmax(0,1fr);gap:0 1ch}
+.past .when{color:var(--mute);font-variant-numeric:tabular-nums}
+.built .pn{display:block}
+.built .po{display:block;color:var(--mute)}
+.won li,.off li{padding-left:2ch;text-indent:-2ch}
+.won li::before,.off li::before{content:"- ";color:var(--mute)}
+.panel .tail{padding:0 0 16px 1.7em;color:var(--mute);max-width:56ch}
+
+footer{grid-area:foot;margin-top:56px}
+.email-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:2px}
+.email{text-transform:none;user-select:all}
+.copy{display:inline-flex;align-items:center;gap:6px;color:var(--mute);font-size:12px;padding:2px 6px;margin-left:-6px;border-radius:3px;transition:color .2s,background-color .2s}
+.copy:hover{color:var(--ink);background:#f4f4f4}
+.copy svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.2}
+.copy.done{color:var(--ink)}
+.links{margin-top:14px;display:flex;gap:22px;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.links a{text-decoration-color:transparent}
+.links a:hover{text-decoration-color:var(--ink)}
+
+.game-col{grid-area:game;position:sticky;top:44px;align-self:start;height:calc(100svh - 84px);min-height:420px;display:flex;align-items:center;justify-content:center}
+.game{position:relative;width:min(100%,620px);aspect-ratio:6/5;max-height:100%;border:1px solid transparent;transition:border-color .8s var(--ease)}
+.game.playing{border-color:var(--hair)}
+.game canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.start{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;padding-bottom:13%}
+.start:focus-visible{outline-offset:-6px}
+.cap{color:var(--mute);font-size:12px;transition:color .3s,opacity .4s}
+.start:hover .cap{color:var(--ink)}
+.playing .start{opacity:0;pointer-events:none;visibility:hidden}
+.playing canvas{cursor:none}
+.hud{position:absolute;left:16px;right:16px;top:12px;display:flex;justify-content:space-between;font-size:12px;font-variant-numeric:tabular-nums;opacity:0;transition:opacity .6s var(--ease) .4s;pointer-events:none}
+.playing .hud{opacity:1}
+.hud .mute{color:var(--mute)}
+.call{position:absolute;left:0;right:0;top:40px;text-align:center;font-size:12px;color:var(--mute);opacity:0;transition:opacity .3s}
+.call.on{opacity:1}
+.hint{position:absolute;left:0;right:0;bottom:12px;text-align:center;font-size:11px;color:var(--mute);opacity:0;transition:opacity .6s}
+.hint.on{opacity:1}
+.end{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;background:rgba(255,255,255,.86);opacity:0;visibility:hidden;transition:opacity .5s var(--ease),visibility 0s .5s;padding:16px}
+.end.on{opacity:1;visibility:visible;transition:opacity .5s var(--ease)}
+.end .res{font-weight:500}
+.end .acts{margin-top:14px;display:flex;gap:24px}
+.end button{text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:.28em}
+.end button:hover{text-decoration-color:var(--ink)}
+.playing .game-touch{touch-action:none}
+
+@media (max-width:860px){
+  .page{grid-template-columns:minmax(0,1fr);grid-template-areas:"main" "game" "foot";grid-template-rows:auto;padding:24px 16px 36px}
+  .back{margin-bottom:28px}
+  .game-col{position:static;height:auto;min-height:0;margin-top:40px}
+  .game{width:100%;aspect-ratio:1/1.08}
+  .past li{grid-template-columns:minmax(0,1fr)}
+  .panel ul,.panel .tail{padding-left:1.7em}
+  footer{margin-top:40px}
+}
+@media (prefers-reduced-motion:reduce){
+  .panel,.panel li,.sec-btn .ar,.game,.hud,.end{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <a class="back" href="index.html">« all boards</a>
+    <p class="name" id="name"></p>
+    <p class="mute">incoming turing scholar @ ut austin</p>
+    <p class="line" id="line"></p>
+    <div class="now">
+      <p class="mute">// now</p>
+      <ul id="now"></ul>
+    </div>
+    <div class="secs" id="secs"></div>
+  </main>
+
+  <div class="game-col">
+    <div class="game game-touch" id="game" tabindex="-1" aria-label="table tennis">
+      <canvas id="cv" aria-hidden="true"></canvas>
+      <button class="start" id="start" type="button" aria-label="play table tennis against me, first to 5"><span class="cap" aria-hidden="true">// click to play</span></button>
+      <div class="hud" aria-hidden="true"><span id="score">you 0 · 0 me</span><span class="mute" id="rally">rally: 0</span></div>
+      <p class="call" id="call" aria-hidden="true"></p>
+      <p class="hint" id="hint" aria-hidden="true"></p>
+      <div class="end" id="end">
+        <p class="res" id="res"></p>
+        <p class="mute" id="best"></p>
+        <p>i play volleyball, table tennis and soccer.</p>
+        <div class="acts"><button type="button" id="again">again</button><button type="button" id="done">done</button></div>
+      </div>
+      <p class="sr" id="live" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <footer>
+    <p class="mute" id="contact"></p>
+    <div class="email-row">
+      <span class="email" id="email"></span>
+      <button class="copy" id="copy" type="button" aria-label="copy email address">
+        <svg viewBox="0 0 12 12" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><path d="M8.5 3.5V2.5a1 1 0 0 0-1-1h-5a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h1"/></svg>
+        <span id="copy-l">copy</span>
+      </button>
+    </div>
+    <nav class="links" aria-label="elsewhere">
+      <a id="gh" href="#">github</a><a id="li" href="#">linkedin</a><a id="cv-l" href="#">resume</a>
+    </nav>
+  </footer>
+</div>
+
+<script src="data.js"></script>
+<script src="voice.js"></script>
+<script>
+(() => {
+"use strict";
+const V = window.TOYESHH_VOICE;
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+
+/* ---------- copy ---------- */
+$("name").textContent = V.name;
+$("line").textContent = V.line;
+$("now").innerHTML = V.now.map(l => `<li>${esc(l)}</li>`).join("");
+$("contact").textContent = V.contactLine;
+$("email").textContent = V.links.email;
+$("gh").href = V.links.github; $("li").href = V.links.linkedin; $("cv-l").href = V.links.resume;
+
+const li = (html, i) => `<li style="--i:${i}">${html}</li>`;
+const sections = [
+  ["past", "past", V.past.map((p, i) => li(`<span class="when">${esc(p.when)}</span><span>${esc(p.what)}</span>`, i)).join(""), `<p class="tail">${esc(V.origin)}</p>`],
+  ["built", "built", V.projects.map((p, i) => li(`<span class="pn">${esc(p.name)}</span><span class="po">${esc(p.one)}</span>`, i)).join(""), ""],
+  ["won", "won", V.wins.map((w, i) => li(esc(w.what), i)).join(""), ""],
+  ["off", "off hours", V.offHours.map((l, i) => li(esc(l), i)).join(""), `<p class="tail">three words: ${V.threeWords.map(esc).join(", ")}.</p>`]
+];
+$("secs").innerHTML = sections.map(([id, label, items, tail]) => `
+  <div class="sec">
+    <button class="sec-btn" type="button" aria-expanded="false" aria-controls="p-${id}"><span class="ar" aria-hidden="true">→</span><span class="lbl">${label}</span></button>
+    <div class="panel ${id}" id="p-${id}" role="region" aria-label="${label}" inert><div><ul>${items}</ul>${tail}</div></div>
+  </div>`).join("");
+document.querySelectorAll(".sec-btn").forEach(b => b.addEventListener("click", () => {
+  const open = b.getAttribute("aria-expanded") !== "true";
+  const p = $(b.getAttribute("aria-controls"));
+  b.setAttribute("aria-expanded", String(open));
+  p.classList.toggle("open", open);
+  p.inert = !open;
+}));
+
+const copyBtn = $("copy"), copyL = $("copy-l");
+let copyT = 0;
+copyBtn.addEventListener("click", async () => {
+  let ok = false;
+  try { await navigator.clipboard.writeText(V.links.email); ok = true; }
+  catch (err) {
+    // clipboard API can be blocked in sandboxed frames; fall back to selecting the text
+    const r = document.createRange(); r.selectNodeContents($("email"));
+    const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    try { ok = document.execCommand("copy"); } catch (e2) { ok = false; }
+  }
+  copyL.textContent = ok ? "copied" : "selected, press ⌘c";
+  copyBtn.classList.add("done");
+  clearTimeout(copyT);
+  copyT = setTimeout(() => { copyL.textContent = "copy"; copyBtn.classList.remove("done"); }, 1800);
+});
+
+/* ---------- table tennis ---------- */
+// world: metres. x across the table, y up (table top = 0), z along it (+z is your end).
+const G = 9.8, R = 0.02, TW = 0.7625, TL = 1.37, TH = 0.035, LEG = 0.76, NW = 0.915, NH = 0.1525;
+const ZP = 1.52, HW = 0.17, TS = 0.42, WIN = 5; // TS: slow motion, so shots stay fast and flat but humanly returnable
+const INK = "#141414", LINE = "#a3a3a3", DOT = "#cdcdcd", FLOOR = "#e4e4e4";
+
+const cv = $("cv"), ctx = cv.getContext("2d");
+const gameEl = $("game"), startBtn = $("start");
+let W = 1, H = 1;
+function resize() {
+  const r = cv.getBoundingClientRect(), d = Math.min(2, window.devicePixelRatio || 1);
+  W = Math.max(1, r.width); H = Math.max(1, r.height);
+  cv.width = Math.round(W * d); cv.height = Math.round(H * d);
+  ctx.setTransform(d, 0, 0, d, 0, 0);
+  kick();
+}
+new ResizeObserver(resize).observe(cv);
+
+const IDLE = { yaw: 0.74, pitch: 0.6, s: 0.205, D: 40, ox: 0.5, oy: 0.43 };
+const PLAY = { yaw: 0, pitch: 0.66, s: 0.3, D: 6, ox: 0.5, oy: 0.5 };
+const cam = { ...IDLE };
+let camFrom = IDLE, camTo = IDLE, camStart = 0, camDur = 0, hover = 0, hoverTo = 0;
+function setCam(to) { camFrom = { ...cam }; camTo = to; camStart = performance.now(); camDur = reduce.matches ? 0 : 1100; kick(); }
+function updCam(now) {
+  const t = camDur ? Math.min(1, (now - camStart) / camDur) : 1;
+  const e = t < 1 ? 1 - Math.pow(2, -10 * t) : 1; // expo out
+  for (const k in cam) cam[k] = camFrom[k] + (camTo[k] - camFrom[k]) * e;
+  return t < 1;
+}
+
+// projection, refreshed once per frame
+let ca = 1, sa = 0, cp = 1, sp = 0, S = 1, CX = 0, CY = 0;
+function frameCam() {
+  const yaw = cam.yaw + hover;
+  ca = Math.cos(yaw); sa = Math.sin(yaw); cp = Math.cos(cam.pitch); sp = Math.sin(cam.pitch);
+  S = cam.s * Math.min(W, H * 1.15); CX = W * cam.ox; CY = H * cam.oy;
+}
+function P(x, y, z) {
+  const x1 = x * ca + z * sa, z1 = -x * sa + z * ca;
+  const up = y * cp - z1 * sp, depth = z1 * cp + y * sp, k = cam.D / Math.max(0.6, cam.D - depth);
+  return [CX + x1 * S * k, CY - up * S * k, k];
+}
+function poly(pts, fill, stroke, lw) {
+  ctx.beginPath();
+  pts.forEach((p, i) => { const q = P(p[0], p[1], p[2]); i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]); });
+  ctx.closePath();
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lw || 0.8; ctx.stroke(); }
+}
+function seg(a, b, stroke, lw) {
+  const p = P(a[0], a[1], a[2]), q = P(b[0], b[1], b[2]);
+  ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]);
+  ctx.strokeStyle = stroke; ctx.lineWidth = lw || 0.8; ctx.stroke();
+}
+function dot(x, y, z, r, color) {
+  const p = P(x, y, z); ctx.fillStyle = color; ctx.fillRect(p[0] - r / 2, p[1] - r / 2, r, r);
+}
+
+function drawTable() {
+  // a faint dotted floor patch grounds the table
+  for (let x = -1.1; x <= 1.101; x += 0.22) for (let z = -1.76; z <= 1.761; z += 0.22) dot(x, -LEG, z, 1, FLOOR);
+  const legs = [[-0.64, -1.12], [0.64, -1.12], [-0.64, 1.12], [0.64, 1.12]];
+  for (const [x, z] of legs) { seg([x, -TH, z], [x, -LEG, z], LINE); seg([x - 0.03, -LEG, z], [x + 0.03, -LEG, z], LINE); }
+  seg([-0.64, -0.5, -1.12], [0.64, -0.5, -1.12], LINE, 0.6); seg([-0.64, -0.5, 1.12], [0.64, -0.5, 1.12], LINE, 0.6);
+  seg([0, -TH, -0.02], [0, -0.5, -1.12], LINE, 0.6); seg([0, -TH, 0.02], [0, -0.5, 1.12], LINE, 0.6);
+  // visible side faces
+  const faces = [[0, 1, [[-TW, TL], [TW, TL]]], [0, -1, [[TW, -TL], [-TW, -TL]]], [1, 0, [[TW, TL], [TW, -TL]]], [-1, 0, [[-TW, -TL], [-TW, TL]]]];
+  for (const [nx, nz, [[x0, z0], [x1, z1]]] of faces) {
+    if (-nx * sa + nz * ca <= 0) continue; // face points away from the camera
+    poly([[x0, 0, z0], [x1, 0, z1], [x1, -TH, z1], [x0, -TH, z0]], "#fff", LINE);
+  }
+  poly([[-TW, 0, -TL], [TW, 0, -TL], [TW, 0, TL], [-TW, 0, TL]], "#fff", null);
+  for (let x = -0.7; x <= 0.701; x += 0.1) for (let z = -1.3; z <= 1.301; z += 0.1) dot(x, 0, z, 1.1, DOT);
+  poly([[-TW, 0, -TL], [TW, 0, -TL], [TW, 0, TL], [-TW, 0, TL]], null, LINE, 0.9);
+  poly([[-TW + 0.02, 0, -TL + 0.02], [TW - 0.02, 0, -TL + 0.02], [TW - 0.02, 0, TL - 0.02], [-TW + 0.02, 0, TL - 0.02]], null, DOT, 0.6);
+  ctx.setLineDash([2, 3]); seg([0, 0, -TL + 0.02], [0, 0, TL - 0.02], LINE, 0.6); ctx.setLineDash([]);
+}
+function drawNet() {
+  seg([-NW, -0.03, 0], [-NW, NH, 0], LINE, 1); seg([NW, -0.03, 0], [NW, NH, 0], LINE, 1);
+  poly([[-NW, 0, 0], [NW, 0, 0], [NW, NH, 0], [-NW, NH, 0]], "rgba(255,255,255,.55)", null);
+  for (let x = -NW + 0.03; x < NW; x += 0.045) for (let y = 0.02; y < NH; y += 0.032) dot(x, y, 0, 0.9, LINE);
+  seg([-NW, NH, 0], [NW, NH, 0], "#6f6f6f", 1.1);
+}
+function ballShadow(x, y, z) {
+  const onTable = Math.abs(x) <= TW && Math.abs(z) <= TL;
+  const gy = onTable ? 0.002 : -LEG, h = y - gy, rr = 0.018 + h * 0.06, a = Math.max(0.15, 0.75 - h * 1.4);
+  ctx.globalAlpha = a;
+  for (let i = 0; i < 10; i++) { const t = i / 10 * Math.PI * 2; dot(x + Math.cos(t) * rr, gy, z + Math.sin(t) * rr, 1.2, INK); }
+  dot(x, gy, z, 1.4, INK);
+  ctx.globalAlpha = 1;
+}
+function drawBall(b) {
+  const p = P(b.x, b.y, b.z), r = Math.max(2.4, R * S * p[2]);
+  ctx.beginPath(); ctx.arc(p[0], p[1], r, 0, Math.PI * 2); ctx.fillStyle = INK; ctx.fill();
+}
+function drawTrail(far) {
+  for (let i = 0; i < trail.length; i++) {
+    const t = trail[i]; if ((t[2] < 0) !== far) continue;
+    ctx.globalAlpha = (i + 1) / trail.length * 0.55; dot(t[0], t[1], t[2], 1.6, INK);
+  }
+  ctx.globalAlpha = 1;
+}
+const RB = 0.095;
+function drawPaddle(x, y, z, stroke) {
+  const ring = []; for (let i = 0; i < 28; i++) { const t = i / 28 * Math.PI * 2; ring.push([x + Math.cos(t) * RB, y + Math.sin(t) * RB * 1.05, z]); }
+  poly([[x - 0.016, y - RB, z], [x + 0.016, y - RB, z], [x + 0.016, y - RB - 0.1, z], [x - 0.016, y - RB - 0.1, z]], "#fff", stroke, 1);
+  poly(ring, "rgba(255,255,255,.72)", stroke, 1.2);
+  ctx.save(); poly(ring, null, null); ctx.clip();
+  for (let u = -RB; u <= RB; u += 0.022) for (let v = -RB; v <= RB; v += 0.022) dot(x + u, y + v, z, 1, LINE);
+  ctx.restore();
+}
+function drawFlatPaddle(x, z, ang) {
+  const y = 0.004, ring = [], c = Math.cos(ang), s = Math.sin(ang);
+  for (let i = 0; i < 28; i++) { const t = i / 28 * Math.PI * 2; ring.push([x + Math.cos(t) * RB, y, z + Math.sin(t) * RB * 1.05]); }
+  const hx = x + c * RB, hz = z + s * RB, ex = x + c * (RB + 0.1), ez = z + s * (RB + 0.1), px = -s * 0.016, pz = c * 0.016;
+  poly([[hx + px, y, hz + pz], [ex + px, y, ez + pz], [ex - px, y, ez - pz], [hx - px, y, hz - pz]], "#fff", INK, 0.8);
+  poly(ring, "#fff", INK, 0.9);
+  ctx.save(); poly(ring, null, null); ctx.clip();
+  for (let u = -RB; u <= RB; u += 0.024) for (let v = -RB; v <= RB; v += 0.024) dot(x + u, y, z + v, 0.9, LINE);
+  ctx.restore();
+}
+
+// game state
+const st = { mode: "idle", you: 0, me: 0, server: "p", rally: 0, best: 0, timer: 0, decided: false, hits: 0 };
+const ball = { x: 0, y: 0.3, z: ZP, vx: 0, vy: 0, vz: 0, spin: 0, hitter: "p", bounced: false, net: false };
+const pad = { x: 0, tx: 0, y: 0.22, v: 0 };
+const ai = { x: 0, tx: 0, y: 0.22, delay: 0, reread: 0, err: 0 };
+const keys = { l: 0, r: 0 };
+let trail = [], trailAcc = 0;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const other = s => (s === "p" ? "o" : "p");
+
+const scoreEl = $("score"), rallyEl = $("rally"), callEl = $("call"), hintEl = $("hint"), endEl = $("end"), liveEl = $("live");
+let callT = 0;
+function say(t) { callEl.textContent = t; callEl.classList.add("on"); clearTimeout(callT); callT = setTimeout(() => callEl.classList.remove("on"), 900); }
+function hud() { scoreEl.textContent = `you ${st.you} · ${st.me} me`; rallyEl.textContent = `rally: ${st.rally}`; }
+
+function predict(withSpin) {
+  let { x, y, z, vx, vy, vz, spin } = ball; const h = 1 / 120;
+  for (let i = 0; i < 600; i++) {
+    vy -= G * h; if (withSpin) vx += spin * h;
+    x += vx * h; y += vy * h; z += vz * h;
+    if (y < R && vy < 0 && Math.abs(x) <= TW && Math.abs(z) <= TL) { y = R; vy = -vy * 0.86; if (withSpin) { vx += spin * 0.12; spin *= 0.55; } vz *= 0.98; }
+    if (z <= -ZP || y < -LEG) break;
+  }
+  return x;
+}
+function shoot(from, tx, tz, speed, spin, compensate) {
+  let vz = speed * (from === "p" ? -1 : 1), vy = 0, T = 1;
+  for (let i = 0; i < 12; i++) {
+    T = Math.abs(tz - ball.z) / Math.abs(vz);
+    vy = (R - ball.y + 0.5 * G * T * T) / T;
+    const tn = Math.abs(ball.z) / Math.abs(vz), yn = ball.y + vy * tn - 0.5 * G * tn * tn;
+    if (yn > NH + R + 0.035) break;
+    vz *= 0.92;
+  }
+  ball.vz = vz; ball.vy = vy; ball.spin = spin;
+  ball.vx = (tx - ball.x - (compensate ? 0.5 * spin * T * T : 0)) / T;
+  ball.hitter = from; ball.bounced = false; ball.net = false;
+  st.rally++; st.best = Math.max(st.best, st.rally); hud();
+}
+function playerShot(base) {
+  const off = clamp((ball.x - pad.x) / HW, -1, 1), pv = clamp(pad.v, -5, 5);
+  const tx = clamp(ball.x * 0.25 + off * 0.6, -1, 1), tz = -(0.5 + Math.random() * 0.6);
+  const speed = Math.min(7.7, base + Math.abs(pv) * 0.3 + st.rally * 0.075);
+  // a moving paddle brushes the ball: it curves the way you swung
+  shoot("p", tx, tz, speed, clamp(pv * 0.55, -3, 3), false);
+  ball.vx += pv * 0.055;
+  ai.delay = 0.08; ai.reread = 0.22;
+  ai.err = (Math.random() - 0.5) * (0.08 + 0.1 * Math.abs(ball.spin) + 0.06 * (speed - 4.9));
+  ai.tx = predict(false) + ai.err;
+  if (++st.hits === 2) hintEl.classList.remove("on");
+}
+function aiShot(base) {
+  let tx = (Math.random() * 2 - 1) * 0.55, tz = 0.45 + Math.random() * 0.75;
+  if (Math.random() < 0.5) tx = -Math.sign(pad.x || 1) * (0.2 + Math.random() * 0.4);
+  if (Math.random() < 0.06 + Math.min(0.12, st.rally * 0.008)) {
+    if (Math.random() < 0.5) tz = 1.48 + Math.random() * 0.2; else tx = Math.sign(tx || 1) * (0.86 + Math.random() * 0.2);
+  }
+  shoot("o", tx, tz, Math.min(6.8, base + st.rally * 0.1 + Math.random() * 0.6), (Math.random() - 0.5) * 2, true);
+}
+function decide(loser, why) {
+  if (st.decided) return;
+  st.decided = true; st.mode = "point"; st.timer = 1.0;
+  if (loser === "p") st.me++; else st.you++;
+  hud(); say(why);
+  liveEl.textContent = `${why}. you ${st.you}, me ${st.me}`;
+}
+function onBounce(side) {
+  if (st.mode !== "rally") return;
+  if (side === ball.hitter) return decide(ball.hitter, ball.net ? "net" : "own side");
+  if (ball.bounced) return decide(side, "missed");
+  ball.bounced = true;
+}
+function step(h) {
+  const pz = ball.z;
+  ball.vy -= G * h; ball.vx += ball.spin * h;
+  ball.x += ball.vx * h; ball.y += ball.vy * h; ball.z += ball.vz * h;
+  if ((pz > 0) !== (ball.z > 0) && Math.abs(ball.x) < NW && ball.y < NH + R && ball.y > -0.02) {
+    ball.z = pz > 0 ? R : -R; ball.vz *= -0.12; ball.vx *= 0.3; ball.vy *= 0.25; ball.net = true;
+  }
+  if (ball.y < R && ball.vy < 0 && ball.y > -0.04 && Math.abs(ball.x) <= TW && Math.abs(ball.z) <= TL) {
+    ball.y = R; ball.vy = -ball.vy * 0.86; ball.vx += ball.spin * 0.12; ball.spin *= 0.55; ball.vz *= 0.98;
+    onBounce(ball.z > 0 ? "p" : "o");
+  }
+  if (ball.y < -LEG + R && ball.vy < 0) {
+    ball.y = -LEG + R; ball.vy *= -0.45; ball.vx *= 0.6; ball.vz *= 0.6;
+    if (st.mode === "rally") ball.bounced ? decide(other(ball.hitter), "missed") : decide(ball.hitter, ball.net ? "net" : Math.abs(ball.x) > TW ? "wide" : "long");
+  }
+  if (st.mode !== "rally") return;
+  const rcv = other(ball.hitter), plane = rcv === "p" ? ZP : -ZP;
+  const crossed = rcv === "p" ? pz < plane && ball.z >= plane : pz > plane && ball.z <= plane;
+  if (!crossed) return;
+  if (!ball.bounced) return decide(ball.hitter, Math.abs(ball.x) > TW ? "wide" : "long");
+  const px = rcv === "p" ? pad.x : ai.x;
+  if (Math.abs(ball.x - px) > HW) return decide(rcv, "missed");
+  ball.z = plane;
+  rcv === "p" ? playerShot(4.9) : aiShot(4.6);
+}
+function toServe() {
+  st.mode = "serve"; st.decided = false; st.rally = 0; trail = []; hud();
+  st.timer = st.server === "p" ? 1.8 : 0.9;
+  ai.tx = (Math.random() - 0.5) * 0.6;
+  if (st.server === "p") { say("your serve"); }
+}
+function serve() {
+  st.mode = "rally";
+  st.server === "p" ? playerShot(4.4) : aiShot(4.3);
+}
+function update(dt) {
+  const h = dt * TS;
+  if (keys.l || keys.r) pad.tx = clamp(pad.tx + (keys.r - keys.l) * 1.7 * dt, -1.05, 1.05);
+  const nx = pad.x + (pad.tx - pad.x) * (1 - Math.exp(-dt * 28));
+  pad.v += ((nx - pad.x) / h - pad.v) * (1 - Math.exp(-dt * 14)); pad.x = nx;
+  const comingP = ball.vz > 0 && st.mode === "rally", comingO = ball.vz < 0 && st.mode === "rally";
+  pad.y += ((comingP ? clamp(ball.y, 0.06, 0.55) : 0.22) - pad.y) * (1 - Math.exp(-dt * 10));
+  ai.y += ((comingO ? clamp(ball.y, 0.06, 0.55) : 0.22) - ai.y) * (1 - Math.exp(-dt * 8));
+  if (comingO) {
+    if ((ai.delay -= h) <= 0) {
+      if (ai.reread > 0 && (ai.reread -= h) <= 0) ai.tx = predict(true) + ai.err * 0.5;
+      ai.x += clamp(ai.tx - ai.x, -1.9 * h, 1.9 * h);
+    }
+  } else if (st.mode === "rally" || st.mode === "point") ai.x += clamp(ai.x * -0.5 - ai.x, -0.75 * h, 0.75 * h);
+  else if (st.mode === "serve" && st.server === "o") ai.x += clamp(ai.tx - ai.x, -1.2 * h, 1.2 * h);
+
+  if (st.mode === "serve") {
+    const sp = st.server === "p";
+    ball.x = sp ? pad.x : ai.x; ball.y = 0.26 + Math.sin(performance.now() / 260) * 0.015; ball.z = sp ? ZP - 0.06 : -ZP + 0.06;
+    ball.vx = ball.vy = ball.vz = 0;
+    if ((st.timer -= dt) <= 0) serve();
+  } else if (st.mode === "rally" || st.mode === "point") {
+    const n = Math.ceil(h / (1 / 360));
+    for (let i = 0; i < n; i++) step(h / n);
+    if ((trailAcc += h) > 0.012) { trailAcc = 0; trail.push([ball.x, ball.y, ball.z]); if (trail.length > 28) trail.shift(); }
+    if (st.mode === "point" && (st.timer -= dt) <= 0) {
+      if (st.you >= WIN || st.me >= WIN) return endGame();
+      st.server = other(st.server); toServe();
+    }
+  }
+}
+function endGame() {
+  st.mode = "over";
+  $("res").textContent = st.you > st.me ? `you win, ${st.you} · ${st.me}.` : `i win, ${st.me} · ${st.you}.`;
+  $("best").textContent = `longest rally: ${st.best}`;
+  liveEl.textContent = `${$("res").textContent} longest rally ${st.best}.`;
+  endEl.classList.add("on"); hintEl.classList.remove("on");
+  $("again").focus({ preventScroll: true });
+}
+function newGame() {
+  Object.assign(st, { you: 0, me: 0, server: "p", best: 0, hits: 0 });
+  pad.x = pad.tx = 0; ai.x = 0;
+  endEl.classList.remove("on");
+  hintEl.textContent = matchMedia("(pointer: coarse)").matches ? "drag to move. tap to serve." : "mouse or arrows to move. click to serve. esc to leave.";
+  hintEl.classList.add("on");
+  toServe();
+}
+function startGame() {
+  if (st.mode !== "idle") return;
+  gameEl.classList.add("playing");
+  setCam(PLAY); hover = hoverTo = 0;
+  newGame();
+  gameEl.focus({ preventScroll: true });
+  if (matchMedia("(max-width: 860px)").matches) gameEl.scrollIntoView({ behavior: reduce.matches ? "auto" : "smooth", block: "center" });
+  kick();
+}
+function leaveGame() {
+  st.mode = "idle"; trail = [];
+  gameEl.classList.remove("playing"); endEl.classList.remove("on"); hintEl.classList.remove("on");
+  setCam(IDLE);
+  startBtn.focus({ preventScroll: true });
+}
+const playing = () => st.mode !== "idle";
+startBtn.addEventListener("click", startGame);
+startBtn.addEventListener("pointerenter", () => { hoverTo = reduce.matches ? 0 : 0.14; kick(); });
+startBtn.addEventListener("pointerleave", () => { hoverTo = 0; kick(); });
+$("again").addEventListener("click", () => { newGame(); gameEl.focus({ preventScroll: true }); });
+$("done").addEventListener("click", leaveGame);
+
+function aimAt(clientX) {
+  const r = cv.getBoundingClientRect(), k = P(0, pad.y, ZP)[2];
+  pad.tx = clamp((clientX - r.left - CX) / (S * k), -1.05, 1.05);
+}
+gameEl.addEventListener("pointermove", e => { if (playing() && st.mode !== "over") aimAt(e.clientX); });
+gameEl.addEventListener("pointerdown", e => {
+  if (!playing() || st.mode === "over" || e.target.closest("button")) return;
+  aimAt(e.clientX);
+  if (st.mode === "serve" && st.server === "p" && st.timer < 1.6) st.timer = 0;
+});
+document.addEventListener("keydown", e => {
+  if (!playing()) return;
+  const k = e.key;
+  if (k === "Escape") { leaveGame(); return; }
+  if (st.mode === "over") return;
+  if (k === "ArrowLeft" || k === "a") { keys.l = 1; e.preventDefault(); }
+  else if (k === "ArrowRight" || k === "d") { keys.r = 1; e.preventDefault(); }
+  else if (k === " " || k === "Enter") { if (st.mode === "serve" && st.server === "p") st.timer = 0; e.preventDefault(); }
+});
+document.addEventListener("keyup", e => {
+  if (e.key === "ArrowLeft" || e.key === "a") keys.l = 0;
+  if (e.key === "ArrowRight" || e.key === "d") keys.r = 0;
+});
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  frameCam();
+  drawTable();
+  if (!playing()) {
+    drawNet();
+    drawFlatPaddle(-0.34, 0.86, 0.5);
+    drawFlatPaddle(0.3, 0.98, 2.2);
+    ballShadow(0.05, R, 0.5); drawBall({ x: 0.05, y: R, z: 0.5 });
+    return;
+  }
+  ballShadow(ball.x, ball.y, ball.z);
+  drawPaddle(ai.x, ai.y, -ZP, "#6f6f6f");
+  drawTrail(true);
+  if (ball.z < 0) drawBall(ball);
+  drawNet();
+  drawTrail(false);
+  if (ball.z >= 0) drawBall(ball);
+  drawPaddle(pad.x, pad.y, ZP, INK);
+}
+
+let raf = 0, last = 0;
+function frame(now) {
+  const dt = Math.min(0.033, (now - last) / 1000); last = now;
+  const moving = updCam(now);
+  const dh = hoverTo - hover; hover += dh * (1 - Math.exp(-dt * 5));
+  if (dt > 0 && playing() && st.mode !== "over") update(dt); // equal timestamps would divide by zero in the paddle velocity
+  draw();
+  raf = moving || Math.abs(dh) > 0.0005 || (playing() && st.mode !== "over") ? requestAnimationFrame(frame) : 0;
+}
+function kick() { if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); } }
+document.fonts && document.fonts.ready.then(kick);
+})();
+</script>
+</body>
+</html>

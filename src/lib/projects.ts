@@ -35,6 +35,23 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    slug: "worlds-site-prototypes",
+    title: "Worlds: Prototypes for This Site",
+    category: "Design Prototypes",
+    type: "projects",
+    image: "/worlds/thumbs/dusk.jpg",
+    year: "2026",
+    projectUrl: "https://toyeshh.com/worlds/index.html",
+    projectUrlLabel: "Open the prototypes",
+    desc: "Sixteen interactive prototypes for the next version of this site, from a particle-collider event display to a golden-hour three.js plain.",
+    details: [
+      "Prototyped sixteen directions with Claude Code before writing any production code, each a standalone page with its own look, motion and interaction.",
+      "Round one tried ten themed worlds. Round two moved to first-person writing with one playable object per page.",
+      "Plain HTML, CSS and JavaScript, with three.js for the 3D scenes and real screenshots from each project.",
+    ],
+    highlights: ["16 prototypes", "three.js scenes", "Real project screenshots"],
+  },
+  {
     slug: "bpa-nlc-competitor",
     title: "BPA National Leadership Conference",
     category: "Business + Technology Competition",

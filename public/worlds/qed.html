@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Q.E.D.</title>
+<meta name="description" content="Toyeshh Medikonda, written as a proof on a blackboard.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap">
+<style>
+:root{
+  --slate:#1b2622; --slate-2:#24322d;
+  --chalk:#eceee5; --chalk-soft:rgba(236,238,229,.84); --chalk-faint:rgba(236,238,229,.55);
+  --yellow:#f2d977; --pink:#f4a7bd; --blue:#97cbec;
+  --wood:#6a4427; --wood-hi:#94643a; --wood-lo:#3f2614;
+  --paper:#f3eedf; --ink:#1f2f4d; --ink-soft:#44506a;
+  --hand:"Kalam","Segoe Print","Bradley Hand","Comic Sans MS",cursive;
+  --tex:"STIX Two Text","Cambria Math","Cambria","Times New Roman",serif;
+  --frame:12px; --ledge:60px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scrollbar-color:rgba(236,238,229,.45) var(--slate);scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--slate);color:var(--chalk-soft);font:400 1.14rem/1.6 var(--hand);overflow-x:clip;min-height:100vh}
+::-webkit-scrollbar{width:12px}
+::-webkit-scrollbar-track{background:var(--slate)}
+::-webkit-scrollbar-thumb{background:rgba(236,238,229,.38);border-radius:6px;border:3px solid var(--slate)}
+::selection{background:rgba(242,217,119,.3);color:var(--chalk)}
+.armed::selection,.armed ::selection{color:transparent}
+a{color:var(--chalk);text-decoration:underline 2px var(--blue);text-underline-offset:5px;text-decoration-skip-ink:none}
+a:hover{text-decoration-color:var(--yellow)}
+:focus-visible{outline:2px dashed var(--blue);outline-offset:5px;border-radius:3px}
+button{font:inherit;color:inherit}
+
+/* the board itself */
+#slate{position:fixed;inset:0;width:100vw;height:100lvh;z-index:-2;display:block}
+.frame{position:fixed;top:0;bottom:0;width:var(--frame);z-index:30;pointer-events:none;
+  background:linear-gradient(90deg,var(--wood-lo),var(--wood-hi) 35%,var(--wood) 70%,var(--wood-lo)),var(--wood);
+  box-shadow:0 0 18px rgba(0,0,0,.55)}
+.frame::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(180deg,rgba(0,0,0,.08) 0 3px,transparent 3px 11px,rgba(255,255,255,.04) 11px 13px,transparent 13px 29px)}
+.frame.l{left:0}.frame.r{right:0;transform:scaleX(-1)}
+#ghosts{position:absolute;left:0;top:0;width:100%;overflow:hidden;pointer-events:none;z-index:-1}
+.ghost{position:absolute;white-space:nowrap;color:var(--chalk);font-family:var(--hand);font-weight:300;filter:blur(.6px);transform-origin:0 50%}
+.ghost i{font-family:var(--tex)}
+.smear{position:absolute;border-radius:50%;background:radial-gradient(closest-side,rgba(236,238,229,.055),rgba(236,238,229,.02) 60%,transparent)}
+
+main{position:relative;max-width:1200px;margin:0 auto;padding:0 clamp(28px,5vw,80px) calc(var(--ledge) + 120px)}
+
+.back{position:absolute;top:18px;left:clamp(28px,5vw,80px);font-size:.95rem;color:var(--chalk-faint);text-decoration-color:rgba(151,203,236,.45);z-index:2}
+
+/* writing machinery */
+.w{position:relative}
+.w>canvas.ink{position:absolute;pointer-events:none}
+.armed,.armed *{color:transparent!important}
+.armed:not(.done),.armed:not(.done) a{text-decoration-color:transparent}
+.draw{display:block;overflow:visible;filter:url(#chalk);fill:none;stroke-linecap:round;stroke-linejoin:round}
+.draw *{vector-effect:non-scaling-stroke}
+.draw.armed *{opacity:0}
+.draw.armed .on{opacity:1}
+
+/* type jobs: yellow = structure, pink = numbers, blue = drawings */
+.y{color:var(--yellow);font-weight:700}
+.n{color:var(--pink);font-weight:700}
+.b{color:var(--blue)}
+.m{font-family:var(--tex);font-style:italic;white-space:nowrap}
+.m .r{font-style:normal}
+h1,h2,h3{font-weight:700;color:var(--chalk);margin:0;text-wrap:balance}
+
+/* hero */
+.hero{min-height:100svh;display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,300px);gap:clamp(32px,5vw,80px);align-items:center;padding:110px 0 calc(var(--ledge) + 40px)}
+.name{font-size:clamp(2.9rem,7.4vw,6rem);line-height:1.05;letter-spacing:-.01em;margin-left:-4px}
+.uline{width:min(100%,620px);height:22px;margin:4px 0 18px;stroke:var(--blue);stroke-width:3.2}
+.now{margin:0 0 34px;max-width:60ch;font-size:1.2rem;color:var(--chalk-soft)}
+.thm{position:relative;padding:22px 28px 24px;max-width:760px;margin:0 0 30px}
+.thm .box{position:absolute;inset:0;width:100%;height:100%;stroke:var(--yellow);stroke-width:2.6}
+.thm-text{font-size:clamp(1.35rem,2.3vw,1.75rem);line-height:1.5;color:var(--yellow);margin:0}
+.thm-text .m{font-size:1.06em}
+.proof{font-size:1.5rem;margin:0 0 6px;color:var(--chalk)}
+.lede{margin:0;max-width:58ch}
+.plan{position:relative;padding-left:clamp(24px,3vw,40px)}
+.plan .vline{position:absolute;left:0;top:-20px;bottom:-20px;width:14px;height:calc(100% + 40px);stroke:var(--chalk-faint);stroke-width:2}
+.plan h2{font-size:1.4rem;margin-bottom:14px}
+.plan ol{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.plan li a{display:inline-block;font-size:1.12rem;line-height:1.35}
+.plan li .y{font-weight:700}
+
+/* steps */
+.step{padding:clamp(70px,10vw,140px) 0 0;scroll-margin-top:40px}
+.step>h2{font-size:clamp(1.9rem,3.6vw,2.8rem);line-height:1.15}
+.step>.uline{width:min(100%,460px);margin-bottom:clamp(34px,4vw,56px)}
+.cols{display:grid;grid-template-columns:1fr 1fr;column-gap:clamp(40px,6vw,96px);row-gap:clamp(48px,6vw,80px);position:relative}
+.cols>.vdiv{position:absolute;left:50%;top:0;height:100%;width:14px;transform:translateX(-50%);stroke:rgba(236,238,229,.32);stroke-width:2}
+
+.lemma h3{font-size:1.45rem;line-height:1.3}
+.lemma h3 .org{font-weight:400}
+.stmt{margin:4px 0 10px;font-size:1.22rem;color:var(--chalk)}
+.pf{margin:0 0 12px;max-width:60ch}
+.pf em,.det em{font-style:normal;font-weight:700;color:var(--chalk)}
+.res{list-style:none;margin:0;padding:0}
+.res li{font-size:1.4rem;line-height:1.45}
+.res li .n{font-size:1.1em}
+.res .imp{font-family:var(--tex);color:var(--chalk-faint);margin-right:.3em}
+.tomb{width:22px;height:22px;margin:8px 0 0 auto;stroke:var(--chalk);stroke-width:2}
+
+.cor h3{font-size:1.4rem;line-height:1.3}
+.det{margin:4px 0 0;max-width:52ch}
+
+.ex h3{font-size:1.4rem;line-height:1.3}
+.ex .k{font-weight:400;color:var(--chalk-faint);font-size:.9em}
+.ex p{margin:4px 0 6px;max-width:56ch}
+.set{font-family:var(--tex);font-size:1.08rem;color:var(--chalk);line-height:1.5}
+.set i{font-style:italic}
+
+.def{font-size:1.4rem;line-height:1.55;margin:0 0 18px;max-width:70ch}
+.def .m{white-space:normal;font-size:1.12em;color:var(--chalk)}
+.def .gloss{color:var(--chalk-faint);font-size:.82em}
+.prop{font-size:1.4rem;margin:48px 0 26px}
+.cd{display:grid;grid-template-columns:auto minmax(80px,1fr) auto;grid-template-rows:auto minmax(120px,auto) auto;align-items:center;max-width:720px;row-gap:6px}
+.cd .node{font-family:var(--tex);font-size:1.55rem;color:var(--chalk);padding:0 10px;white-space:nowrap}
+.cd .node i{font-style:italic}
+.cd .ah{position:relative;height:56px;display:flex;flex-direction:column;justify-content:center}
+.cd .ah svg{width:100%;height:20px;stroke:var(--blue);stroke-width:2.6}
+.cd .ah .lab{position:absolute;left:0;right:0;text-align:center;top:-6px;color:var(--blue);font-family:var(--tex);font-style:italic;font-size:1.1rem}
+.cd .av{display:flex;align-items:stretch;gap:8px;height:100%;justify-self:center;min-height:120px}
+.cd .av svg{width:20px;height:auto;stroke:var(--blue);stroke-width:2.6}
+.cd .av .lab{align-self:center;color:var(--blue);font-family:var(--tex);font-style:italic;font-size:1.1rem;white-space:nowrap}
+.cd .av.left{flex-direction:row-reverse}
+.cap{margin:22px 0 0;max-width:56ch}
+
+#qed .concl{font-size:clamp(1.45rem,2.6vw,2rem);line-height:1.5;max-width:42ch;color:var(--chalk);margin:0}
+.qedrow{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap}
+.qedbox{width:46px;height:46px;stroke:var(--chalk);stroke-width:2.6;flex:none;margin-bottom:8px}
+.contact{margin-top:clamp(60px,8vw,100px)}
+.contact h2{font-size:clamp(1.7rem,3vw,2.3rem)}
+.contact p{margin:10px 0}
+.mail{font-family:var(--tex);font-size:1.25rem;color:var(--chalk);user-select:all;-webkit-user-select:all}
+.chip{background:none;border:1.5px solid rgba(236,238,229,.5);border-radius:14px 10px 13px 9px;padding:1px 12px 2px;margin-left:10px;font-size:.95rem;color:var(--chalk);cursor:pointer}
+.chip:hover{border-color:var(--yellow);color:var(--yellow)}
+.links{display:flex;gap:28px;flex-wrap:wrap;font-size:1.25rem}
+.remark{margin-top:56px;max-width:62ch;color:var(--chalk-faint)}
+.remark b{color:var(--yellow)}
+
+/* the office hours note, pinned to the board */
+.note{position:fixed;top:16px;right:calc(var(--frame) + 14px);z-index:40;width:148px;padding:14px 14px 12px;border:0;text-align:left;cursor:pointer;
+  background:var(--paper) repeating-linear-gradient(180deg,transparent 0 21px,rgba(60,90,150,.18) 21px 22px);background-position:0 8px;
+  color:var(--ink);font-family:var(--hand);transform:rotate(3deg);border-radius:2px;
+  box-shadow:0 10px 18px -6px rgba(0,0,0,.55),0 2px 3px rgba(0,0,0,.35);transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.note:hover,.note:focus-visible{transform:rotate(1deg) translateY(2px)}
+.note::before{content:"";position:absolute;top:-7px;left:50%;width:18px;height:18px;margin-left:-9px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#f0b2c3,#c4566f 60%,#7d2b3e);box-shadow:0 3px 4px rgba(0,0,0,.45)}
+.note b{display:block;font-size:1.25rem;line-height:1.1}
+.note span{display:block;font-size:.86rem;line-height:1.35;color:var(--ink-soft);margin-top:4px}
+
+/* plain view */
+dialog{border:0;padding:0;background:transparent;max-width:min(560px,calc(100vw - 32px));width:100%;color:var(--ink)}
+dialog::backdrop{background:rgba(10,15,13,.72)}
+.card{position:relative;background:var(--paper);padding:34px clamp(22px,5vw,40px) 30px;border-radius:3px;font-family:var(--tex);font-size:1.08rem;line-height:1.55;
+  box-shadow:0 24px 50px -12px rgba(0,0,0,.7)}
+.card,.card *{cursor:auto!important}
+.card a,.card button{cursor:pointer!important}
+.card h2{font-family:var(--tex);font-weight:600;font-size:1.9rem;color:var(--ink);margin:0 0 8px}
+.card p{margin:0 0 10px}
+.card a{color:var(--ink);text-decoration:underline 1px rgba(31,47,77,.5);text-underline-offset:3px}
+.card a:hover{text-decoration-color:var(--ink)}
+.card :focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.card ::selection{background:rgba(31,47,77,.2);color:var(--ink)}
+.card .mailrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 14px;padding:10px 0;border-top:1px solid rgba(31,47,77,.2);border-bottom:1px solid rgba(31,47,77,.2)}
+.card .mail{color:var(--ink);font-size:1.15rem}
+.card .chip{color:var(--ink);border-color:rgba(31,47,77,.45);font-family:var(--tex);margin:0}
+.card .chip:hover{color:var(--ink);border-color:var(--ink);background:rgba(31,47,77,.06)}
+.card ul{list-style:none;margin:0;padding:0;display:flex;gap:22px;flex-wrap:wrap}
+.card .x{position:absolute;top:12px;right:14px;background:none;border:0;font-family:var(--tex);font-size:.95rem;color:var(--ink-soft);text-decoration:underline 1px;text-underline-offset:3px;padding:4px}
+
+/* chalk ledge with chalk and eraser */
+.ledge{position:fixed;left:0;right:0;bottom:0;height:var(--ledge);z-index:35;display:flex;align-items:flex-start;justify-content:center;gap:clamp(10px,2.4vw,22px);padding:10px clamp(20px,4vw,60px) 0;
+  background:linear-gradient(180deg,var(--wood-hi) 0,#a8764a 4px,var(--wood) 14px,var(--wood-lo) 100%);
+  box-shadow:0 -8px 18px -6px rgba(0,0,0,.6)}
+.ledge::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(90deg,rgba(0,0,0,.07) 0 2px,transparent 2px 17px,rgba(255,255,255,.035) 17px 19px,transparent 19px 41px)}
+.stick{position:relative;width:52px;height:13px;margin-top:6px;border:0;padding:0;border-radius:4px 5px 5px 4px;cursor:pointer;background:var(--c);
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.14),inset 0 2px 0 rgba(255,255,255,.35),0 3px 4px rgba(0,0,0,.4);transition:transform .2s cubic-bezier(.2,.8,.2,1)}
+.stick::after{content:"";position:absolute;right:-2px;top:2px;bottom:2px;width:5px;border-radius:50%;background:rgba(255,255,255,.35)}
+.stick:nth-child(2){width:40px;transform:rotate(-4deg)}
+.stick:nth-child(3){width:46px;transform:rotate(3deg)}
+.stick:nth-child(4){width:34px}
+.stick[aria-pressed=true]{transform:translateY(-6px) rotate(-8deg)}
+.eraser{display:flex;flex-direction:column;width:84px;height:30px;padding:0;border:0;border-radius:4px;overflow:hidden;cursor:pointer;margin-left:clamp(6px,2vw,18px);
+  box-shadow:0 4px 6px rgba(0,0,0,.45);transition:transform .2s}
+.eraser:hover{transform:translateY(-2px)}
+.eraser .top{flex:1;background:linear-gradient(180deg,#c9a170,#9c7447)}
+.eraser .felt{height:9px;background:#3b3d3c repeating-linear-gradient(90deg,#444645 0 2px,#333534 2px 4px)}
+.ledge .hint{position:absolute;right:clamp(20px,4vw,60px);top:14px;font-size:.92rem;color:#f0dcc0;opacity:.85}
+.ledge .hint .t{display:none}
+@media (hover:none){.ledge .hint .m-{display:none}.ledge .hint .t{display:inline}}
+.ledge .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+#doodle{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:20;transition:opacity 1.2s}
+#doodle.fade{opacity:0}
+.drawing body{touch-action:none}
+.inking{user-select:none;-webkit-user-select:none}
+.duster{position:fixed;left:0;top:0;width:150px;height:56px;z-index:25;pointer-events:none;display:none;border-radius:6px;overflow:hidden;box-shadow:0 10px 16px rgba(0,0,0,.5)}
+.duster .top{height:38px;background:linear-gradient(180deg,#c9a170,#9c7447)}
+.duster .felt{height:18px;background:#3b3d3c repeating-linear-gradient(90deg,#444645 0 2px,#333534 2px 4px)}
+
+/* chalk cursor and the lecturer's chalk */
+.fine,.fine *{cursor:none!important}
+.chalk{position:fixed;left:0;top:0;z-index:60;pointer-events:none;width:0;height:0}
+.chalk i{position:absolute;left:-1px;top:-5px;width:36px;height:10px;border-radius:3px 4px 4px 2px;transform-origin:1px 5px;transform:rotate(-38deg);
+  background:var(--c,var(--chalk));box-shadow:inset 0 -2px 0 rgba(0,0,0,.18),inset 0 2px 0 rgba(255,255,255,.4),2px 4px 5px rgba(0,0,0,.45);transition:transform .15s}
+.chalk.hot i{transform:rotate(-52deg) translateX(3px)}
+.chalk.down i{transform:rotate(-30deg) scale(.96)}
+#cur{display:none}.fine #cur{display:block}
+#tip{opacity:0;transition:opacity .2s}
+#tip.on{opacity:1}
+
+@media (max-width:860px){
+  :root{--frame:6px;--ledge:56px}
+  main{padding-left:22px;padding-right:22px}
+  .back{left:22px}
+  .hero{grid-template-columns:1fr;align-items:start;padding-top:96px;gap:44px;min-height:auto}
+  .plan{padding-left:0;padding-top:28px}
+  .plan .vline{display:none}
+  .cols{grid-template-columns:1fr}
+  .cols>.vdiv{display:none}
+  .thm{padding:18px 18px 20px}
+  .note{width:118px;padding:11px 11px 9px;top:12px}
+  .note b{font-size:1.08rem}.note span{font-size:.78rem}
+  .cd .node{font-size:1.2rem;padding:0 4px}
+  .cd .ah .lab,.cd .av .lab{font-size:.95rem}
+  .ledge .hint{display:none}
+  .stick{width:42px}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <filter id="chalk" x="-10%" y="-30%" width="120%" height="160%">
+    <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="4" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G" result="d"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3 0 0 0 -.32" result="m"/>
+    <feComposite in="d" in2="m" operator="in"/>
+  </filter>
+</svg>
+<canvas id="slate" aria-hidden="true"></canvas>
+<div class="frame l" aria-hidden="true"></div><div class="frame r" aria-hidden="true"></div>
+
+<button class="note" id="noteBtn" aria-haspopup="dialog" aria-controls="oh"><b>Office hours</b><span>email, links, résumé</span></button>
+
+<main id="board">
+  <div id="ghosts" aria-hidden="true"></div>
+  <a class="back" href="index.html">← all boards</a>
+  <noscript><p style="padding-top:120px">This board writes itself with JavaScript. Toyeshh Medikonda: toyeshhm@gmail.com, github.com/toyeshhm</p></noscript>
+</main>
+
+<canvas id="doodle" aria-hidden="true"></canvas>
+<div class="duster" id="duster" aria-hidden="true"><div class="top"></div><div class="felt"></div></div>
+<div class="chalk" id="cur" aria-hidden="true"><i></i></div>
+<div class="chalk" id="tip" aria-hidden="true"><i></i></div>
+
+<div class="ledge" role="toolbar" aria-label="Chalk ledge: draw on the board">
+  <button class="stick" style="--c:#eceee5" data-c="#eceee5" aria-pressed="true" aria-label="White chalk"></button>
+  <button class="stick" style="--c:#f2d977" data-c="#f2d977" aria-pressed="false" aria-label="Yellow chalk"></button>
+  <button class="stick" style="--c:#f4a7bd" data-c="#f4a7bd" aria-pressed="false" aria-label="Pink chalk"></button>
+  <button class="stick" style="--c:#97cbec" data-c="#97cbec" aria-pressed="false" aria-label="Blue chalk"></button>
+  <button class="eraser" id="eraseBtn" aria-label="Erase your drawings"><span class="top"></span><span class="felt"></span></button>
+  <span class="hint" aria-hidden="true"><span class="m-">drag anywhere to draw</span><span class="t">tap a chalk to draw</span></span>
+  <span class="sr" id="live" aria-live="polite"></span>
+</div>
+
+<dialog id="oh" aria-labelledby="oh-name">
+  <div class="card">
+    <button class="x" id="ohClose">Close</button>
+    <h2 id="oh-name"></h2>
+    <p id="oh-now"></p>
+    <p id="oh-line"></p>
+    <div class="mailrow"><span class="mail" id="oh-mail"></span><button class="chip" data-copy>Copy email</button></div>
+    <ul id="oh-links"></ul>
+  </div>
+</dialog>
+
+<script src="data.js"></script>
+<script>
+(() => {
+'use strict';
+const D = window.TOYESHH;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const DPR = Math.min(2, window.devicePixelRatio || 1);
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const nums = s => esc(s).replace(/[−+]?\$?\d[\d,]*(?:\.\d+)?(?:K\+|\+|%|st|nd|rd|th)?/g, m => `<span class="n">${m}</span>`);
+const WORD = ['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve'];
+const cap = s => s[0].toUpperCase() + s.slice(1);
+const nE = D.experience.length, nW = D.wins.length, nP = D.projects.length;
+const MATH = '<span class="m"><span class="r">E</span>[X ∪ {<span class="r">Toyeshh</span>}] &gt; <span class="r">E</span>[X]</span>';
+
+/* ---------- hand-drawn SVG pieces (paths are stroked in order) ---------- */
+const UL = '<svg class="draw uline" viewBox="0 0 400 20" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 13 C 80 7, 170 15, 260 9 S 360 11, 397 7"/></svg>';
+const BOX = '<svg class="draw box" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M-.8 2.6 L100.9 1.4"/><path pathLength="1" d="M99.1 -2.5 L98.6 102"/><path pathLength="1" d="M101 97.6 L-1 98.8"/><path pathLength="1" d="M1.3 101.5 L1.7 -2"/></svg>';
+const VL = '<svg class="draw vline" viewBox="0 0 14 100" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M7 0 C 5 30, 9 60, 6.5 100"/></svg>';
+const VDIV = VL.replace('vline', 'vdiv');
+const TOMB = '<svg class="draw tomb" viewBox="0 0 24 24" aria-hidden="true"><path pathLength="1" d="M3 3.5 L21 3 L21.4 21 L3.2 21.3 Z"/></svg>';
+const QED = '<svg class="draw qedbox" viewBox="0 0 46 46" aria-hidden="true"><path pathLength="1" d="M4 5 L42 4 L42.5 42 L4.5 42.6 Z"/><path pathLength="1" d="M8 10 L38 9 M38 14 L8 15.5 M8 21 L38 20 M38 25.5 L8 26.5 M8 32 L38 31 M38 36.5 L8 37.5"/></svg>';
+const AH = '<svg viewBox="0 0 200 20" preserveAspectRatio="none" class="draw" aria-hidden="true"><path pathLength="1" d="M4 11 C 60 8, 130 13, 194 10"/><path pathLength="1" d="M183 3 L195 10 L183 17"/></svg>';
+const AV = '<svg viewBox="0 0 20 120" preserveAspectRatio="none" class="draw" aria-hidden="true"><path pathLength="1" d="M10 4 C 8 40, 12 80, 10 114"/><path pathLength="1" d="M3 103 L10 115 L17 103"/></svg>';
+
+/* ---------- content, built from data.js ---------- */
+const lemma = (e, i) => `
+  <article class="lemma">
+    <h3 class="w"><span class="y">Lemma ${i + 1}</span> <span class="org">(${esc(e.org.replace(/\s*\((.+)\)/, ', $1'))}).</span></h3>
+    <p class="w stmt">${esc(e.role)}, ${esc(e.when)}.</p>
+    <p class="pf"><em>Proof.</em> ${esc(e.did)}</p>
+    <ul class="res">${e.numbers.map(([n, l]) => `<li class="w"><span class="imp">⟹</span><span class="n">${esc(n)}</span> ${esc(l)}</li>`).join('')}</ul>
+    ${TOMB}
+  </article>`;
+const cor = (w, i) => `
+  <article class="cor">
+    <h3 class="w"><span class="y">Corollary ${i + 1}.</span> ${esc(w.what)}.</h3>
+    <p class="det">${nums(w.detail)}.</p>
+  </article>`;
+const ex = (p, i) => `
+  <article class="ex">
+    <h3 class="w"><span class="y">Example ${i + 1}</span> <span class="k">(${esc(p.kind)})</span> ${esc(p.name)}.</h3>
+    <p>${esc(p.one)}</p>
+    <p class="set"><i>S</i><sub>${i + 1}</sub> = {${p.stack.map(esc).join(', ')}}</p>
+  </article>`;
+
+const plan = [
+  ['lemmas', `Step 1.`, `Lemmas 1–${nE}, from work`],
+  ['corollaries', `Step 2.`, `Corollaries 1–${nW}, from the record`],
+  ['examples', `Step 3.`, `Examples 1–${nP}, things he built`],
+  ['definitions', `Step 4.`, `Definitions and a diagram`],
+  ['qed', `∎`, `Conclusion and office hours`],
+];
+
+const board = $('#board');
+board.insertAdjacentHTML('beforeend', `
+<header class="hero" id="top">
+  <div>
+    <h1 class="w name">${esc(D.name)}</h1>
+    ${UL}
+    <p class="now">${esc(D.now)}. ${esc(D.place)}.</p>
+    <div class="thm">
+      ${BOX}
+      <p class="w thm-text"><span class="y">Theorem 1.</span> Let X be any team that builds products, models or agents. Then ${MATH}.</p>
+    </div>
+    <p class="w proof"><span class="y">Proof,</span> by construction.</p>
+    <p class="lede">${esc(D.line)} We exhibit ${WORD[nE]} lemmas, ${WORD[nW]} corollaries and ${WORD[nP]} examples, then conclude.</p>
+  </div>
+  <nav class="plan" aria-label="Plan of the proof">
+    ${VL}
+    <h2 class="w">Plan of the proof</h2>
+    <ol>${plan.map(([id, a, b]) => `<li><a class="w" href="#${id}"><span class="y">${a}</span> ${b}</a></li>`).join('')}</ol>
+  </nav>
+</header>
+
+<section class="step" id="lemmas" aria-labelledby="h-lem">
+  <h2 class="w" id="h-lem"><span class="y">Step 1.</span> ${cap(WORD[nE])} lemmas, from work</h2>${UL}
+  <div class="cols">${VDIV}${D.experience.map(lemma).join('')}</div>
+</section>
+
+<section class="step" id="corollaries" aria-labelledby="h-cor">
+  <h2 class="w" id="h-cor"><span class="y">Step 2.</span> ${cap(WORD[nW])} corollaries, from the record</h2>${UL}
+  <div class="cols">${VDIV}${D.wins.map(cor).join('')}</div>
+</section>
+
+<section class="step" id="examples" aria-labelledby="h-ex">
+  <h2 class="w" id="h-ex"><span class="y">Step 3.</span> ${cap(WORD[nP])} examples, things he built</h2>${UL}
+  <div class="cols">${VDIV}${D.projects.map(ex).join('')}</div>
+</section>
+
+<section class="step" id="definitions" aria-labelledby="h-def">
+  <h2 class="w" id="h-def"><span class="y">Step 4.</span> Definitions</h2>${UL}
+  <p class="w def"><span class="y">Definition 1.</span> <span class="m">L = {<span class="r">${D.skills.languages.map(esc).join(', ')}</span>}</span><span class="gloss">, the languages.</span></p>
+  <p class="w def"><span class="y">Definition 2.</span> <span class="m">A = {<span class="r">${D.skills.areas.map(esc).join(', ')}</span>}</span><span class="gloss">, the areas.</span></p>
+  <p class="w prop"><span class="y">Proposition.</span> The square commutes.</p>
+  <div class="cd" role="img" aria-label="A commutative square. A problem is formalized into a model and solved with A to give a result; or it is built with L into a product and measured to give the same result.">
+    <div class="node w">problem</div>
+    <div class="ah"><span class="lab w">formalize</span>${AH}</div>
+    <div class="node w">model</div>
+    <div class="av left"><span class="lab w">build with <i>L</i></span>${AV}</div>
+    <div></div>
+    <div class="av"><span class="lab w">solve with <i>A</i></span>${AV}</div>
+    <div class="node w">product</div>
+    <div class="ah"><span class="lab w">ship, measure</span>${AH}</div>
+    <div class="node w">result</div>
+  </div>
+  <p class="cap">Build it or prove it. Both paths end at a result someone measured.</p>
+</section>
+
+<section class="step" id="qed" aria-labelledby="h-qed">
+  <h2 class="w" id="h-qed"><span class="y">Conclusion.</span></h2>${UL}
+  <div class="qedrow">
+    <p class="w concl">Hence, by Lemmas 1–${nE}, Corollaries 1–${nW} and Examples 1–${nP}, ${MATH}.</p>
+    ${QED}
+  </div>
+  <div class="contact">
+    <h2 class="w">Office hours</h2>
+    <p>Write to <span class="mail">${esc(D.links.email)}</span><button class="chip" data-copy>copy</button></p>
+    <p class="links"><a href="${esc(D.links.github)}" rel="noopener">GitHub</a><a href="${esc(D.links.linkedin)}" rel="noopener">LinkedIn</a><a href="${esc(D.links.resume)}">Résumé</a></p>
+  </div>
+  <p class="remark"><b>Remark</b> (not needed for the proof). ${D.facts.map(f => esc(f) + '.').join(' ')}</p>
+</section>`);
+
+/* plain view */
+$('#oh-name').textContent = D.name;
+$('#oh-now').textContent = D.now + '.';
+$('#oh-line').textContent = D.line;
+$('#oh-mail').textContent = D.links.email;
+$('#oh-links').innerHTML = [['GitHub', D.links.github], ['LinkedIn', D.links.linkedin], ['Résumé', D.links.resume]]
+  .map(([t, h]) => `<li><a href="${esc(h)}" rel="noopener">${t}</a></li>`).join('');
+
+/* ---------- chalk material ---------- */
+const rng = seed => () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const speck = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 160;
+  const x = c.getContext('2d'), r = rng(11);
+  const img = x.createImageData(160, 160), d = img.data;
+  for (let i = 3; i < d.length; i += 4) { const v = r(); d[i] = v < .1 ? 190 + r() * 65 : v < .45 ? r() * 70 : 0; }
+  x.putImageData(img, 0, 0);
+  x.strokeStyle = 'rgba(0,0,0,.45)'; x.lineWidth = .6;
+  for (let i = 0; i < 46; i++) { const a = r() * 160, b = r() * 160; x.beginPath(); x.moveTo(a, b); x.lineTo(a + 5 + r() * 14, b + (r() - .5) * 3); x.stroke(); }
+  return c;
+})();
+
+/* slate: fixed grain + blotches. Grain is uniform, so it can stay put while the board scrolls */
+function paintSlate() {
+  const c = $('#slate'), W = Math.max(innerWidth, 400), H = Math.max(innerHeight, 400) + 160;
+  c.width = W; c.height = H;
+  const x = c.getContext('2d'), r = rng(5);
+  x.fillStyle = '#1b2622'; x.fillRect(0, 0, W, H);
+  for (let i = 0; i < 26; i++) {
+    const cx = r() * W, cy = r() * H, rad = 120 + r() * 420, g = x.createRadialGradient(cx, cy, 0, cx, cy, rad);
+    const light = r() > .45;
+    g.addColorStop(0, light ? 'rgba(220,235,225,.035)' : 'rgba(0,0,0,.09)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+    x.fillStyle = g; x.fillRect(cx - rad, cy - rad, rad * 2, rad * 2);
+  }
+  const img = x.getImageData(0, 0, W, H), d = img.data;
+  for (let i = 0; i < d.length; i += 4) { const n = (r() - .5) * 14; d[i] += n; d[i + 1] += n; d[i + 2] += n; }
+  x.putImageData(img, 0, 0);
+  const v = x.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .35, W / 2, H / 2, Math.max(W, H) * .75);
+  v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.35)');
+  x.fillStyle = v; x.fillRect(0, 0, W, H);
+}
+
+/* ghosted, half-erased equations from earlier lectures */
+const GHOSTS = [
+  '∑<sub>k=1</sub><sup>n</sup> k = n(n+1)/2', 'dp[i] = min<sub>j&lt;i</sub> ( dp[j] + c(j, i) )', 'SR = <i>μ</i> / <i>σ</i> · √12',
+  '|<i>ψ</i>⟩ = <i>α</i>|0⟩ + <i>β</i>|1⟩', 'softmax( QK<sup>T</sup> / √d ) V', 'P(A | B) = P(B | A) P(A) / P(B)',
+  '∫<sub>0</sub><sup>∞</sup> e<sup>−x²</sup> dx = √π / 2', 'T(n) = 2T(n/2) + O(n)', 'lim<sub>n→∞</sub> (1 + 1/n)<sup>n</sup> = e',
+  'gcd(a, b) = gcd(b, a mod b)', '∇<sub><i>θ</i></sub> L(<i>θ</i>)', 'e<sup><i>iπ</i></sup> + 1 = 0', 'O(n log n)', 'det(A − <i>λ</i>I) = 0',
+];
+function placeGhosts() {
+  const g = $('#ghosts'), H = board.scrollHeight, W = board.clientWidth, r = rng(23);
+  g.style.height = H + 'px';
+  let html = '';
+  const n = Math.max(8, Math.round(H / 520));
+  for (let i = 0; i < n; i++) {
+    const top = (i + .2 + r() * .6) / n * H, left = r() * W * .7, size = 26 + r() * 40, rot = (r() - .5) * 7;
+    const a = Math.round(r() * 160 + 10), s = 30 + r() * 25;
+    html += `<div class="ghost" style="top:${top | 0}px;left:${left | 0}px;font-size:${size | 0}px;opacity:${(.07 + r() * .06).toFixed(3)};transform:rotate(${rot.toFixed(1)}deg);` +
+      `-webkit-mask-image:linear-gradient(${a}deg,#000 0 ${s | 0}%,transparent ${(s + 14) | 0}%,rgba(0,0,0,.5) ${(s + 30) | 0}%,#000 ${(s + 46) | 0}%);mask-image:linear-gradient(${a}deg,#000 0 ${s | 0}%,transparent ${(s + 14) | 0}%,rgba(0,0,0,.5) ${(s + 30) | 0}%,#000 ${(s + 46) | 0}%)">${GHOSTS[i % GHOSTS.length]}</div>`;
+    const sw = 280 + r() * 520;
+    html += `<div class="smear" style="top:${(top + (r() - .5) * 200) | 0}px;left:${(r() * W * .8 - 100) | 0}px;width:${sw | 0}px;height:${(50 + r() * 110) | 0}px;transform:rotate(${((r() - .5) * 14).toFixed(1)}deg)"></div>`;
+  }
+  g.innerHTML = html;
+}
+
+/* ---------- the signature: chalk that writes itself ----------
+   Each .w element is rasterized in its real font, thinned to a 1px skeleton (Zhang-Suen),
+   the skeleton is traced into pen strokes word by word, and a chalk brush follows those
+   strokes to reveal the lettering. The DOM text stays underneath for selection and screen readers. */
+function thin(g, W, H) {
+  let it = 0, changed = true; const del = [];
+  while (changed && it < 40) {
+    changed = false; it++;
+    for (let step = 0; step < 2; step++) {
+      del.length = 0;
+      for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
+        const i = y * W + x; if (!g[i]) continue;
+        const p2 = g[i - W], p3 = g[i - W + 1], p4 = g[i + 1], p5 = g[i + W + 1], p6 = g[i + W], p7 = g[i + W - 1], p8 = g[i - 1], p9 = g[i - W - 1];
+        const B = p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9; if (B < 2 || B > 6) continue;
+        const A = (!p2 && p3) + (!p3 && p4) + (!p4 && p5) + (!p5 && p6) + (!p6 && p7) + (!p7 && p8) + (!p8 && p9) + (!p9 && p2);
+        if (A !== 1) continue;
+        if (step === 0 ? (p2 * p4 * p6 || p4 * p6 * p8) : (p2 * p4 * p8 || p2 * p6 * p8)) continue;
+        del.push(i);
+      }
+      for (const i of del) g[i] = 0;
+      if (del.length) changed = true;
+    }
+  }
+  return it;
+}
+const N8 = [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]];
+function trace(g, W, H, regions) {
+  const vis = new Uint8Array(W * H), out = [];
+  const deg = i => { let k = 0; for (const [ox, oy] of N8) k += g[i + oy * W + ox]; return k; };
+  const run = start => {
+    const stack = [start]; let last = -1, dx = 1, dy = 0;
+    while (stack.length) {
+      const p = stack.pop(); if (vis[p]) continue; vis[p] = 1;
+      const x = p % W, y = (p / W) | 0;
+      const lift = last < 0 || Math.abs(x - last % W) > 1 || Math.abs(y - ((last / W) | 0)) > 1;
+      if (!lift) { dx = x - last % W; dy = y - ((last / W) | 0); }
+      out.push(x, y, lift ? 1 : 0); last = p;
+      const nb = [];
+      for (const [ox, oy] of N8) { const q = p + oy * W + ox; if (g[q] && !vis[q]) nb.push([q, ox * dx + oy * dy]); }
+      nb.sort((a, b) => a[1] - b[1]);
+      for (const [q] of nb) stack.push(q);
+    }
+  };
+  const sweep = (x0, y0, x1, y1) => {
+    x0 = Math.max(1, x0); y0 = Math.max(1, y0); x1 = Math.min(W - 2, x1); y1 = Math.min(H - 2, y1);
+    for (;;) {
+      let best = -1, bs = 1e9, any = -1, as = 1e9;
+      for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+        const i = y * W + x; if (!g[i] || vis[i]) continue;
+        const s = x + y * .55;
+        if (s < as) { as = s; any = i; }
+        if (s < bs && deg(i) === 1) { bs = s; best = i; }
+      }
+      if (any < 0) return;
+      run(best >= 0 && bs < as + 14 ? best : any);
+    }
+  };
+  for (const r of regions) sweep(r[0], r[1], r[2], r[3]);
+  sweep(0, 0, W - 1, H - 1);
+  return out;
+}
+
+const M = 10; // canvas bleed so chalk can overshoot the box
+const tip = $('#tip');
+class Writer {
+  constructor(el) {
+    this.el = el; this.state = 0; this.colors = new Map();
+    const tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    for (let n; (n = tw.nextNode());) if (!this.colors.has(n.parentElement)) this.colors.set(n.parentElement, getComputedStyle(n.parentElement).color);
+    this.tipColor = this.colors.values().next().value || '#eceee5';
+    el.classList.add('armed');
+  }
+  prep() {
+    const el = this.el, box = el.getBoundingClientRect();
+    const W = Math.ceil(box.width) + 2 * M, H = Math.ceil(box.height) + 2 * M;
+    if (!box.width) return false;
+    let cv = this.cv;
+    if (!cv) { cv = this.cv = document.createElement('canvas'); cv.className = 'ink'; cv.setAttribute('aria-hidden', 'true'); el.appendChild(cv); }
+    cv.width = W * DPR; cv.height = H * DPR; cv.style.width = W + 'px'; cv.style.height = H + 'px'; cv.style.left = cv.style.top = -M + 'px';
+    const tex = document.createElement('canvas'); tex.width = cv.width; tex.height = cv.height;
+    const t = tex.getContext('2d'); t.scale(DPR, DPR);
+    const sk = document.createElement('canvas'); sk.width = W; sk.height = H;
+    const s = sk.getContext('2d', { willReadFrequently: true });
+    const regions = [];
+    const tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), range = document.createRange();
+    for (let n; (n = tw.nextNode());) {
+      const p = n.parentElement, cs = getComputedStyle(p);
+      const font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+      t.font = s.font = font; t.fillStyle = this.colors.get(p) || '#eceee5';
+      for (const m of n.data.matchAll(/\S+/g)) {
+        range.setStart(n, m.index); range.setEnd(n, m.index + m[0].length);
+        const rects = range.getClientRects();
+        const parts = rects.length === 1 ? [[m[0], rects[0]]] : [...m[0]].map((ch, k) => {
+          range.setStart(n, m.index + k); range.setEnd(n, m.index + k + ch.length); return [ch, range.getBoundingClientRect()];
+        });
+        for (const [w, r] of parts) {
+          if (!r || !r.width) continue;
+          const x = r.left - box.left + M, y = r.top - box.top + M;
+          const asc = t.measureText(w).fontBoundingBoxAscent ?? parseFloat(cs.fontSize) * .8;
+          t.globalAlpha = .93; t.fillText(w, x, y + asc);
+          t.globalAlpha = .28; t.fillText(w, x + .5, y + asc - .45);
+          s.fillText(w, x, y + asc);
+          regions.push([Math.floor(x) - 3, Math.floor(y) - 3, Math.ceil(x + r.width) + 3, Math.ceil(y + r.height) + 3]);
+        }
+      }
+    }
+    t.setTransform(1, 0, 0, 1, 0, 0); t.globalAlpha = 1;
+    t.globalCompositeOperation = 'destination-out'; t.fillStyle = t.createPattern(speck, 'repeat'); t.fillRect(0, 0, tex.width, tex.height);
+    Object.assign(this, { tex, sk: s, regions, W, H, ctx: cv.getContext('2d') });
+    return true;
+  }
+  full() { if (!this.prep()) return; const c = this.ctx; c.clearRect(0, 0, c.canvas.width, c.canvas.height); c.drawImage(this.tex, 0, 0); this.sk = null; }
+  finish() { this.skip = true; if (this.state === 2) return; this.state = 2; this.full(); this.el.classList.add('done'); }
+  write(mul) {
+    if (!this.prep()) { this.finish(); return Promise.resolve(); }
+    const { W, H } = this, a = this.sk.getImageData(0, 0, W, H).data, g = new Uint8Array(W * H);
+    for (let i = 0; i < g.length; i++) g[i] = a[i * 4 + 3] > 110 ? 1 : 0;
+    const iters = thin(g, W, H), pts = trace(g, W, H, this.regions), n = pts.length / 3;
+    const rad = (iters * 1.15 + 1.6) * DPR, fs = parseFloat(getComputedStyle(this.el).fontSize);
+    const dur = Math.min(1.3, Math.max(.4, n / (fs * 40))) / mul * 1000;
+    const mask = document.createElement('canvas'); mask.width = this.tex.width; mask.height = this.tex.height;
+    const mk = mask.getContext('2d'), c = this.ctx; mk.fillStyle = '#fff';
+    tip.style.setProperty('--c', this.tipColor); tip.classList.add('on');
+    return new Promise(res => {
+      let i = 0, t0 = 0;
+      const frame = now => {
+        if (this.skip) { tip.classList.remove('on'); return res(); }
+        t0 = t0 || now;
+        const to = Math.min(n, Math.ceil((now - t0) / dur * n));
+        for (; i < to; i++) { mk.beginPath(); mk.arc(pts[i * 3] * DPR, pts[i * 3 + 1] * DPR, rad, 0, 6.3); mk.fill(); }
+        c.globalCompositeOperation = 'copy'; c.drawImage(mask, 0, 0);
+        c.globalCompositeOperation = 'source-in'; c.drawImage(this.tex, 0, 0);
+        c.globalCompositeOperation = 'source-over';
+        if (i > 0) {
+          const cr = this.cv.getBoundingClientRect(), k = (i - 1) * 3;
+          tip.style.transform = `translate(${cr.left + pts[k]}px,${cr.top + pts[k + 1]}px)`;
+        }
+        if (i < n) requestAnimationFrame(frame);
+        else { tip.classList.remove('on'); this.finish(); res(); }
+      };
+      requestAnimationFrame(frame);
+    });
+  }
+}
+class Drawer {
+  constructor(el) { this.el = el; this.state = 0; el.classList.add('armed'); }
+  finish() { this.skip = true; this.state = 2; this.el.classList.remove('armed'); this.anims?.forEach(a => a.finish()); }
+  async write(mul) {
+    this.anims = [];
+    for (const p of this.el.querySelectorAll('path')) {
+      if (this.skip) break;
+      p.classList.add('on');
+      const a = p.animate([{ strokeDasharray: '1 2', strokeDashoffset: 1 }, { strokeDasharray: '1 2', strokeDashoffset: 0 }],
+        { duration: 420 / mul, easing: 'cubic-bezier(.35,.1,.25,1)' });
+      this.anims.push(a);
+      await a.finished.catch(() => {});
+    }
+    this.finish();
+  }
+}
+
+/* one hand writes one thing at a time; a long queue makes the hand hurry */
+const items = [], queue = []; let busy = false;
+function enqueue(it) {
+  for (const o of items) { if (o === it) break; if (!o.state) { o.state = 1; queue.push(o); } }
+  if (!it.state) { it.state = 1; queue.push(it); }
+  pump();
+}
+async function pump() {
+  if (busy) return; busy = true;
+  while (queue.length) {
+    const it = queue.shift(), r = it.el.getBoundingClientRect();
+    if (RM || r.bottom < 0 || r.top > innerHeight) it.finish();
+    else await it.write(1 + queue.length * .6);
+  }
+  busy = false;
+}
+
+function boot() {
+  for (const el of document.querySelectorAll('.w, .draw')) items.push(el.tagName === 'svg' ? new Drawer(el) : new Writer(el));
+  // svgs nested inside a writer's flow belong in DOM order with it; items is already in document order
+  if (RM) { items.forEach(it => it.finish()); return; }
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    io.unobserve(e.target); enqueue(items.find(it => it.el === e.target));
+  }), { rootMargin: '0px 0px -8% 0px', threshold: .15 });
+  items.forEach(it => io.observe(it.el));
+}
+
+let rz;
+addEventListener('resize', () => {
+  clearTimeout(rz);
+  rz = setTimeout(() => {
+    items.forEach(it => { if (it instanceof Writer && it.state === 2) it.full(); });
+    placeGhosts(); sizeDoodle();
+    if (Math.abs($('#slate').width - innerWidth) > 40) paintSlate();
+  }, 180);
+});
+
+/* ---------- doodling with the chalk cursor ---------- */
+const dc = $('#doodle'), dx = dc.getContext('2d');
+const tex = {};
+const chalkTex = col => tex[col] || (tex[col] = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 160; const x = c.getContext('2d');
+  x.fillStyle = col; x.fillRect(0, 0, 160, 160); x.globalCompositeOperation = 'destination-out'; x.drawImage(speck, 0, 0);
+  return dx.createPattern(c, 'repeat');
+})());
+let strokes = [], cur = null, color = '#eceee5', touchDraw = false, wiping = false;
+function sizeDoodle() { dc.width = innerWidth * DPR; dc.height = innerHeight * DPR; redraw(); }
+function styleFor(col) {
+  const p = chalkTex(col); p.setTransform(new DOMMatrix([DPR, 0, 0, DPR, -scrollX * DPR, -scrollY * DPR]));
+  dx.strokeStyle = p; dx.lineWidth = 3.6 * DPR; dx.lineCap = dx.lineJoin = 'round';
+}
+function redraw() {
+  if (wiping) return;
+  dx.clearRect(0, 0, dc.width, dc.height);
+  for (const s of strokes) {
+    styleFor(s.c); dx.beginPath();
+    s.p.forEach(([x, y], k) => dx[k ? 'lineTo' : 'moveTo']((x - scrollX) * DPR, (y - scrollY) * DPR));
+    if (s.p.length === 1) dx.lineTo((s.p[0][0] - scrollX + .1) * DPR, (s.p[0][1] - scrollY) * DPR);
+    dx.stroke();
+  }
+}
+let sr = 0;
+addEventListener('scroll', () => { if (!sr) sr = requestAnimationFrame(() => { sr = 0; redraw(); }); }, { passive: true });
+const blocked = t => t.closest('a,button,dialog,.note,.ledge,input,textarea,.mail');
+addEventListener('pointerdown', e => {
+  if (e.button !== 0 || blocked(e.target) || $('#oh').open) return;
+  if (e.pointerType === 'touch' && !touchDraw) return;
+  e.preventDefault();
+  document.documentElement.classList.add('inking');
+  cur = { c: color, p: [[e.pageX, e.pageY]] }; strokes.push(cur);
+  curEl.classList.add('down');
+  styleFor(color); dx.beginPath(); dx.moveTo((e.clientX) * DPR, (e.clientY) * DPR); dx.lineTo((e.clientX + .1) * DPR, e.clientY * DPR); dx.stroke();
+});
+addEventListener('pointermove', e => {
+  if (!cur) return;
+  const last = cur.p[cur.p.length - 1];
+  if (Math.hypot(e.pageX - last[0], e.pageY - last[1]) < 1.5) return;
+  cur.p.push([e.pageX, e.pageY]);
+  styleFor(cur.c); dx.beginPath(); dx.moveTo((last[0] - scrollX) * DPR, (last[1] - scrollY) * DPR); dx.lineTo(e.clientX * DPR, e.clientY * DPR); dx.stroke();
+});
+const lift = () => { cur = null; curEl.classList.remove('down'); document.documentElement.classList.remove('inking'); };
+addEventListener('pointerup', lift); addEventListener('pointercancel', lift);
+
+/* chalk cursor */
+const curEl = $('#cur');
+if (matchMedia('(pointer: fine)').matches) {
+  document.documentElement.classList.add('fine');
+  addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse' && e.pointerType !== 'pen') return;
+    curEl.style.transform = `translate(${e.clientX}px,${e.clientY}px)`;
+    curEl.style.opacity = 1;
+    curEl.classList.toggle('hot', !!e.target.closest('a,button'));
+  }, { passive: true });
+  document.addEventListener('mouseleave', () => { curEl.style.opacity = 0; });
+}
+
+/* ledge: pick a chalk, erase */
+const live = $('#live');
+document.querySelectorAll('.stick').forEach(b => b.addEventListener('click', () => {
+  const was = b.getAttribute('aria-pressed') === 'true';
+  if (matchMedia('(hover: none)').matches && was) { touchDraw = !touchDraw; }
+  else touchDraw = matchMedia('(hover: none)').matches ? true : touchDraw;
+  document.querySelectorAll('.stick').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
+  color = b.dataset.c; curEl.style.setProperty('--c', color);
+  document.documentElement.classList.toggle('drawing', touchDraw);
+  live.textContent = `${b.getAttribute('aria-label')} picked up.` + (touchDraw ? ' Drag on the board to draw.' : '');
+}));
+$('#eraseBtn').addEventListener('click', () => {
+  if (!strokes.length) { live.textContent = 'Nothing to erase.'; return; }
+  const done = () => {
+    strokes = []; wiping = false; dc.classList.add('fade');
+    setTimeout(() => { dc.classList.remove('fade'); redraw(); }, 1250);
+    live.textContent = 'Board erased.';
+  };
+  if (RM) { dx.clearRect(0, 0, dc.width, dc.height); return done(); }
+  const du = $('#duster'), W = innerWidth, H = innerHeight, passes = Math.max(3, Math.ceil(H / 220)), T = 380 * passes;
+  wiping = true; du.style.display = 'block';
+  let t0 = 0, px = null;
+  const step = now => {
+    t0 = t0 || now;
+    const t = Math.min(1, (now - t0) / T), seg = t * passes, k = Math.min(passes - 1, Math.floor(seg)), f = seg - k;
+    const e = f < .5 ? 2 * f * f : 1 - Math.pow(-2 * f + 2, 2) / 2;
+    const x = (k % 2 ? 1 - e : e) * (W + 160) - 160, y = (k + .5) / passes * H - 28 + Math.sin(seg * 9) * 10;
+    du.style.transform = `translate(${x}px,${y}px) rotate(${(k % 2 ? 6 : -6)}deg)`;
+    const pts = px ? [px, [x, y]] : [[x, y]];
+    for (const [ax, ay] of pts) {
+      dx.save(); dx.globalCompositeOperation = 'destination-out'; dx.fillStyle = 'rgba(0,0,0,.92)';
+      dx.fillRect((ax - 8) * DPR, (ay - 30) * DPR, 166 * DPR, 116 * DPR);
+      dx.globalCompositeOperation = 'source-over'; dx.fillStyle = 'rgba(236,238,229,.025)';
+      dx.fillRect((ax) * DPR, (ay + 10) * DPR, 150 * DPR, 40 * DPR); dx.restore();
+    }
+    px = [x, y];
+    if (t < 1) requestAnimationFrame(step); else { du.style.display = 'none'; done(); }
+  };
+  requestAnimationFrame(step);
+});
+
+/* office hours: the plain view */
+const dlg = $('#oh');
+const openOH = () => { if (!dlg.open) { dlg.showModal(); curEl.style.opacity = 0; } };
+$('#noteBtn').addEventListener('click', openOH);
+$('#ohClose').addEventListener('click', () => dlg.close());
+dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+addEventListener('keydown', e => {
+  if ((e.key === 'o' || e.key === 'O') && !e.metaKey && !e.ctrlKey && !e.altKey && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); openOH(); }
+});
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-copy]'); if (!b) return;
+  const old = b.textContent;
+  try { await navigator.clipboard.writeText(D.links.email); b.textContent = 'copied'; }
+  catch {
+    const m = b.parentElement.querySelector('.mail'), sel = getSelection(), r = document.createRange();
+    r.selectNodeContents(m); sel.removeAllRanges(); sel.addRange(r);
+    b.textContent = 'selected, press ⌘C';
+  }
+  setTimeout(() => { b.textContent = old; }, 1800);
+});
+
+/* go */
+paintSlate(); sizeDoodle();
+const fontsReady = Promise.all(['700 40px Kalam', '400 20px Kalam', 'italic 400 20px "STIX Two Text"', '400 20px "STIX Two Text"'].map(f => document.fonts.load(f)));
+Promise.race([fontsReady, new Promise(r => setTimeout(r, 1800))]).catch(() => {}).then(() => { placeGhosts(); boot(); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Signal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,100..800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#3b0b11;      /* oxblood field */
+  --bg2:#2a070c;     /* deeper oxblood */
+  --ink:#f0e2c8;     /* bone glyphs */
+  --dim:#d98c7c;     /* rose, secondary copy (5.5:1 on --bg) */
+  --rule:#86353a;    /* rules and tracks */
+  --mono:"Martian Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scrollbar-color:var(--rule) var(--bg2);scrollbar-width:thin;-webkit-text-size-adjust:100%}
+::-webkit-scrollbar{width:10px;height:8px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--rule);border:2px solid var(--bg2)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.65 var(--mono);overflow-x:hidden;caret-color:var(--ink)}
+::selection{background:var(--ink);color:var(--bg)}
+a{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-decoration-thickness:1px;text-underline-offset:.3em}
+a:hover{text-decoration-style:solid}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+h1,h2,h3,p,ul,ol{margin:0}
+ul,ol{list-style:none;padding:0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* persistent controls */
+.ctl{position:fixed;top:14px;z-index:20;font-size:12px;line-height:1;padding:9px 11px;background:var(--bg);border:1px solid var(--rule)}
+.ctl:hover,.ctl:focus-visible{background:var(--ink);color:var(--bg);border-color:var(--ink);text-decoration:none}
+.boards{left:14px;text-decoration:none}
+.reply{right:14px}
+.reply kbd{font:inherit;opacity:.75;margin-left:.6em}
+
+/* hero */
+.hero{position:relative;height:100svh;min-height:560px;overflow:hidden;cursor:crosshair}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.card{position:absolute;left:clamp(16px,4vw,56px);bottom:clamp(16px,6vh,64px);max-width:min(640px,calc(100% - 32px));background:var(--bg);padding:22px 24px 20px;border:1px dashed var(--rule);cursor:auto}
+.name{font-size:clamp(2.1rem,7.4vw,5.6rem);line-height:.98;font-weight:780;font-stretch:112.5%;letter-spacing:-.03em;text-transform:uppercase}
+.name span{display:block}
+.line{margin-top:18px;font-size:clamp(15px,1.5vw,18px);max-width:40ch}
+.now{margin-top:8px;color:var(--dim);font-size:13px;max-width:52ch}
+.hint{margin-top:16px;color:var(--dim);font-size:12px}
+.tele{position:absolute;right:clamp(16px,3vw,40px);bottom:clamp(16px,3vh,28px);font-size:11px;color:var(--dim);background:var(--bg);padding:4px 8px;font-variant-numeric:tabular-nums;white-space:pre;pointer-events:none}
+
+/* frames */
+main{padding:0 clamp(16px,4vw,48px)}
+.frame{max-width:1180px;margin:clamp(72px,12vh,140px) auto 0;scroll-margin-top:60px}
+.fh{display:flex;align-items:baseline;gap:14px;margin-bottom:34px}
+.fh h2{font-size:clamp(1.5rem,3.4vw,2.6rem);font-weight:760;font-stretch:112.5%;letter-spacing:-.02em;text-transform:uppercase;line-height:1}
+.fh .fill{flex:1;border-bottom:1px dashed var(--rule);transform:translateY(-.3em);min-width:24px}
+.fh .meta{font-size:12px;color:var(--dim);white-space:nowrap}
+.grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,5vw,72px);align-items:start}
+.fig{margin:0;position:sticky;top:76px}
+.fig pre{margin:0;font:400 11.5px/1.45 var(--mono);color:var(--ink);overflow-x:auto;padding:16px;background:var(--bg2);border:1px solid var(--rule)}
+.fig figcaption{margin-top:10px;font-size:12px;color:var(--dim)}
+.fig pre .d{color:var(--dim)}
+.fig pre .r{color:var(--rule)}
+.fig pre .i{background:var(--ink);color:var(--bg)}
+
+.entry{padding:0 0 30px;margin-bottom:30px;border-bottom:1px dashed var(--rule)}
+.entry:last-child{border-bottom:0;margin-bottom:0}
+.entry h3{font-size:18px;font-weight:700;font-stretch:106%;line-height:1.3}
+.entry .role{color:var(--dim);font-size:13px;margin-top:4px}
+.entry p.did{margin-top:12px;max-width:62ch}
+.nums{margin-top:14px;display:grid;grid-template-columns:auto 1fr;gap:4px 16px;font-size:13px;font-variant-numeric:tabular-nums}
+.nums dt{font-weight:700;white-space:nowrap}
+.nums dd{margin:0;color:var(--dim)}
+
+.wins li{padding:14px 0;border-bottom:1px dashed var(--rule)}
+.wins li:first-child{padding-top:0}
+.wins b{font-weight:700}
+.wins span{display:block;color:var(--dim);font-size:13px;margin-top:3px;max-width:60ch}
+
+/* projects */
+.rx{background:var(--bg2);border:1px solid var(--rule)}
+.rx canvas{display:block;width:100%;aspect-ratio:4/3;cursor:crosshair}
+.rx .cap{padding:12px 14px;font-size:12px;color:var(--dim);border-top:1px solid var(--rule);min-height:4.2em}
+.rx .cap b{color:var(--ink);font-weight:700}
+.pk{display:block;width:100%;text-align:left;padding:14px 14px 15px;border-bottom:1px dashed var(--rule)}
+.pk:hover{background:var(--bg2)}
+.pk[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.pk[aria-pressed="true"] .k,.pk[aria-pressed="true"] .st,.pk[aria-pressed="true"] .one{color:var(--bg)}
+.pk .top{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.pk .nm{font-weight:700;font-size:16px;font-stretch:106%}
+.pk .k{font-size:11px;color:var(--dim)}
+.pk .one{display:block;margin-top:6px;font-size:13.5px;max-width:62ch}
+.pk .st{display:block;margin-top:6px;font-size:11.5px;color:var(--dim)}
+
+/* skills tape */
+.tape{overflow:hidden;background:var(--bg2);border:1px solid var(--rule);border-left:0;border-right:0;margin:0 calc(-1 * clamp(16px,4vw,48px))}
+.track{display:flex;width:max-content;animation:feed 90s linear infinite}
+.tape:hover .track,.tape:focus-within .track{animation-play-state:paused}
+.track pre{margin:0;padding:14px 0;font:400 12px/1.25 var(--mono);color:var(--ink)}
+.track pre .s{color:var(--rule)}
+.track pre .l{color:var(--dim)}
+@keyframes feed{to{transform:translateX(-50%)}}
+.skills{margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:28px clamp(28px,5vw,72px)}
+.skills h3{font-size:13px;color:var(--dim);font-weight:400;margin-bottom:12px}
+.skills li{font-size:17px;font-weight:600;line-height:1.5}
+.tapecap{margin-top:12px;font-size:12px;color:var(--dim)}
+
+/* end */
+.eot{max-width:1180px;margin:clamp(72px,12vh,140px) auto 0;padding-bottom:80px}
+.mail{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;margin-top:8px}
+.mail code{font:700 clamp(1.1rem,3.4vw,2.2rem)/1.2 var(--mono);font-stretch:106%;user-select:all;word-break:break-all}
+.btn{display:inline-block;font-size:12px;line-height:1;padding:10px 12px;border:1px solid var(--ink);text-decoration:none}
+.btn:hover,.btn:focus-visible{background:var(--ink);color:var(--bg)}
+.links{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.notes{margin-top:44px;color:var(--dim);font-size:13px}
+.notes li::before{content:"> ";color:var(--rule)}
+.foot{margin-top:56px;font-size:11px;color:var(--dim)}
+
+/* plain view */
+dialog{border:0;padding:0;background:var(--ink);color:var(--bg);max-width:min(560px,calc(100% - 32px));width:100%}
+dialog::backdrop{background:rgba(42,7,12,.88)}
+dialog::selection,dialog ::selection{background:var(--bg);color:var(--ink)}
+.plain{padding:28px 26px 24px}
+.plain h2{font-size:24px;font-weight:760;font-stretch:106%;line-height:1.2}
+.plain p{margin-top:10px;font-size:14px}
+.plain .sub{color:#6b2a2c}
+.plain .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:20px}
+.plain code{font:700 15px var(--mono);user-select:all;word-break:break-all}
+.plain .btn{border-color:var(--bg)}
+.plain .btn:hover,.plain .btn:focus-visible{background:var(--bg);color:var(--ink)}
+.plain :focus-visible{outline-color:var(--bg)}
+.plain ul{margin-top:20px;display:grid;gap:6px;font-size:14px}
+.plain .x{position:absolute;top:12px;right:12px}
+.live{font-size:12px;min-height:1em}
+
+@media (max-width:820px){
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .fig{position:static}
+  .skills{grid-template-columns:1fr}
+  .tele{display:none}
+  .card{padding:18px 18px 16px}
+}
+@media (prefers-reduced-motion:reduce){
+  .track{animation:none}
+  .tape{overflow-x:auto}
+}
+</style>
+</head>
+<body>
+<a class="ctl boards" href="index.html">← all boards</a>
+<button class="ctl reply" id="replyBtn" aria-haspopup="dialog">Reply to sender<kbd>R</kbd></button>
+
+<header class="hero" id="hero">
+  <canvas id="field" role="img" aria-label="Live ASCII rendering: a slowly turning monolith that dissolves into a lattice and closes again."></canvas>
+  <div class="card">
+    <h1 class="name" data-decode id="nm"></h1>
+    <p class="line" data-decode id="ln"></p>
+    <p class="now" data-decode id="nw"></p>
+    <p class="hint">Move the pointer to bend the light. Scroll to receive five frames.</p>
+  </div>
+  <p class="tele" id="tele" aria-hidden="true"></p>
+  <noscript><p class="card">This board renders its content with JavaScript.</p></noscript>
+</header>
+
+<main>
+  <section class="frame" id="exp" aria-labelledby="h-exp">
+    <div class="fh"><h2 id="h-exp" data-decode>Experience</h2><span class="fill"></span><span class="meta">frame 1/5</span></div>
+    <div class="grid">
+      <figure class="fig"><pre id="gantt" aria-hidden="true"></pre><figcaption>Months on each role, drawn from the dates on the right.</figcaption></figure>
+      <div id="expList"></div>
+    </div>
+  </section>
+
+  <section class="frame" id="wins" aria-labelledby="h-wins">
+    <div class="fh"><h2 id="h-wins" data-decode>Wins</h2><span class="fill"></span><span class="meta">frame 2/5</span></div>
+    <div class="grid">
+      <figure class="fig"><pre id="ranks" aria-hidden="true"></pre><figcaption>Each bar is the share of the field placed behind.</figcaption></figure>
+      <ul class="wins" id="winList"></ul>
+    </div>
+  </section>
+
+  <section class="frame" id="proj" aria-labelledby="h-proj">
+    <div class="fh"><h2 id="h-proj" data-decode>Projects</h2><span class="fill"></span><span class="meta">frame 3/5</span></div>
+    <div class="grid">
+      <figure class="fig rx"><canvas id="rxc" aria-hidden="true"></canvas><figcaption class="cap" id="rxcap" aria-live="polite"></figcaption></figure>
+      <ul id="projList" aria-label="Projects. Select one to tune the receiver."></ul>
+    </div>
+  </section>
+
+  <section class="frame" id="skills" aria-labelledby="h-sk">
+    <div class="fh"><h2 id="h-sk" data-decode>Skills</h2><span class="fill"></span><span class="meta">frame 4/5</span></div>
+    <div class="tape" tabindex="0" aria-label="Skills punched as 5-bit tape. The lists below say the same."><div class="track" id="track"></div></div>
+    <p class="tapecap">Every skill below, punched as 5-bit Baudot tape. Read a column top to bottom; the letter sits under it.</p>
+    <div class="skills">
+      <div><h3>Languages</h3><ul id="langs"></ul></div>
+      <div><h3>Areas</h3><ul id="areas"></ul></div>
+    </div>
+  </section>
+
+  <section class="eot" id="end" aria-labelledby="h-end">
+    <div class="fh"><h2 id="h-end" data-decode>End of transmission</h2><span class="fill"></span><span class="meta">frame 5/5</span></div>
+    <p data-decode id="endLine" style="max-width:56ch"></p>
+    <div class="mail"><code id="mail2"></code><button class="btn" data-copy>Copy address</button><span class="live" aria-live="polite"></span></div>
+    <div class="links" id="links2"></div>
+    <ul class="notes" id="notes"></ul>
+    <p class="foot">Field rendered live: a ray-marched signed distance field, one ray per character, drawn through a glyph atlas in WebGL. No libraries.</p>
+  </section>
+</main>
+
+<dialog id="plain" aria-labelledby="pl-h">
+  <div class="plain">
+    <button class="btn x" id="plClose">Close <span aria-hidden="true">esc</span></button>
+    <h2 id="pl-h"></h2>
+    <p id="pl-line"></p>
+    <p class="sub" id="pl-now"></p>
+    <div class="row"><code id="pl-mail"></code><button class="btn" data-copy>Copy</button><span class="live" aria-live="polite"></span></div>
+    <ul id="pl-links"></ul>
+  </div>
+</dialog>
+
+<script src="data.js"></script>
+<script>
+(() => {
+const D = window.TOYESHH;
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = s => document.querySelector(s);
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+
+/* ---------- content ---------- */
+const [first, ...rest] = D.name.split(' ');
+$('#nm').append(el('span', null, first), el('span', null, rest.join(' ')));
+$('#ln').textContent = D.line;
+$('#nw').textContent = D.now + '. ' + D.place + '.';
+
+const expList = $('#expList');
+for (const x of D.experience) {
+  const art = el('article', 'entry');
+  art.append(el('h3', null, x.org));
+  const role = el('p', 'role', x.role + ' / ' + x.when); art.append(role);
+  const did = el('p', 'did', x.did); did.dataset.decode = ''; art.append(did);
+  const dl = el('dl', 'nums');
+  for (const [n, l] of x.numbers) dl.append(el('dt', null, n), el('dd', null, l));
+  art.append(dl);
+  art.querySelector('h3').dataset.decode = '';
+  expList.append(art);
+}
+
+const winList = $('#winList');
+for (const w of D.wins) {
+  const li = el('li'); li.append(el('b', null, w.what), el('span', null, w.detail));
+  li.querySelector('b').dataset.decode = '';
+  winList.append(li);
+}
+
+const langs = $('#langs'), areas = $('#areas');
+D.skills.languages.forEach(s => langs.append(el('li', null, s)));
+D.skills.areas.forEach(s => areas.append(el('li', null, s)));
+for (const li of document.querySelectorAll('#langs li,#areas li')) li.dataset.decode = '';
+
+$('#endLine').textContent = 'Reply to the sender at the address below. ' + D.line;
+D.facts.forEach(f => $('#notes').append(el('li', null, f)));
+
+// links (end frame + plain view share one list)
+const LINKS = [['GitHub', D.links.github], ['LinkedIn', D.links.linkedin], ['Resume', D.links.resume]];
+for (const [label, href] of LINKS) {
+  const a = el('a', 'btn', label); a.href = href; if (href.startsWith('http')) { a.target = '_blank'; a.rel = 'noopener'; }
+  $('#links2').append(a);
+  const li = el('li'); const b = el('a', null, label + ': ' + href.replace(/^https:\/\/(www\.)?/, '')); b.href = href;
+  if (href.startsWith('http')) { b.target = '_blank'; b.rel = 'noopener'; }
+  li.append(b); $('#pl-links').append(li);
+}
+$('#mail2').textContent = $('#pl-mail').textContent = D.links.email;
+$('#pl-h').textContent = D.name;
+$('#pl-line').textContent = D.line;
+$('#pl-now').textContent = D.now + '. ' + D.place + '.';
+
+/* ---------- copy ---------- */
+for (const b of document.querySelectorAll('[data-copy]')) b.addEventListener('click', async () => {
+  const live = b.parentElement.querySelector('.live');
+  try { await navigator.clipboard.writeText(D.links.email); live.textContent = 'Copied.'; }
+  catch (e) {
+    const code = b.parentElement.querySelector('code'); const r = document.createRange(); r.selectNodeContents(code);
+    const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    live.textContent = 'Selected. Press Cmd or Ctrl + C.';
+  }
+  setTimeout(() => { live.textContent = ''; }, 2400);
+});
+
+/* ---------- plain view ---------- */
+const dlg = $('#plain');
+const openPlain = () => { if (!dlg.open) dlg.showModal(); };
+$('#replyBtn').addEventListener('click', openPlain);
+$('#plClose').addEventListener('click', () => dlg.close());
+dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+addEventListener('keydown', e => {
+  if (e.metaKey || e.ctrlKey || e.altKey || /INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
+  if (e.key === 'r' || e.key === 'R') { e.preventDefault(); dlg.open ? dlg.close() : openPlain(); }
+});
+
+/* ---------- figure: experience timeline ---------- */
+const MON = 'JanFebMarAprMayJunJulAugSepOctNovDec';
+const NOW = new Date(); const nowM = NOW.getFullYear() * 12 + NOW.getMonth();
+function parseWhen(s) {
+  const [a, b] = s.split('–').map(x => x.trim());
+  const pm = x => { const m = x.match(/^([A-Za-z]{3})(?:\s+(\d{4}))?$/); return { m: MON.indexOf(m[1]) / 3, y: m[2] ? +m[2] : null }; };
+  const A = pm(a), B = b === 'now' ? { m: NOW.getMonth(), y: NOW.getFullYear(), now: true } : pm(b);
+  if (A.y == null) A.y = B.y; if (B.y == null) B.y = A.y;
+  return { s: A.y * 12 + A.m, e: B.y * 12 + B.m, now: !!B.now };
+}
+const shortOrg = o => { o = o.replace(/\s*\(.*\)/, ''); return o.length > 11 ? o.split(' ').filter(w => /^[A-Z]/.test(w)).map(w => w[0]).join('') : o; };
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+function drawGantt() {
+  const w = matchMedia('(max-width:560px)').matches ? 1 : 2;
+  const spans = D.experience.map(x => ({ label: shortOrg(x.org), ...parseWhen(x.when) }));
+  const lo = Math.min(...spans.map(s => s.s)) - (Math.min(...spans.map(s => s.s)) % 12);
+  const hi = Math.max(nowM, ...spans.map(s => s.e));
+  const n = hi - lo + 1, pad = 12;
+  let yr = ' '.repeat(pad), mo = ' '.repeat(pad);
+  for (let m = 0; m < n; m++) {
+    const abs = lo + m;
+    if (abs % 12 === 0) yr = yr.padEnd(pad + m * w) + Math.floor(abs / 12);
+    mo += (MON[(abs % 12) * 3] + ' ').slice(0, w);
+  }
+  let out = esc(yr.padEnd(pad + n * w)) + '\n<span class="d">' + esc(mo) + '</span>\n<span class="r">' + ' '.repeat(pad) + '-'.repeat(n * w) + '</span>\n';
+  for (const s of spans) {
+    let row = '';
+    for (let m = 0; m < n; m++) {
+      const abs = lo + m;
+      if (abs >= s.s && abs <= s.e) row += (s.now && abs === s.e) ? '#>'.slice(-w) : '#'.repeat(w);
+      else row += '<span class="r">' + '.'.repeat(w) + '</span>';
+    }
+    out += esc(s.label.padEnd(pad)) + row + '\n';
+  }
+  const nowCol = pad + (nowM - lo) * w;
+  out += ' '.repeat(nowCol) + '<span class="d">^ now</span>';
+  $('#gantt').innerHTML = out;
+}
+drawGantt();
+matchMedia('(max-width:560px)').addEventListener('change', drawGantt);
+
+/* ---------- figure: rank bars, parsed from the wins ---------- */
+(function drawRanks() {
+  const W = innerWidth < 560 ? 12 : 24; let out = '';
+  for (const w of D.wins) {
+    const m = w.detail.match(/(\d+)(?:st|nd|rd|th) of (\d[\d,]*)(\+?)/);
+    if (!m) continue;
+    const rank = +m[1], total = +m[2].replace(/,/g, '');
+    const beat = 1 - rank / total, fill = Math.round(beat * W);
+    const label = w.what.replace(/^BPA Nationals, /, 'BPA ').replace(/ finalist$/, '');
+    out += esc(label) + '\n';
+    out += ' ' + (rank + ' of ' + total + m[3]).padEnd(11) + '[' + '#'.repeat(fill) + '<span class="r">' + '.'.repeat(W - fill) + '</span>]  <span class="d">top ' + (rank / total * 100).toFixed(1) + '%</span>\n\n';
+  }
+  out += '<span class="d">USACO</span>\n Platinum   <span class="i"> TOP DIVISION </span>';
+  $('#ranks').innerHTML = out;
+})();
+
+/* ---------- figure: skills as 5-bit Baudot (ITA2 letters) tape ---------- */
+(function drawTape() {
+  const ITA2 = { A:'11000',B:'10011',C:'01110',D:'10010',E:'10000',F:'10110',G:'01011',H:'00101',I:'01100',J:'11010',K:'11110',L:'01001',M:'00111',N:'00110',O:'00011',P:'01101',Q:'11101',R:'01010',S:'10100',T:'00001',U:'11100',V:'01111',W:'11001',X:'10111',Y:'10101',Z:'10001',' ':'00100' };
+  const text = [...D.skills.languages, ...D.skills.areas].join(' / ').toUpperCase() + ' / ';
+  const rows = ['', '', '', '', '', '', ''];
+  for (const ch of text) {
+    const code = ITA2[ch] || '00000';
+    const hole = b => b === '1' ? 'o' : ' ';
+    rows[0] += hole(code[0]); rows[1] += hole(code[1]);
+    rows[2] += '<span class="s">·</span>';
+    rows[3] += hole(code[2]); rows[4] += hole(code[3]); rows[5] += hole(code[4]);
+    rows[6] += '<span class="l">' + esc(ch) + '</span>';
+  }
+  const html = rows.join('\n');
+  const track = $('#track');
+  for (let i = 0; i < 2; i++) { const p = el('pre'); p.setAttribute('aria-hidden', 'true'); p.innerHTML = html; track.append(p); }
+})();
+
+/* ---------- decode: glyph noise that locks left to right ---------- */
+const NOISE = '#%&@$*+=<>/\\[]{}?!^~ABCDEFHKMNRSTXZ0123456789';
+const rnd = () => NOISE[(Math.random() * NOISE.length) | 0];
+const decoding = new Set();
+function prep(node) {
+  const w = document.createTreeWalker(node, NodeFilter.SHOW_TEXT); const parts = []; let len = 0;
+  while (w.nextNode()) { const s = w.currentNode.nodeValue; parts.push({ n: w.currentNode, s, o: len }); len += s.length; }
+  return { parts, len };
+}
+function paint(job, locked) {
+  for (const p of job.parts) {
+    let out = '';
+    for (let i = 0; i < p.s.length; i++) { const c = p.s[i]; out += (p.o + i < locked || /\s/.test(c)) ? c : rnd(); }
+    p.n.nodeValue = out;
+  }
+}
+function decode(node, delay = 0) {
+  const job = prep(node);
+  job.t0 = performance.now() + delay; job.dur = Math.min(1100, 320 + job.len * 14);
+  paint(job, 0); decoding.add(job); kick();
+}
+let decRaf = 0, lastNoise = 0;
+function decTick(now) {
+  decRaf = 0;
+  if (now - lastNoise > 45) {
+    lastNoise = now;
+    for (const job of decoding) {
+      const k = Math.max(0, Math.min(1, (now - job.t0) / job.dur));
+      const locked = Math.floor((1 - Math.pow(1 - k, 2)) * (job.len + 1));
+      paint(job, k >= 1 ? job.len + 1 : locked);
+      if (k >= 1) decoding.delete(job);
+    }
+  }
+  if (decoding.size) decRaf = requestAnimationFrame(decTick);
+}
+function kick() { if (!decRaf) decRaf = requestAnimationFrame(decTick); }
+if (!REDUCE) {
+  ['#nm', '#ln', '#nw'].forEach((s, i) => decode($(s), 250 + i * 260));
+  const io = new IntersectionObserver(es => { for (const e of es) if (e.isIntersecting) { io.unobserve(e.target); decode(e.target); } });
+  document.querySelectorAll('main [data-decode]').forEach(n => io.observe(n));
+}
+
+/* ---------- the receiver: SDF ray march -> per-cell luminance -> glyph atlas ---------- */
+const RAMP = ' .,:-=+*oxO#%@';
+const VS = 'attribute vec2 a;varying vec2 vUv;void main(){vUv=a*.5+.5;gl_Position=vec4(a,0.,1.);}';
+const SCENE = `precision highp float;
+varying vec2 vUv;
+uniform float uT,uAspect,uA,uB,uMix,uPtrOn,uZoom;
+uniform vec2 uPtr,uOff;
+mat2 rot(float a){float c=cos(a),s=sin(a);return mat2(c,-s,s,c);}
+float sdBox(vec3 p,vec3 b){vec3 q=abs(p)-b;return length(max(q,0.))+min(max(q.x,max(q.y,q.z)),0.);}
+float sdCap(vec3 p,vec3 a,vec3 b,float r){vec3 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/dot(ba,ba),0.,1.);return length(pa-ba*h)-r;}
+float sdTor(vec3 p,vec2 t){return length(vec2(length(p.xz)-t.x,p.y))-t.y;}
+float sdCyl(vec3 p,float r,float h){vec2 d=abs(vec2(length(p.xz),p.y))-vec2(r,h);return min(max(d.x,d.y),0.)+length(max(d,0.));}
+float smin(float a,float b,float k){float h=clamp(.5+.5*(b-a)/k,0.,1.);return mix(b,a,h)-k*h*(1.-h);}
+float shape(float id,vec3 p){
+  if(id<.5){ // monolith, 1:4:9, twisting, dissolving into a gyroid lattice
+    vec3 q=p; q.xz*=rot(q.y*.9*sin(uT*.21));
+    float d=sdBox(q,vec3(.4,.9,.1))-.02;
+    vec3 g3=p*5.5;
+    float g=abs(dot(sin(g3+vec3(0.,uT*.4,0.)),cos(g3.zxy)))/5.5-.035;
+    float k=smoothstep(-.35,.85,sin(uT*.33-1.2));
+    return mix(d,max(d,g),k);
+  }
+  if(id<1.5){ // agents: three linked nodes
+    vec3 a=vec3(0.,.62,0.),b=vec3(-.62,-.4,0.),c=vec3(.62,-.4,0.);
+    float s=min(min(length(p-a),length(p-b)),length(p-c))-.26;
+    float l=min(min(sdCap(p,a,b,.05),sdCap(p,b,c,.05)),sdCap(p,c,a,.05));
+    return smin(s,l,.08);
+  }
+  if(id<2.5){ // quant: five bars, one per rebuild
+    float d=1e5;
+    for(int i=0;i<5;i++){float f=float(i);float h=.22+.15*f+.07*sin(f*2.1);
+      d=min(d,sdBox(p-vec3(-.64+f*.32,-.75+h,0.),vec3(.11,h,.11))-.015);}
+    return d;
+  }
+  if(id<3.5){ vec3 q=p-.5*clamp(floor(p/.5+.5),-1.,1.); return sdBox(q,vec3(.15))-.02; } // data: 3x3x3 records
+  if(id<4.5){ vec3 q=p; q.yz*=rot(1.2); return smin(sdTor(q,vec2(.62,.15)),length(p)-.22,.1); } // ml: ring and core
+  if(id<5.5){ return smin(length(p-vec3(0.,.3,0.))-.42,sdCap(p,vec3(0.,.2,0.),vec3(0.,-.85,0.),.04),.3); } // ios: map pin
+  if(id<6.5){ vec3 q=abs(p); return (q.x+q.y+q.z-.9)*.57735; } // game: a die
+  if(id<7.5){ float d=1e5; for(int i=0;i<3;i++){float f=float(i); d=min(d,sdBox(p-vec3(0.,-.5+f*.5,0.),vec3(.62-f*.12,.18,.4))-.03);} return d; } // edu: a stack
+  if(id<8.5){ return min(min(sdTor(p+vec3(0.,.1,0.),vec2(.62,.1)),sdCyl(p+vec3(0.,.2,0.),.62,.035)),length(p-vec3(.08,.02,0.))-.26); } // app: a plate
+  vec3 lq=(p-vec3(0.,0.,.3)).xzy; // venture: camera body and lens
+  return min(sdBox(p,vec3(.62,.4,.24))-.05,sdCyl(lq,.27,.2));
+}
+float map(vec3 p){
+  p.xz*=rot(uT*.25); p.yz*=rot(.18*sin(uT*.17)+.12);
+  return mix(shape(uA,p),shape(uB,p),uMix);
+}
+void main(){
+  vec2 uv=vUv*2.-1.; uv.x*=uAspect;
+  vec2 dv=uv-uPtr; float r2=dot(dv,dv);
+  uv-=dv*uPtrOn*.05/(r2+.06); // the pointer lenses the field
+  vec2 s=uv-uOff;
+  vec3 ro=vec3(0.,0.,3.2),rd=normalize(vec3(s,-1.7*uZoom));
+  float t=0.,hit=0.;
+  for(int i=0;i<72;i++){float d=map(ro+rd*t);if(d<.0015){hit=1.;break;}t+=d*.8;if(t>7.)break;}
+  float h=fract(sin(dot(gl_FragCoord.xy,vec2(12.9898,78.233)))*43758.5453);
+  float L=.03+step(.986,h)*(.16+.1*sin(uT*1.7+h*60.)); // sparse, slow-twinkling carrier
+  if(hit>.5){
+    vec3 p=ro+rd*t; vec2 e=vec2(.0015,-.0015);
+    vec3 n=normalize(e.xyy*map(p+e.xyy)+e.yyx*map(p+e.yyx)+e.yxy*map(p+e.yxy)+e.xxx*map(p+e.xxx));
+    vec2 lp=mix(vec2(cos(uT*.3)*.9,.75),(uPtr-uOff)*1.6,uPtrOn); // the light follows the pointer
+    vec3 l=normalize(vec3(lp,1.1));
+    float dif=max(dot(n,l),0.);
+    float spe=pow(max(dot(reflect(-l,n),-rd),0.),28.);
+    float rim=pow(1.-max(dot(n,-rd),0.),3.);
+    L=.07+.6*dif+.55*spe+.26*rim;
+  }
+  gl_FragColor=vec4(L,0.,0.,1.);
+}`;
+const COMPOSE = `precision mediump float;
+varying vec2 vUv;
+uniform sampler2D uScene,uAtlas;
+uniform vec2 uGrid; uniform float uN,uT,uResolve,uGlitch;
+uniform vec3 uInk,uDim,uBg;
+float h21(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+void main(){
+  vec2 g=vUv*uGrid,c=floor(g),f=fract(g);
+  float L=texture2D(uScene,(c+.5)/uGrid).r;
+  float tick=floor(uT*14.);
+  float on=step(h21(c),uResolve*1.15-.1);
+  float band=uGlitch*.45*exp(-pow((vUv.y-1.+fract(uT*.055))*40.,2.));
+  float gl=step(1.-band*.65,h21(c*1.7+tick));
+  float noise=max(1.-on,gl);
+  float Lf=mix(L,h21(c+tick*.37)*.72,noise);
+  float gi=floor(clamp(Lf,0.,.999)*uN);
+  float a=texture2D(uAtlas,vec2((gi+f.x)/uN,1.-f.y)).r;
+  float inv=step(.86,Lf)*(1.-noise);
+  vec3 fg=mix(uDim,uInk,smoothstep(.16,.6,Lf));
+  gl_FragColor=vec4(mix(mix(uBg,fg,a),mix(uInk,uBg,a),inv),1.);
+}`;
+const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255);
+const COL = { ink: hex('#f0e2c8'), dim: hex('#9a3e3a'), bg: hex('#3b0b11') };
+let ADV = .62; // glyph advance / em, measured once the font is in
+
+function receiver(canvas, o) {
+  const gl = canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'low-power' });
+  if (!gl) return null;
+  const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; };
+  const mk = fs => { const p = gl.createProgram(); gl.attachShader(p, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(p, sh(gl.FRAGMENT_SHADER, fs)); gl.bindAttribLocation(p, 0, 'a'); gl.linkProgram(p); const U = {}; return { p, u: n => U[n] || (U[n] = gl.getUniformLocation(p, n)) }; };
+  const S = mk(SCENE), C = mk(COMPOSE);
+  const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+  const tex = (filter) => { const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, filter); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filter);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); return t; };
+  const sceneTex = tex(gl.NEAREST), atlasTex = tex(gl.LINEAR), fbo = gl.createFramebuffer();
+  const r = { visible: false, last: 0, cols: 0, rows: 0, a: o.shape, b: o.shape, mix: 0, mixT0: -1, resT0: -1, ptr: [0, 0], ptrT: [0, 0], on: 0, onT: 0, t0: performance.now() };
+
+  r.resize = () => {
+    const w = canvas.clientWidth, h = canvas.clientHeight; if (!w || !h) return;
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+    let ch = o.cell(w); if (w / (ch * ADV) > o.maxCols) ch = w / (o.maxCols * ADV); // cap the ray count
+    r.cols = Math.floor(w / (ch * ADV)); r.rows = Math.floor(h / ch); r.aspect = w / h;
+    gl.bindTexture(gl.TEXTURE_2D, sceneTex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, r.cols, r.rows, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, sceneTex, 0);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    // glyph atlas, one row, drawn at the device size of a cell
+    const gw = Math.max(4, Math.round(w / r.cols * dpr)), gh = Math.max(6, Math.round(h / r.rows * dpr));
+    const cv = document.createElement('canvas'); cv.width = gw * RAMP.length; cv.height = gh;
+    const x = cv.getContext('2d'); x.fillStyle = '#000'; x.fillRect(0, 0, cv.width, cv.height);
+    x.fillStyle = '#fff'; x.font = `500 ${Math.round(gh * .74)}px "Martian Mono", ui-monospace, monospace`;
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    [...RAMP].forEach((c, i) => x.fillText(c, i * gw + gw / 2, gh * .54));
+    gl.bindTexture(gl.TEXTURE_2D, atlasTex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, cv);
+    if (REDUCE) r.draw(performance.now());
+  };
+
+  r.setShape = id => {
+    if (id === r.b) return;
+    r.a = r.mix > .5 ? r.b : r.a; r.b = id; r.mix = 0; r.mixT0 = performance.now(); r.resT0 = r.mixT0;
+    if (REDUCE) { r.a = r.b; r.mix = 0; r.draw(performance.now()); }
+  };
+
+  r.draw = now => {
+    const t = REDUCE ? o.still : (now - r.t0) / 1000;
+    if (r.mixT0 >= 0 && !REDUCE) { r.mix = Math.min(1, (now - r.mixT0) / 700); if (r.mix >= 1) { r.a = r.b; r.mix = 0; r.mixT0 = -1; } }
+    const k = REDUCE ? 1 : .14; // ease pointer
+    r.ptr[0] += (r.ptrT[0] - r.ptr[0]) * k; r.ptr[1] += (r.ptrT[1] - r.ptr[1]) * k; r.on += (r.onT - r.on) * k;
+    let res = 1;
+    if (!REDUCE) {
+      res = Math.min(1, (now - r.t0 - (o.delay || 0)) / (o.resolveMs || 1600));
+      if (r.resT0 >= 0) res = Math.min(res, .35 + (now - r.resT0) / 650);
+      res = Math.max(0, res);
+    }
+    const [ox, oy] = o.off(r.aspect);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo); gl.viewport(0, 0, r.cols, r.rows); gl.useProgram(S.p);
+    gl.uniform1f(S.u('uT'), t); gl.uniform1f(S.u('uAspect'), r.aspect);
+    gl.uniform1f(S.u('uA'), r.a); gl.uniform1f(S.u('uB'), r.b); gl.uniform1f(S.u('uMix'), r.mix);
+    gl.uniform1f(S.u('uPtrOn'), r.on); gl.uniform2f(S.u('uPtr'), r.ptr[0], r.ptr[1]);
+    gl.uniform2f(S.u('uOff'), ox, oy); gl.uniform1f(S.u('uZoom'), o.zoom(r.aspect));
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.viewport(0, 0, canvas.width, canvas.height); gl.useProgram(C.p);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, sceneTex); gl.uniform1i(C.u('uScene'), 0);
+    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, atlasTex); gl.uniform1i(C.u('uAtlas'), 1);
+    gl.uniform2f(C.u('uGrid'), r.cols, r.rows); gl.uniform1f(C.u('uN'), RAMP.length);
+    gl.uniform1f(C.u('uT'), t); gl.uniform1f(C.u('uResolve'), res); gl.uniform1f(C.u('uGlitch'), REDUCE ? 0 : 1);
+    gl.uniform3fv(C.u('uInk'), COL.ink); gl.uniform3fv(C.u('uDim'), COL.dim); gl.uniform3fv(C.u('uBg'), COL.bg);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    o.onFrame && o.onFrame(r, now);
+  };
+
+  const hit = o.hit || canvas;
+  hit.addEventListener('pointermove', e => {
+    const b = canvas.getBoundingClientRect();
+    r.ptrT = [((e.clientX - b.left) / b.width * 2 - 1) * r.aspect, -((e.clientY - b.top) / b.height * 2 - 1)]; r.onT = 1;
+    if (REDUCE) requestAnimationFrame(t => { r.ptr = r.ptrT.slice(); r.on = 1; r.draw(t); });
+  });
+  hit.addEventListener('pointerleave', () => { r.onT = 0; if (REDUCE) requestAnimationFrame(t => { r.on = 0; r.draw(t); }); });
+  new ResizeObserver(() => r.resize()).observe(canvas);
+  new IntersectionObserver(es => { r.visible = es[0].isIntersecting; wake(); }).observe(canvas);
+  return r;
+}
+
+// one loop for every receiver: capped at 30 fps, stops when none is on screen
+const RX = []; let loopOn = false;
+function loop(now) {
+  const live = RX.filter(r => r.visible && !document.hidden);
+  if (!live.length || REDUCE) { loopOn = false; return; }
+  for (const r of live) if (now - r.last >= 1000 / 30 - 2) { r.last = now; r.draw(now); }
+  requestAnimationFrame(loop);
+}
+function wake() { if (!loopOn && !REDUCE) { loopOn = true; requestAnimationFrame(loop); } }
+document.addEventListener('visibilitychange', wake);
+
+/* ---------- projects ---------- */
+const KIND = { agents: [1, 'three nodes and their links'], quant: [2, 'five bars, one per rebuild'], data: [3, 'a 3 x 3 x 3 grid of records'], ml: [4, 'a ring around a core'], ios: [5, 'a map pin'], game: [6, 'a die'], edu: [7, 'a stack, last in first out'], app: [8, 'a plate'], venture: [9, 'a camera body and its lens'] };
+const projList = $('#projList'); let rx2 = null;
+function tune(i) {
+  const p = D.projects[i]; const [id, what] = KIND[p.kind] || [6, 'an unknown object'];
+  projList.querySelectorAll('.pk').forEach((b, j) => b.setAttribute('aria-pressed', String(j === i)));
+  const cap = $('#rxcap'); cap.textContent = '';
+  cap.append('Receiving ', el('b', null, p.name), '. Rendered as ' + what + '.');
+  rx2 && rx2.setShape(id);
+}
+D.projects.forEach((p, i) => {
+  const li = el('li'); const b = el('button', 'pk'); b.setAttribute('aria-pressed', 'false');
+  const top = el('span', 'top'); const nm = el('span', 'nm', p.name); nm.dataset.decode = '';
+  top.append(nm, el('span', 'k', p.kind)); b.append(top, el('span', 'one', p.one), el('span', 'st', p.stack.join(' / ')));
+  b.addEventListener('click', () => tune(i)); b.addEventListener('focus', () => tune(i));
+  b.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') tune(i); });
+  li.append(b); projList.append(li);
+});
+if (!REDUCE) { const io = new IntersectionObserver(es => { for (const e of es) if (e.isIntersecting) { io.unobserve(e.target); decode(e.target); } }); projList.querySelectorAll('[data-decode]').forEach(n => io.observe(n)); }
+
+/* ---------- boot the receivers once the font is in (the atlas is drawn with it) ---------- */
+const tele = $('#tele'); let fpsN = 0, fpsT = 0, fps = 0, frames = 0;
+Promise.race([document.fonts.load('500 40px "Martian Mono"'), new Promise(r => setTimeout(r, 2500))]).then(() => {
+  const c = document.createElement('canvas').getContext('2d'); c.font = '500 100px "Martian Mono", ui-monospace, monospace';
+  ADV = c.measureText('M').width / 100;
+  try {
+    const hero = receiver($('#field'), {
+      shape: 0, maxCols: 170, still: 9.5, delay: 150, resolveMs: 1700, hit: $('#hero'),
+      cell: w => w < 600 ? 11 : 14,
+      off: a => a < 1 ? [0, .34] : [Math.min(a * .42, 1.1), .04],
+      zoom: a => a < 1 ? .9 : 1.05,
+      onFrame: (r, now) => {
+        frames++; fpsN++; if (now - fpsT > 1000) { fps = fpsN; fpsN = 0; fpsT = now; }
+        tele.textContent = `${r.cols} x ${r.rows} cells   ${r.cols * r.rows} rays   ${REDUCE ? 'still' : fps + ' fps'}   frame ${String(frames).padStart(6, '0')}`;
+      }
+    });
+    rx2 = receiver($('#rxc'), { shape: 1, maxCols: 64, still: 4, resolveMs: 900, cell: w => w < 400 ? 8 : 9.5, off: () => [0, 0], zoom: () => 1.7 });
+    [hero, rx2].forEach(r => { if (r) { RX.push(r); r.resize(); } });
+  } catch (err) { console.error(err); }
+  tune(0); wake();
+});
+})();
+</script>
+</body>
+</html>

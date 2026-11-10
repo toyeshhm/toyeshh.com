@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Case File</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --folder:#8d9b86; --folder-dk:#6b7965; --folder-ink:#1b2619;
+  --sheet:#dbe5ee; --sheet-line:#9fb4cb; --print:#2b4776;
+  --ink:#1c2147; --pink:#f1cdd2; --pink-line:#d69aa5; --pink-print:#74263a;
+  --photo:#eef1f2; --stamp:#5b2a88; --tape:#141519;
+  --type:"Courier Prime","Courier New",Courier,monospace;
+  --form:"Archivo","Arial Narrow","Helvetica Neue",Arial,sans-serif;
+  --tex:none; --grunge:none;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scrollbar-color:var(--folder-dk) var(--folder);scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+::-webkit-scrollbar{width:12px;height:12px}
+::-webkit-scrollbar-track{background:var(--folder)}
+::-webkit-scrollbar-thumb{background:var(--folder-dk);border:3px solid var(--folder);border-radius:2px}
+body{margin:0;background-color:var(--folder);background-image:var(--tex);background-size:300px;color:var(--ink);font:17px/1.55 var(--type);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:var(--stamp);color:var(--sheet)}
+a{color:var(--ink);text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:.22em;text-decoration-color:var(--stamp)}
+a:hover{color:var(--stamp)}
+:focus-visible{outline:2px dashed var(--stamp);outline-offset:3px;border-radius:2px}
+button{font:inherit;color:inherit}
+h1,h2,h3,p{margin:0}
+
+/* Folder tab */
+.tabbar{position:relative;max-width:1180px;margin:0 auto;padding:14px 16px 0;display:flex;align-items:flex-end;gap:18px;min-height:70px}
+.back{font:600 13px/1 var(--form);font-stretch:80%;letter-spacing:.04em;color:var(--folder-ink);text-decoration-color:var(--folder-ink);position:absolute;top:12px;left:16px}
+.tab{margin-left:40px;background:var(--folder-dk);background-image:var(--tex);padding:12px 22px 10px;border-radius:8px 8px 0 0;box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+.sticker{display:block;background:#f3f1e8;padding:5px 12px;font:700 14px/1.2 var(--type);color:var(--ink);letter-spacing:.02em;box-shadow:0 1px 1px rgba(0,0,0,.25)}
+.sticker b{color:var(--stamp);margin-left:.6em}
+
+main{max-width:1180px;margin:0 auto;padding:0 16px 120px}
+
+/* Sheets */
+.sheet{position:relative;background-color:var(--sheet);background-image:var(--tex);background-size:300px;padding:26px 36px 34px;margin-top:0;box-shadow:0 1px 1px rgba(20,30,20,.25),0 18px 30px -14px rgba(18,28,18,.55);transform:rotate(-.35deg)}
+.sheet+.sheet,.slip-sheet{margin-top:64px}
+.sheet:nth-of-type(2n){transform:rotate(.3deg)}
+.sheet.pink{background-color:var(--pink);--sheet-line:var(--pink-line);--print:var(--pink-print)}
+.marking{font:700 11.5px/1 var(--form);font-stretch:85%;letter-spacing:.14em;text-transform:uppercase;color:var(--print);text-align:center;margin:0 0 14px}
+.marking.bottom{margin:26px 0 0}
+.formhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 24px;border-bottom:2.5px solid var(--print);padding-bottom:8px;margin-bottom:22px}
+.formhead h2{font:800 30px/1.05 var(--form);font-stretch:72%;letter-spacing:.01em;text-transform:uppercase;color:var(--print)}
+.formhead .meta{font:600 12.5px/1.3 var(--form);font-stretch:85%;letter-spacing:.06em;text-transform:uppercase;color:var(--print)}
+.typed{text-shadow:.35px .25px 0 rgba(28,33,71,.38)}
+
+/* Form fields */
+.fields{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));border-top:1px solid var(--sheet-line);border-left:1px solid var(--sheet-line)}
+.f{grid-column:span 6;border-right:1px solid var(--sheet-line);border-bottom:1px solid var(--sheet-line);padding:7px 12px 10px;min-width:0}
+.f.s4{grid-column:span 4}.f.s3{grid-column:span 3}.f.s2{grid-column:span 2}
+.lab{display:block;font:600 12px/1.3 var(--form);font-stretch:85%;letter-spacing:.05em;text-transform:uppercase;color:var(--print);margin-bottom:3px}
+.val{display:block}
+.name{font:700 clamp(2.3rem,5.6vw,4.4rem)/.98 var(--type);letter-spacing:-.025em;text-transform:uppercase;color:var(--ink);text-shadow:.6px .4px 0 rgba(28,33,71,.4);padding:4px 0 2px;text-wrap:balance}
+.facts{margin:0;padding:0;list-style:none}
+.facts li::before{content:"- "}
+
+/* Cover */
+.cover-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,340px);gap:34px;align-items:start}
+.stamp{display:inline-block;color:var(--stamp);border:3px solid currentColor;outline:1.5px solid currentColor;outline-offset:3px;padding:6px 12px 5px;font:800 18px/1 var(--form);font-stretch:70%;letter-spacing:.1em;text-transform:uppercase;mix-blend-mode:multiply;opacity:.88;-webkit-mask-image:var(--grunge);mask-image:var(--grunge);-webkit-mask-size:220px;mask-size:220px;pointer-events:none}
+.cover .stamp.clear{position:absolute;right:120px;bottom:44px;transform:rotate(-7deg)}
+.handling{font-size:15.5px}
+
+/* Exhibits */
+.photo{position:relative;background:var(--photo);padding:10px 10px 12px;box-shadow:0 1px 2px rgba(0,0,0,.22),0 10px 20px -10px rgba(10,20,40,.45);margin:0}
+.photo.tilt-r{transform:rotate(1.8deg)}.photo.tilt-l{transform:rotate(-1.4deg)}
+.photo canvas{display:block;width:100%;height:auto;image-rendering:pixelated;image-rendering:crisp-edges;background:var(--photo)}
+.photo figcaption{font:400 13.5px/1.4 var(--type);color:var(--ink);padding:9px 2px 0}
+.photo figcaption b{font-family:var(--form);font-stretch:80%;letter-spacing:.06em;text-transform:uppercase;font-size:12.5px}
+.clip{position:absolute;top:-22px;left:28px;width:22px;height:64px;z-index:2;filter:drop-shadow(1px 2px 1.5px rgba(0,0,0,.3))}
+.imgwrap{position:relative}
+.tag{position:absolute;font:700 11px/1 var(--form);font-stretch:80%;letter-spacing:.1em;text-transform:uppercase;background:var(--photo);color:var(--ink);padding:3px 5px;white-space:nowrap;box-shadow:0 0 0 1px var(--ink)}
+
+/* Redaction tape */
+.rx{position:relative;display:inline-block;white-space:nowrap;cursor:grab;touch-action:pan-y;--p:0;border-radius:1px;user-select:none;-webkit-user-select:none}
+.rx-bar{position:absolute;inset:-.1em -.22em -.06em;background:linear-gradient(180deg,#30323a 0,var(--tape) 20%,var(--tape) 80%,#09090c 100%);filter:url(#rough);clip-path:inset(0 0 0 calc(var(--p)*100%));pointer-events:none}
+.rx.from-r .rx-bar{clip-path:inset(0 calc(var(--p)*100%) 0 0)}
+.rx-curl{position:absolute;top:-.24em;bottom:-.16em;width:.75em;left:calc(var(--p)*100% - .4em);background:linear-gradient(90deg,#5a5c66,#24252b 55%,#0b0c0f);box-shadow:4px 3px 6px rgba(10,12,30,.38);transform:skewX(-12deg) rotate(-3deg);opacity:0;pointer-events:none;transition:transform .42s cubic-bezier(.16,1,.3,1),opacity .42s cubic-bezier(.16,1,.3,1)}
+.rx.from-r .rx-curl{left:auto;right:calc(var(--p)*100% - .4em);transform:skewX(12deg) rotate(3deg)}
+.rx.peeling .rx-curl{opacity:1}
+.rx .rx-curl.fly{opacity:0;transform:translate(1em,-1.8em) rotate(-28deg) scale(1.15)}
+.rx.from-r .rx-curl.fly{transform:translate(-1em,-1.8em) rotate(28deg) scale(1.15)}
+.rx.open{cursor:text;user-select:text;-webkit-user-select:text;background:rgba(20,21,25,.07);box-shadow:0 0 0 .14em rgba(20,21,25,.05)}
+.rx.open .rx-bar{display:none}
+@media (hover:hover){.rx:not(.open):hover .rx-bar{background:linear-gradient(180deg,#3a3c45 0,#1b1c21 20%,#1b1c21 80%,#09090c 100%)}}
+
+/* Operations */
+.ops-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:34px;align-items:start}
+.ops{border-top:1px solid var(--sheet-line)}
+.op{display:grid;grid-template-columns:200px minmax(0,1fr);gap:4px 22px;padding:16px 0 18px;border-bottom:1px solid var(--sheet-line)}
+.op h3{font:700 19px/1.25 var(--type);color:var(--ink)}
+.op .role{font-size:15px;margin-top:4px}
+.op .when{font:600 12.5px/1.3 var(--form);font-stretch:85%;letter-spacing:.06em;text-transform:uppercase;color:var(--print);margin-top:6px}
+.op .did{max-width:62ch}
+.outcome{margin:10px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:6px 26px}
+.outcome li{font-size:15.5px}
+.outcome .rx{font-weight:700;font-size:18px;margin-right:.3em}
+.ops-side{position:sticky;top:24px}
+
+/* Commendations ledger */
+.ledger{list-style:none;margin:0;padding:0;border-top:1px solid var(--sheet-line)}
+.ledger li{display:grid;grid-template-columns:62px minmax(0,300px) minmax(0,1fr);gap:4px 20px;padding:12px 0 13px;border-bottom:1px solid var(--sheet-line);align-items:baseline}
+.ledger .ref{font:700 12.5px/1 var(--form);font-stretch:80%;letter-spacing:.08em;color:var(--print)}
+.ledger strong{font-size:17.5px}
+.ledger span.d{font-size:16px;line-height:1.75}
+
+/* Contact sheet */
+.contact{background:#e9ecee;background-image:var(--tex);background-size:300px;padding:18px 18px 12px;box-shadow:0 1px 2px rgba(0,0,0,.2),0 12px 24px -12px rgba(10,20,40,.5);transform:rotate(.5deg);margin-bottom:28px}
+.frames{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px 12px;margin:0;padding:0;list-style:none}
+.frames li{position:relative}
+.frames canvas{display:block;width:100%;height:auto;image-rendering:pixelated;border:5px solid var(--ink);background:var(--photo)}
+.frames .fn{display:flex;justify-content:space-between;font:700 11px/1 var(--form);font-stretch:80%;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);padding:5px 1px 2px}
+.frames li::after{content:"";position:absolute;inset:-9px -8px 6px;border:2.5px solid var(--stamp);border-radius:48% 52% 46% 54%/55% 45% 55% 45%;opacity:0;transform:scale(.94) rotate(-2deg);transition:opacity .25s,transform .35s cubic-bezier(.16,1,.3,1);pointer-events:none}
+.frames li.mark::after{opacity:.85;transform:none}
+.contact-meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px 16px;font:600 11.5px/1 var(--form);font-stretch:85%;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);margin:12px 2px 0}
+.log{list-style:none;margin:0;padding:0;border-top:1px solid var(--sheet-line)}
+.log li{display:grid;grid-template-columns:62px 170px minmax(0,1fr) 240px;gap:4px 20px;padding:11px 0;border-bottom:1px solid var(--sheet-line);align-items:baseline}
+.log li.mark{background:rgba(91,42,136,.07)}
+.log .ref{font:700 12.5px/1 var(--form);font-stretch:80%;letter-spacing:.08em;color:var(--print)}
+.log strong{font-size:16.5px}
+.log .one{font-size:15.5px;max-width:64ch}
+.log .stack{font-size:14px;color:var(--print)}
+
+/* Capabilities */
+.cap-grid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:34px;align-items:start}
+.boxes{display:flex;flex-wrap:wrap;gap:8px 24px;margin:6px 0 4px;padding:0;list-style:none}
+.boxes li{display:flex;align-items:center;gap:9px;font-size:16.5px}
+.box{position:relative;width:17px;height:17px;border:1.5px solid var(--print);flex:none}
+.box::after{content:"X";position:absolute;inset:-5px 0 0 1px;font:700 19px/1 var(--type);color:var(--ink)}
+
+/* Routing slip */
+.slip{background:var(--pink);background-image:var(--tex);background-size:300px;color:var(--ink);--sheet-line:var(--pink-line);--print:var(--pink-print)}
+.slip-sheet{max-width:640px;margin-left:auto;margin-right:auto;padding:24px 30px 28px;transform:rotate(-.8deg);box-shadow:0 1px 1px rgba(20,30,20,.25),0 18px 30px -14px rgba(18,28,18,.55)}
+.slip h2,.slip .slip-h{font:800 26px/1.05 var(--form);font-stretch:72%;letter-spacing:.02em;text-transform:uppercase;color:var(--print)}
+.slip .route{display:grid;grid-template-columns:90px minmax(0,1fr);border-top:1px solid var(--sheet-line);margin-top:12px}
+.slip .route > *{border-bottom:1px solid var(--sheet-line);padding:8px 0}
+.slip .route dt{font:600 12px/1.6 var(--form);font-stretch:85%;letter-spacing:.06em;text-transform:uppercase;color:var(--print)}
+.slip .route dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.mail{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.mail code{font:700 17px/1.3 var(--type);user-select:all;-webkit-user-select:all}
+.btn{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1.5px solid var(--print);color:var(--print);padding:6px 12px 5px;font:700 12.5px/1 var(--form);font-stretch:80%;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border-radius:2px}
+.btn:hover{background:var(--print);color:var(--pink)}
+.btn[data-state="ok"]{background:var(--print);color:var(--pink)}
+.copy-note{font-size:13.5px;color:var(--print);min-height:1.3em}
+
+/* Fixed controls */
+.stamptool{position:fixed;top:12px;right:16px;z-index:30;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;padding:4px;cursor:pointer;color:var(--folder-ink)}
+.stamptool svg{width:54px;height:54px;transition:transform .2s cubic-bezier(.16,1,.3,1);filter:drop-shadow(0 3px 3px rgba(0,0,0,.3))}
+.stamptool:hover svg{transform:translateY(3px)}
+.stamptool:active svg{transform:translateY(8px) scale(.97)}
+.stamptool span{font:800 12px/1 var(--form);font-stretch:75%;letter-spacing:.08em;text-transform:uppercase;background:var(--photo);padding:4px 6px;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.stamptool[aria-disabled="true"]{cursor:default;opacity:.75}
+.stamptool[aria-disabled="true"] svg{transform:none}
+.handler{position:fixed;right:18px;bottom:18px;z-index:30;background:var(--pink);background-image:var(--tex);background-size:300px;border:0;border-top:7px solid var(--pink-print);padding:10px 16px 11px;text-align:left;cursor:pointer;transform:rotate(2.5deg);box-shadow:0 2px 3px rgba(0,0,0,.25),0 14px 22px -10px rgba(10,20,10,.55);transition:transform .25s cubic-bezier(.16,1,.3,1)}
+.handler:hover{transform:rotate(0deg) translateY(-3px)}
+.handler b{display:block;font:800 16px/1 var(--form);font-stretch:72%;letter-spacing:.06em;text-transform:uppercase;color:var(--pink-print)}
+.handler small{display:block;font:400 12.5px/1.3 var(--type);color:var(--ink);margin-top:4px}
+
+/* Impression left by the stamp tool */
+.impression{position:absolute;z-index:5;font-size:clamp(26px,4.4vw,48px);padding:10px 20px 8px;outline-width:2.5px;border-width:5px;opacity:0;transform:rotate(-9deg) scale(1.5)}
+.impression.down{animation:slam .32s cubic-bezier(.3,1.4,.5,1) forwards}
+@keyframes slam{0%{opacity:0;transform:rotate(-9deg) scale(1.5)}60%{opacity:.95}100%{opacity:.86;transform:rotate(-9deg) scale(1)}}
+.sheet.thud{animation:thud .25s ease-out}
+@keyframes thud{40%{translate:0 2px}}
+
+/* End of file */
+.eof{text-align:center;margin:56px auto 0;max-width:60ch;font-size:15.5px;color:var(--folder-ink)}
+.eof b{font-family:var(--form);font-stretch:80%;letter-spacing:.1em;text-transform:uppercase}
+
+/* Plain view */
+dialog.plain{border:0;padding:0;max-width:min(620px,calc(100vw - 32px));width:100%;background:transparent;color:var(--ink)}
+dialog.plain::backdrop{background:rgba(27,38,25,.62)}
+dialog.plain .slip{padding:24px 28px 26px;box-shadow:0 30px 60px -20px rgba(0,0,0,.6)}
+dialog.plain .plain-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.summary{font:400 17px/1.5 var(--type);margin-top:10px}
+
+@media (max-width:980px){
+  .cover-grid,.ops-grid,.cap-grid{grid-template-columns:minmax(0,1fr)}
+  .cover-grid .photo{max-width:360px;margin:6px auto 0}
+  .ops-side{position:static;max-width:440px;margin:0 auto}
+  .frames{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .log li{grid-template-columns:52px minmax(0,1fr)}
+  .log .one,.log .stack{grid-column:2}
+}
+@media (max-width:640px){
+  body{font-size:16px}
+  .sheet{padding:18px 16px 24px;transform:none}
+  .sheet:nth-of-type(2n){transform:none}
+  .tab{margin-left:0;padding:10px 12px 8px;margin-top:22px}
+  .sticker{font-size:12.5px}
+  .back{top:10px}
+  .f.s4,.f.s3,.f.s2{grid-column:span 6}
+  .op{grid-template-columns:minmax(0,1fr)}
+  .ledger li{grid-template-columns:44px minmax(0,1fr)}
+  .ledger span.d{grid-column:2}
+  .frames{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .formhead h2{font-size:25px}
+  .cover .stamp.clear{position:static;transform:rotate(-5deg);margin:18px 0 0 6px}
+  .stamptool{top:6px;right:8px}
+  .stamptool svg{width:40px;height:40px}
+  .stamptool span{font-size:10.5px}
+  .handler{right:10px;bottom:10px;padding:8px 12px 9px}
+  .handler small{display:none}
+  .slip-sheet{padding:20px 16px 22px}
+  .slip .route{grid-template-columns:72px minmax(0,1fr)}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition:none!important;animation-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <filter id="rough" x="-5%" y="-20%" width="110%" height="140%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="4"/>
+    <feDisplacementMap in="SourceGraphic" scale="3.2"/>
+  </filter>
+  <symbol id="clip" viewBox="0 0 22 64"><path d="M7 50V12a4 4 0 0 1 8 0v42a7 7 0 0 1-14 0V8a10 10 0 0 1 20 0v40" fill="none" stroke="#8a9096" stroke-width="2.4" stroke-linecap="round"/><path d="M7 50V12a4 4 0 0 1 8 0v42a7 7 0 0 1-14 0V8a10 10 0 0 1 20 0v40" fill="none" stroke="#d9dde0" stroke-width=".8" stroke-linecap="round" transform="translate(-.6 -.4)"/></symbol>
+</svg>
+
+<header class="tabbar">
+  <a class="back" href="index.html">← all boards</a>
+  <div class="tab"><span class="sticker" id="sticker"></span></div>
+</header>
+
+<button class="stamptool" id="declass" type="button" aria-label="Declassify all redactions. Shortcut D.">
+  <svg viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="12" rx="11" ry="9" fill="#3b2a24"/><ellipse cx="29" cy="9" rx="4" ry="2.6" fill="#6d5246"/><rect x="27" y="18" width="10" height="18" fill="#4a3a31"/><rect x="10" y="34" width="44" height="12" rx="2" fill="#2d241f"/><rect x="12" y="46" width="40" height="7" fill="#5b2a88"/><rect x="12" y="51" width="40" height="2" fill="#3e1c5f"/></svg>
+  <span>Declassify all</span>
+</button>
+
+<button class="handler" id="handler" type="button" aria-haspopup="dialog">
+  <b>Contact handler</b><small>Plain view. Press C.</small>
+</button>
+
+<main id="file">
+  <section class="sheet cover" id="profile" aria-labelledby="h-profile">
+    <p class="marking">Declassified for general curiosity</p>
+    <div class="formhead"><h2 id="h-profile">Subject profile</h2><span class="meta" id="meta1"></span></div>
+    <div class="cover-grid">
+      <div class="fields" id="profile-fields"></div>
+      <figure class="photo tilt-r">
+        <svg class="clip" aria-hidden="true"><use href="#clip"/></svg>
+        <div class="imgwrap" id="map-wrap"><canvas width="240" height="320" data-ex="map" role="img" aria-label="Dithered map of north and central Texas with a dashed route from Frisco south along I-35 to Austin."></canvas></div>
+        <figcaption><b>Exhibit A.</b> Known route of subject, Frisco to Austin. Drawn by this page, not to scale.</figcaption>
+      </figure>
+    </div>
+    <span class="stamp clear">Clearance: none required</span>
+  </section>
+
+  <section class="sheet" id="operations" aria-labelledby="h-ops">
+    <div class="formhead"><h2 id="h-ops">Known operations</h2><span class="meta" id="meta2"></span></div>
+    <div class="ops-grid">
+      <div class="ops" id="ops"></div>
+      <div class="ops-side">
+        <figure class="photo tilt-l">
+          <svg class="clip" aria-hidden="true"><use href="#clip"/></svg>
+          <canvas width="360" height="210" data-ex="circuit" role="img" aria-label="Dithered schematic of a four-qubit quantum convolutional circuit: rotation gates, CNOT layers, pooling and a final measurement."></canvas>
+          <figcaption><b>Exhibit C.</b> A quantum convolutional circuit, reconstructed for the file from the Non-Trivial operation. Schematic, not the actual model.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet pink" id="commendations" aria-labelledby="h-wins">
+    <div class="formhead"><h2 id="h-wins">Commendations</h2><span class="meta" id="meta3"></span></div>
+    <ol class="ledger" id="wins"></ol>
+  </section>
+
+  <section class="sheet" id="assets" aria-labelledby="h-assets">
+    <div class="formhead"><h2 id="h-assets">Assets</h2><span class="meta" id="meta4"></span></div>
+    <div class="contact">
+      <ul class="frames" id="frames"></ul>
+      <div class="contact-meta"><span>Roll 14. Ten frames.</span><span>Each frame is a diagram of the asset, drawn and dithered by this page.</span></div>
+    </div>
+    <ol class="log" id="log"></ol>
+  </section>
+
+  <section class="sheet" id="capabilities" aria-labelledby="h-cap">
+    <div class="formhead"><h2 id="h-cap">Capabilities</h2><span class="meta" id="meta5"></span></div>
+    <div class="cap-grid">
+      <div class="fields" id="cap-fields"></div>
+      <figure class="photo tilt-r">
+        <svg class="clip" aria-hidden="true"><use href="#clip"/></svg>
+        <canvas width="300" height="200" data-ex="sat" role="img" aria-label="Dithered overhead view of a city grid beside a river, with a reticle at center."></canvas>
+        <figcaption><b>Exhibit B.</b> Current posting, overhead. A procedural city on a river, standing in for Austin.</figcaption>
+      </figure>
+    </div>
+    <p class="marking bottom">End of sheet 5. Attach routing slip below.</p>
+  </section>
+
+  <section class="slip slip-sheet" id="handler-slip" aria-labelledby="h-slip"></section>
+
+  <p class="eof"><b>End of file.</b> Redactions lifted: <span id="count">0</span>. The subject is still building, so this file stays open.</p>
+</main>
+
+<dialog class="plain" id="plain" aria-labelledby="plain-h">
+  <div class="slip" id="plain-slip"></div>
+</dialog>
+
+<script src="data.js"></script>
+<script>
+(() => {
+const D = window.TOYESHH;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- Redaction markup ---------- */
+let rxTotal = 0;
+const rx = v => { rxTotal++; return `<span class="rx" tabindex="0" role="button" aria-label="Redacted fact. Press to declassify." data-v="${esc(v)}"><span class="rx-t">${esc(v)}</span><span class="rx-bar" aria-hidden="true"></span><span class="rx-curl" aria-hidden="true"></span></span>`; };
+const NUM = /(?<![A-Za-z\d])[$+−-]?\d[\d,]*(?:K\+|\+|%)?(?:(?:st|nd|rd|th)(?: of \d[\d,]*\+?)?)?/g;
+const PHRASES = ['Turing Scholar', 'Platinum', 'Best Presenter', 'Jane Street'];
+function redact(text) {
+  const marks = [];
+  for (const m of text.matchAll(NUM)) marks.push([m.index, m.index + m[0].length]);
+  for (const p of PHRASES) { let i = text.indexOf(p); while (i >= 0) { marks.push([i, i + p.length]); i = text.indexOf(p, i + 1); } }
+  marks.sort((a, b) => a[0] - b[0]);
+  let out = '', at = 0;
+  for (const [s, e] of marks) { if (s < at) continue; out += esc(text.slice(at, s)) + rx(text.slice(s, e)); at = e; }
+  return out + esc(text.slice(at));
+}
+const field = (lab, html, cls = '') => `<div class="f ${cls}"><span class="lab">${lab}</span><span class="val typed">${html}</span></div>`;
+
+/* ---------- Render the file ---------- */
+const sheets = 5;
+['meta1','meta2','meta3','meta4','meta5'].forEach((id, i) => { $('#' + id).textContent = `File TM-2030. Sheet ${i + 1} of ${sheets}. ${i === 2 ? 'Third copy, pink' : 'Second copy, blue'}`; });
+$('#sticker').innerHTML = `${esc(D.name.split(' ').reverse().join(', ').toUpperCase())}<b>TM-2030</b>`;
+
+$('#profile-fields').innerHTML =
+  field('Subject', `<h1 class="name">${esc(D.name)}</h1>`) +
+  field('Current assignment', redact(D.now), 's4') +
+  field('Known handle', esc(D.handle), 's2') +
+  field('Base of operations', esc(D.place), 's3') +
+  field('Status', 'Active. Building.', 's3') +
+  field('Summary of subject', esc(D.line)) +
+  field('Distinguishing habits', `<ul class="facts">${D.facts.map(f => `<li>${redact(f)}</li>`).join('')}</ul>`) +
+  field('Handling instructions', `<span class="handling">The black bars are tape. Drag across one, or click it. Short on time? Use the stamp, top right.</span>`);
+
+$('#ops').innerHTML = D.experience.map(x => `
+  <article class="op">
+    <div><h3 class="typed">${esc(x.org)}</h3><p class="role typed">${esc(x.role)}</p><p class="when">${esc(x.when)}</p></div>
+    <div><p class="did typed">${esc(x.did)}</p>
+      <ul class="outcome">${x.numbers.map(([n, l]) => `<li class="typed">${rx(n)} ${esc(l)}</li>`).join('')}</ul></div>
+  </article>`).join('');
+
+$('#wins').innerHTML = D.wins.map((w, i) => `<li><span class="ref">C-${i + 1}</span><strong class="typed">${redact(w.what)}</strong><span class="d typed">${redact(w.detail)}</span></li>`).join('');
+
+const fno = i => `14-${String(i + 1).padStart(2, '0')}`;
+$('#frames').innerHTML = D.projects.map((p, i) => `<li data-i="${i}"><canvas width="160" height="108" data-ex="frame" data-name="${esc(p.name)}" role="img" aria-label="Diagram of ${esc(p.name)}"></canvas><span class="fn"><span>${fno(i)}</span><span>${esc(p.name)}</span></span></li>`).join('');
+$('#log').innerHTML = D.projects.map((p, i) => `<li data-i="${i}"><span class="ref">${fno(i)}</span><strong class="typed">${esc(p.name)}</strong><span class="one typed">${esc(p.one)}</span><span class="stack typed">${p.stack.map(esc).join(', ')}</span></li>`).join('');
+const linkMarks = sel => document.querySelectorAll(sel).forEach(li => {
+  const on = v => document.querySelectorAll(`[data-i="${li.dataset.i}"]`).forEach(n => n.classList.toggle('mark', v));
+  li.addEventListener('mouseenter', () => on(true)); li.addEventListener('mouseleave', () => on(false));
+});
+linkMarks('#frames li'); linkMarks('#log li');
+
+const boxes = arr => `<ul class="boxes">${arr.map(s => `<li><span class="box" aria-hidden="true"></span>${esc(s)}</li>`).join('')}</ul>`;
+$('#cap-fields').innerHTML =
+  field('Languages, observed in use', boxes(D.skills.languages)) +
+  field('Areas of operation', boxes(D.skills.areas)) +
+  field('Assessment', 'Range is wide and the work ships. Recommend contact before the next operation starts.');
+
+const slip = (hid, tag) => `
+  <${tag} class="slip-h" id="${hid}">Routing slip. Contact handler</${tag}>
+  <dl class="route">
+    <dt>To</dt><dd>You, the reader</dd>
+    <dt>Re</dt><dd><strong>${esc(D.name)}</strong></dd>
+    <dt>Summary</dt><dd>${esc(D.line)} ${esc(D.now)}.</dd>
+    <dt>Email</dt><dd><div class="mail"><code>${esc(D.links.email)}</code><button class="btn copy" type="button">Copy address</button></div><div class="copy-note" aria-live="polite"></div></dd>
+    <dt>GitHub</dt><dd><a href="${esc(D.links.github)}" target="_blank" rel="noopener">${esc(D.links.github.replace('https://', ''))}</a></dd>
+    <dt>LinkedIn</dt><dd><a href="${esc(D.links.linkedin)}" target="_blank" rel="noopener">${esc(D.links.linkedin.replace('https://www.', ''))}</a></dd>
+    <dt>Resume</dt><dd><a href="${esc(D.links.resume)}">Resume (PDF)</a></dd>
+  </dl>`;
+$('#handler-slip').innerHTML = slip('h-slip', 'h2');
+$('#plain-slip').innerHTML = `<div class="plain-top"><span class="lab">Plain view</span><button class="btn" type="button" id="plain-close">Close</button></div>` + slip('plain-h', 'h2');
+
+/* ---------- Copy email ---------- */
+document.addEventListener('click', async e => {
+  const b = e.target.closest('.copy'); if (!b) return;
+  const note = b.closest('dd').querySelector('.copy-note');
+  try { await navigator.clipboard.writeText(D.links.email); b.dataset.state = 'ok'; b.textContent = 'Copied'; note.textContent = 'Address copied to clipboard.'; }
+  catch (err) {
+    const r = document.createRange(); r.selectNodeContents(b.parentNode.querySelector('code'));
+    const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    note.textContent = 'Copy was blocked here. The address is selected; press Cmd or Ctrl + C.';
+  }
+  setTimeout(() => { b.dataset.state = ''; b.textContent = 'Copy address'; }, 2200);
+});
+
+/* ---------- Plain view ---------- */
+const dlg = $('#plain');
+const openPlain = () => { if (!dlg.open) dlg.showModal(); };
+$('#handler').addEventListener('click', openPlain);
+$('#plain-close').addEventListener('click', () => dlg.close());
+dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+
+/* ---------- Redaction tape: peel by scrubbing, click, or keyboard ---------- */
+const countEl = $('#count');
+let lifted = 0;
+const updCount = () => { countEl.textContent = `${lifted} of ${rxTotal}`; };
+updCount();
+const setP = (el, p) => { el._p = p; el.style.setProperty('--p', p.toFixed(3)); };
+function finish(el, fast) {
+  if (el._open) return; el._open = true;
+  el.classList.add('peeling');
+  const from = el._p || 0;
+  const done = () => {
+    el.classList.add('open');
+    el.querySelector('.rx-curl').classList.add('fly');
+    el.setAttribute('aria-label', 'Declassified: ' + el.dataset.v);
+    el.setAttribute('aria-disabled', 'true');
+    lifted++; updCount();
+  };
+  if (RM) { setP(el, 1); done(); return; }
+  const t0 = performance.now(), dur = (fast ? 200 : 320) * (1 - from) + 60;
+  const step = now => { const k = Math.min(1, (now - t0) / dur); setP(el, from + (1 - from) * (1 - Math.pow(1 - k, 3))); k < 1 ? requestAnimationFrame(step) : done(); };
+  requestAnimationFrame(step);
+}
+function restick(el) {
+  const from = el._p || 0, t0 = performance.now();
+  const step = now => { if (el._open) return; const k = Math.min(1, (now - t0) / 180); setP(el, from * (1 - k)); if (k < 1) requestAnimationFrame(step); else el.classList.remove('peeling'); };
+  requestAnimationFrame(step);
+}
+document.querySelectorAll('.rx').forEach(el => {
+  el.addEventListener('pointerenter', e => {
+    if (el._open || (el._p || 0) > 0) return;
+    const r = el.getBoundingClientRect();
+    el._dir = e.clientX < r.left + r.width / 2 ? 1 : -1;
+    el.classList.toggle('from-r', el._dir < 0);
+  });
+  el.addEventListener('pointermove', e => {
+    if (el._open || !el._dir) return;
+    const r = el.getBoundingClientRect();
+    const p = Math.max(0, Math.min(1, el._dir > 0 ? (e.clientX - r.left) / r.width : (r.right - e.clientX) / r.width));
+    if (p > (el._p || 0)) { setP(el, p); el.classList.add('peeling'); }
+    if (p > .9) finish(el);
+  });
+  el.addEventListener('pointerleave', () => { if (el._open) return; (el._p || 0) > .5 ? finish(el) : restick(el); });
+  el.addEventListener('click', () => finish(el));
+  el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); finish(el); } });
+});
+
+/* ---------- Declassify all: the stamp ---------- */
+const tool = $('#declass');
+function declassifyAll() {
+  if (tool.getAttribute('aria-disabled') === 'true') return;
+  tool.setAttribute('aria-disabled', 'true');
+  tool.querySelector('span').textContent = 'Declassified';
+  const mid = innerHeight / 2;
+  const sheet = [...document.querySelectorAll('.sheet')].sort((a, b) => {
+    const ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+    return Math.abs(ra.top + Math.min(ra.height, innerHeight) / 2 - mid) - Math.abs(rb.top + Math.min(rb.height, innerHeight) / 2 - mid);
+  })[0];
+  const imp = document.createElement('span');
+  imp.className = 'stamp impression'; imp.textContent = 'Declassified'; imp.setAttribute('aria-hidden', 'true');
+  const r = sheet.getBoundingClientRect();
+  imp.style.top = Math.max(40, Math.min(r.height - 90, mid - r.top - 40)) + 'px';
+  imp.style.left = Math.max(10, r.width * .5 - 160) + 'px';
+  sheet.appendChild(imp);
+  requestAnimationFrame(() => { imp.classList.add('down'); sheet.classList.add('thud'); });
+  const closed = [...document.querySelectorAll('.rx')].filter(el => !el._open);
+  const vis = el => { const b = el.getBoundingClientRect(); return b.bottom > 0 && b.top < innerHeight; };
+  closed.sort((a, b) => vis(b) - vis(a));
+  closed.forEach((el, i) => setTimeout(() => finish(el, true), RM ? 0 : 180 + i * 38));
+}
+tool.addEventListener('click', declassifyAll);
+document.addEventListener('keydown', e => {
+  if (e.metaKey || e.ctrlKey || e.altKey || dlg.open) return;
+  if (e.key === 'c' || e.key === 'C') openPlain();
+  if (e.key === 'd' || e.key === 'D') declassifyAll();
+});
+
+/* ---------- Paper textures, generated ---------- */
+function makeTex(size, dots, alpha) {
+  const c = document.createElement('canvas'); c.width = c.height = size; const x = c.getContext('2d');
+  for (let i = 0; i < dots; i++) { x.fillStyle = Math.random() < .55 ? `rgba(20,30,40,${Math.random() * alpha})` : `rgba(255,255,255,${Math.random() * alpha * 1.4})`; x.fillRect(Math.random() * size, Math.random() * size, 1, 1); }
+  x.lineWidth = .6;
+  for (let i = 0; i < 70; i++) { x.strokeStyle = `rgba(30,40,60,${Math.random() * .07})`; const px = Math.random() * size, py = Math.random() * size, a = Math.random() * 6.28; x.beginPath(); x.moveTo(px, py); x.quadraticCurveTo(px + Math.cos(a) * 6 + 3, py + Math.sin(a) * 6, px + Math.cos(a) * 12, py + Math.sin(a) * 12); x.stroke(); }
+  return c.toDataURL();
+}
+function makeGrunge(size) {
+  const c = document.createElement('canvas'); c.width = c.height = size; const x = c.getContext('2d'); const id = x.createImageData(size, size);
+  for (let y = 0; y < size; y++) for (let xx = 0; xx < size; xx++) { const n = fbm(xx / 9, y / 9, 11), sp = Math.random(); const a = n < .3 || sp < .07 ? 0 : 255; id.data[(y * size + xx) * 4 + 3] = a; }
+  x.putImageData(id, 0, 0); return c.toDataURL();
+}
+try {
+  document.documentElement.style.setProperty('--tex', `url(${makeTex(300, 9000, .16)})`);
+  document.documentElement.style.setProperty('--grunge', `url(${makeGrunge(220)})`);
+} catch (err) { console.warn('Texture generation failed; plain paper used.', err); }
+
+/* ---------- Noise ---------- */
+function hash(x, y, s) { let h = (x * 374761393 + y * 668265263 + s * 982451653) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967295; }
+function vnoise(x, y, s) {
+  const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi, u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
+  const a = hash(xi, yi, s), b = hash(xi + 1, yi, s), c = hash(xi, yi + 1, s), d = hash(xi + 1, yi + 1, s);
+  return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+}
+function fbm(x, y, s) { let v = 0, a = .5, f = 1; for (let o = 0; o < 4; o++) { v += a * vnoise(x * f, y * f, s + o); f *= 2; a *= .5; } return v / .9375; }
+function rng(s) { return () => { s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+/* ---------- Drawing helpers (grayscale, 0 ink .. 1 paper) ---------- */
+const G = v => { const n = Math.round(Math.max(0, Math.min(1, v)) * 255); return `rgb(${n},${n},${n})`; };
+function base(c, w, h, s, lo, hi, sc) {
+  const id = c.createImageData(w, h);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const v = (lo + (hi - lo) * fbm(x / sc, y / sc, s)) * 255, i = (y * w + x) * 4; id.data[i] = id.data[i + 1] = id.data[i + 2] = v; id.data[i + 3] = 255; }
+  c.putImageData(id, 0, 0);
+}
+function path(c, pts, width, v, dash) {
+  c.beginPath(); pts.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y));
+  c.lineWidth = width; c.strokeStyle = G(v); c.setLineDash(dash || []); c.lineJoin = c.lineCap = 'round'; c.stroke(); c.setLineDash([]);
+}
+function wiggle(pts, amp, seed) {
+  const out = [];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const [ax, ay] = pts[i], [bx, by] = pts[i + 1], n = 12, nx = -(by - ay), ny = bx - ax, L = Math.hypot(nx, ny) || 1;
+    for (let k = 0; k < n; k++) { const t = k / n, o = (vnoise(i * 3 + t * 3, 0, seed) - .5) * 2 * amp; out.push([ax + (bx - ax) * t + nx / L * o, ay + (by - ay) * t + ny / L * o]); }
+  }
+  out.push(pts[pts.length - 1]); return out;
+}
+function vignette(c, w, h, amt) { const g = c.createRadialGradient(w / 2, h / 2, Math.min(w, h) * .3, w / 2, h / 2, Math.max(w, h) * .72); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, `rgba(0,0,0,${amt})`); c.fillStyle = g; c.fillRect(0, 0, w, h); }
+function circle(c, x, y, r, fill, stroke, lw) { c.beginPath(); c.arc(x, y, r, 0, 6.2832); if (fill != null) { c.fillStyle = G(fill); c.fill(); } if (stroke != null) { c.lineWidth = lw || 1; c.strokeStyle = G(stroke); c.stroke(); } }
+function reticle(c, x, y, r) { circle(c, x, y, r + 2, null, 1, 4); circle(c, x, y, r, null, 0, 1.6); [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(([dx, dy]) => path(c, [[x + dx * (r - 4), y + dy * (r - 4)], [x + dx * (r + 6), y + dy * (r + 6)]], 1.6, 0)); }
+
+/* Exhibit A: Frisco to Austin */
+const MAP = { w: 240, h: 320, P: (la, lo) => [(lo + 98.5) / 2.6 * 240, (33.5 - la) / 3.6 * 320] };
+const C = { frisco: [33.15, -96.82], dallas: [32.78, -96.80], fw: [32.75, -97.33], hills: [32.01, -97.13], waco: [31.55, -97.15], temple: [31.10, -97.34], rr: [30.51, -97.68], austin: [30.27, -97.74] };
+function exMap(c, w, h) {
+  const P = MAP.P;
+  base(c, w, h, 7, .7, .97, 30);
+  c.globalAlpha = .5; for (let i = -20; i < w + 20; i += 21) path(c, [[i, 0], [i + 7, h]], .7, .5); for (let j = 0; j < h; j += 21) path(c, [[0, j], [w, j - 6]], .7, .5); c.globalAlpha = 1;
+  [[C.dallas, 24], [C.fw, 17], [C.austin, 14], [C.waco, 8], [C.frisco, 9], [C.temple, 6], [C.rr, 7]].forEach(([p, r], k) => {
+    const [cx, cy] = P(...p);
+    for (let n = 0; n < r * r * 1.4; n++) { const a = hash(n, k, 3) * 6.283, d = Math.sqrt(hash(n, k, 5)) * r; c.fillStyle = G(.3 + hash(n, k, 9) * .4); c.fillRect(cx + Math.cos(a) * d, cy + Math.sin(a) * d, 1.4, 1.4); }
+  });
+  [[[33.1, -97.6], [32.8, -96.9], [32.4, -96.5], [32.0, -96.1]], [[32.7, -98.4], [32.0, -97.6], [31.55, -97.12], [30.9, -96.6], [30.3, -96.1]], [[30.7, -98.5], [30.42, -97.95], [30.26, -97.74], [29.95, -97.2]]]
+    .forEach((r, k) => path(c, wiggle(r.map(p => P(...p)), 4, 20 + k), 1.5, .38));
+  [[33.08, -97.02, 7, 4], [30.42, -97.95, 8, 3], [31.9, -97.37, 4, 6], [33.03, -96.5, 5, 4], [32.86, -96.53, 3, 6]].forEach(([la, lo, rx, ry]) => { const [x, y] = P(la, lo); c.beginPath(); c.ellipse(x, y, rx, ry, .6, 0, 6.283); c.fillStyle = G(.28); c.fill(); });
+  const I35 = [C.dallas, C.hills, C.waco, C.temple, C.rr, C.austin].map(p => P(...p));
+  path(c, I35, 2.4, .12); path(c, [C.fw, C.hills].map(p => P(...p)), 2, .2); path(c, [C.frisco, C.dallas].map(p => P(...p)), 1.8, .18);
+  path(c, [[C.fw[0], C.fw[1]], C.dallas].map(p => P(...p)), 1.4, .3);
+  const route = [C.frisco, C.dallas, C.hills, C.waco, C.temple, C.rr, C.austin].map(p => P(...p));
+  path(c, route, 6, 1); path(c, route, 2.6, 0, [6, 4]);
+  reticle(c, ...P(...C.frisco), 9); reticle(c, ...P(...C.austin), 11);
+  vignette(c, w, h, .4);
+}
+
+/* Exhibit B: overhead city on a river */
+function exSat(c, w, h) {
+  base(c, w, h, 31, .3, .7, 14);
+  const R = rng(9), riverY = x => h * .64 + Math.sin(x / 38) * 12 + Math.sin(x / 13) * 3;
+  c.save(); c.translate(w * .46, h * .36); c.rotate(-.05);
+  for (let gx = -6; gx < 6; gx++) for (let gy = -5; gy < 3; gy++) {
+    const bx = gx * 21, by = gy * 19; if (Math.hypot(bx, by) > 115 + R() * 20) continue;
+    c.fillStyle = G(.82); c.fillRect(bx - 2, by - 2, 21, 19);
+    for (let k = 0; k < 3; k++) { const ww = 5 + R() * 9, hh = 4 + R() * 8, ox = R() * (17 - ww), oy = R() * (15 - hh), tall = R() * 4; c.fillStyle = G(.12); c.fillRect(bx + ox + tall, by + oy + tall, ww, hh); c.fillStyle = G(.45 + R() * .5); c.fillRect(bx + ox, by + oy, ww, hh); }
+  }
+  c.restore();
+  c.beginPath(); for (let x = 0; x <= w; x += 2) c.lineTo(x, riverY(x) - 7); for (let x = w; x >= 0; x -= 2) c.lineTo(x, riverY(x) + 7); c.fillStyle = G(.1); c.fill();
+  for (let x = 0; x <= w; x += 3) { c.fillStyle = G(.55 + vnoise(x / 6, 1, 4) * .3); c.fillRect(x, riverY(x) - 9, 3, 2); c.fillRect(x, riverY(x) + 7, 3, 2); }
+  [w * .3, w * .48, w * .6].forEach(x => { c.fillStyle = G(.9); c.fillRect(x, riverY(x) - 9, 4, 18); });
+  c.fillStyle = G(.18); c.fillRect(w * .74 - 1, 0, 8, h); c.fillStyle = G(.92); c.fillRect(w * .74, 0, 6, h);
+  reticle(c, w * .48, h * .4, 14);
+  for (let i = 0; i < w; i += 10) path(c, [[i, 0], [i, i % 50 ? 4 : 9]], 1, 1);
+  vignette(c, w, h, .45);
+}
+
+/* Exhibit C: quantum convolutional circuit */
+function exCircuit(c, w, h) {
+  base(c, w, h, 41, .84, .98, 50);
+  const ys = [42, 84, 126, 168];
+  c.font = '700 12px "Courier Prime", monospace'; c.textBaseline = 'middle'; c.textAlign = 'center';
+  ys.forEach((y, i) => { path(c, [[34, y], [w - 18, y]], 1.6, .2); c.fillStyle = G(.1); c.fillText('q' + i, 16, y); });
+  const gate = (x, y, t) => { c.fillStyle = 'rgba(0,0,0,.18)'; c.fillRect(x - 12, y - 10, 26, 22); c.fillStyle = G(.97); c.fillRect(x - 13, y - 11, 26, 22); c.lineWidth = 1.6; c.strokeStyle = G(.1); c.strokeRect(x - 13, y - 11, 26, 22); c.fillStyle = G(.05); c.fillText(t, x, y + 1); };
+  const cnot = (x, a, b) => { path(c, [[x, ys[a]], [x, ys[b]]], 1.6, .1); circle(c, x, ys[a], 4, 0); circle(c, x, ys[b], 8, .97, .1, 1.6); path(c, [[x - 8, ys[b]], [x + 8, ys[b]]], 1.4, .1); path(c, [[x, ys[b] - 8], [x, ys[b] + 8]], 1.4, .1); };
+  const meter = (x, y) => { gate(x, y, ''); c.beginPath(); c.arc(x, y + 6, 8, Math.PI * 1.15, Math.PI * 1.85); c.strokeStyle = G(.1); c.lineWidth = 1.4; c.stroke(); path(c, [[x, y + 6], [x + 6, y - 5]], 1.4, .1); };
+  ys.forEach((y, i) => gate(56, y, 'H'));
+  ys.forEach((y, i) => gate(92, y, 'RY'));
+  cnot(126, 0, 1); cnot(126, 2, 3); cnot(152, 1, 2);
+  ys.forEach((y, i) => gate(186, y, 'RZ'));
+  c.setLineDash([3, 3]); c.strokeStyle = G(.35); c.lineWidth = 1; c.strokeRect(206, 22, 64, 166); c.setLineDash([]);
+  meter(222, ys[0]); meter(222, ys[2]); cnot(252, 0, 1); cnot(252, 2, 3);
+  gate(286, ys[1], 'RY'); gate(286, ys[3], 'RY'); cnot(312, 1, 3); meter(338, ys[3]);
+  c.font = '700 10px "Archivo", sans-serif'; c.fillStyle = G(.25); c.fillText('CONV', 139, 14); c.fillText('POOL', 238, 14); c.fillText('READ', 326, 14);
+  const g = c.createLinearGradient(0, 0, w, h); g.addColorStop(0, 'rgba(255,255,255,.18)'); g.addColorStop(1, 'rgba(0,0,0,.22)'); c.fillStyle = g; c.fillRect(0, 0, w, h);
+  vignette(c, w, h, .3);
+}
+
+/* Contact sheet frames: one diagram per asset */
+const FRAMES = {
+  'Toyo Brain'(c, w, h, R) {
+    base(c, w, h, 2, .86, .98, 20); const N = [[w / 2, h / 2]];
+    for (let i = 0; i < 24; i++) { const a = R() * 6.283, d = 18 + R() * 52; N.push([w / 2 + Math.cos(a) * d * 1.3, h / 2 + Math.sin(a) * d * .8]); }
+    N.forEach((p, i) => { if (!i) return; const near = N.map((q, j) => [Math.hypot(q[0] - p[0], q[1] - p[1]), j]).sort((a, b) => a[0] - b[0]); path(c, [p, N[near[1][1]]], 1, .35); if (i % 3 === 0) path(c, [p, N[0]], 1, .45); });
+    N.forEach((p, i) => i ? circle(c, p[0], p[1], 2 + R() * 3, .1) : (circle(c, p[0], p[1], 11, .05), circle(c, p[0], p[1], 16, null, .1, 1.5)));
+    vignette(c, w, h, .3);
+  },
+  'The Survivorship Tax'(c, w, h, R) {
+    base(c, w, h, 3, .9, .99, 30); path(c, [[14, 8], [14, h - 12], [w - 6, h - 12]], 1.4, .15);
+    for (let k = 0; k < 5; k++) { let y = h * .72; const pts = [], drift = .22 - k * .08; for (let x = 16; x < w - 6; x += 2) { y -= drift + (R() - .5) * 3.2; pts.push([x, Math.max(6, Math.min(h - 14, y))]); } path(c, pts, k ? 1.2 : 2.2, k * .14); }
+    vignette(c, w, h, .25);
+  },
+  'YC Intel'(c, w, h, R) {
+    base(c, w, h, 4, .88, .98, 25); const cl = [[.25, .35], [.6, .3], [.45, .7], [.78, .65], [.2, .75]];
+    for (let i = 0; i < 1500; i++) { const [cx, cy] = cl[i % 5], g = () => (R() + R() + R() - 1.5); c.fillStyle = G(.1 + R() * .3); c.fillRect(cx * w + g() * 22, cy * h + g() * 15, 1, 1); }
+    vignette(c, w, h, .3);
+  },
+  'Lecture Notes'(c, w, h, R) {
+    base(c, w, h, 5, .86, .97, 25);
+    for (let x = 6; x < w - 6; x += 2) { const a = h * .34 * fbm(x / 12, 1, 4) * (.3 + .7 * Math.abs(Math.sin(x / 21))); path(c, [[x, h * .45 - a], [x, h * .45 + a]], 1.3, .08); }
+    for (let x = 6; x < w - 6; x += 3) for (let y = h * .8; y < h - 6; y += 3) { c.fillStyle = G(.3 + fbm(x / 8, y / 5, 7) * .6); c.fillRect(x, y, 3, 3); }
+    vignette(c, w, h, .3);
+  },
+  'StudyAtlas'(c, w, h, R) {
+    base(c, w, h, 6, .62, .82, 12);
+    for (let x = 8; x < w; x += 24) path(c, [[x, 0], [x + 4, h]], 3, .97); for (let y = 10; y < h; y += 20) path(c, [[0, y], [w, y + 3]], 3, .97);
+    path(c, [[0, h], [w, 10]], 4, .99); c.fillStyle = G(.42); c.fillRect(58, 31, 20, 16);
+    [[34, 26], [92, 52], [126, 30], [70, 82]].forEach(([x, y]) => { c.beginPath(); c.moveTo(x, y + 12); c.bezierCurveTo(x - 9, y + 2, x - 7, y - 9, x, y - 9); c.bezierCurveTo(x + 7, y - 9, x + 9, y + 2, x, y + 12); c.fillStyle = G(.05); c.fill(); circle(c, x, y - 2, 2.6, .98); });
+    vignette(c, w, h, .3);
+  },
+  'Leetposter'(c, w, h, R) {
+    base(c, w, h, 8, .9, .99, 30); c.fillStyle = G(.78); c.fillRect(0, 0, 16, h);
+    for (let i = 0; i < 10; i++) { const y = 14 + i * 9, ind = [0, 1, 2, 2, 1, 2, 3, 2, 1, 0][i] * 8; if (i === 6) { c.fillStyle = G(.12); c.fillRect(16, y - 4, w - 16, 8); } c.fillStyle = G(i === 6 ? .95 : .25); c.fillRect(22 + ind, y - 2, 20 + R() * 70, 4); }
+    c.font = '700 15px "Courier Prime", monospace'; c.textAlign = 'right'; c.textBaseline = 'top'; c.fillStyle = G(.05); c.fillText('40:00', w - 6, 4);
+    vignette(c, w, h, .25);
+  },
+  'learnDSA'(c, w, h, R) {
+    base(c, w, h, 9, .88, .98, 25); const lv = 4, nodes = [];
+    for (let d = 0; d < lv; d++) for (let i = 0; i < 2 ** d; i++) nodes.push([d, i, w * (i + .5) / 2 ** d, 14 + d * 27]);
+    const hot = new Set(['0-0', '1-0', '2-1', '3-2']);
+    nodes.forEach(([d, i, x, y]) => { if (d) { const px = w * (Math.floor(i / 2) + .5) / 2 ** (d - 1); path(c, [[px, y - 27], [x, y]], hot.has(`${d}-${i}`) && hot.has(`${d - 1}-${Math.floor(i / 2)}`) ? 2.6 : 1.1, .2); } });
+    nodes.forEach(([d, i, x, y]) => circle(c, x, y, d === 3 ? 5 : 7, hot.has(`${d}-${i}`) ? .08 : .97, .1, 1.4));
+    vignette(c, w, h, .25);
+  },
+  'Longhorn Macros'(c, w, h, R) {
+    base(c, w, h, 10, .8, .94, 25); const cx = 52, cy = h / 2;
+    circle(c, cx, cy, 42, .98, .3, 1.5); [[0, 2.4, .12], [2.4, 4.3, .45], [4.3, 6.283, .7]].forEach(([a, b, v]) => { c.beginPath(); c.moveTo(cx, cy); c.arc(cx, cy, 33, a, b); c.fillStyle = G(v); c.fill(); }); circle(c, cx, cy, 13, .98);
+    [.8, .55, .35].forEach((f, i) => { const y = 30 + i * 24; c.fillStyle = G(.97); c.fillRect(106, y, 46, 9); c.fillStyle = G(.12); c.fillRect(106, y, 46 * f, 9); c.strokeStyle = G(.2); c.strokeRect(106, y, 46, 9); });
+    vignette(c, w, h, .3);
+  },
+  'Probe'(c, w, h, R) {
+    base(c, w, h, 12, .22, .45, 10);
+    const tube = (x, y, ww, hh, vert) => { const g = vert ? c.createLinearGradient(x, 0, x + ww, 0) : c.createLinearGradient(0, y, 0, y + hh); g.addColorStop(0, G(.35)); g.addColorStop(.35, G(.92)); g.addColorStop(1, G(.15)); c.fillStyle = g; c.fillRect(x, y, ww, hh); };
+    tube(0, h * .52, w * .62, 18); tube(w * .56, 0, 18, h * .52 + 18, true); tube(w * .56 - 4, h * .52 - 4, 26, 26); c.fillStyle = G(.6); c.fillRect(w * .3, h * .52 - 3, 7, 24);
+    const b = 12; [[10, 10, 1, 1], [w - 10, 10, -1, 1], [10, h - 10, 1, -1], [w - 10, h - 10, -1, -1]].forEach(([x, y, sx, sy]) => path(c, [[x + sx * b, y], [x, y], [x, y + sy * b]], 2, .98));
+    reticle(c, w * .33, h * .6, 9);
+    c.font = '700 11px "Archivo", sans-serif'; c.textAlign = 'left'; c.textBaseline = 'top'; c.fillStyle = G(.98); c.fillText('REC', 24, 16); circle(c, 18, 21, 3, .98);
+  },
+  'Doe Clicker'(c, w, h, R) {
+    base(c, w, h, 13, .02, .2, 20); const cx = w / 2, cy = h / 2;
+    for (let r = 60; r > 8; r -= 7) circle(c, cx, cy, r, null, .35 + (r % 14) * .02, 1);
+    for (let a = 0; a < 6.283; a += .26) path(c, [[cx + Math.cos(a) * 44, cy + Math.sin(a) * 30], [cx + Math.cos(a) * 80, cy + Math.sin(a) * 56]], 1, .5);
+    c.beginPath(); c.moveTo(cx - 40, cy); c.quadraticCurveTo(cx, cy - 30, cx + 40, cy); c.quadraticCurveTo(cx, cy + 30, cx - 40, cy); c.fillStyle = G(.92); c.fill();
+    circle(c, cx, cy, 13, .3); circle(c, cx, cy, 6, .01); circle(c, cx + 4, cy - 4, 2.5, 1);
+  }
+};
+
+/* ---------- Atkinson dither, resolved from static ---------- */
+const INK = [28, 33, 71], PAPER = [238, 241, 242];
+function targetOf(cv) {
+  const w = cv.width, h = cv.height, off = document.createElement('canvas'); off.width = w; off.height = h;
+  const c = off.getContext('2d', { willReadFrequently: true }), k = cv.dataset.ex;
+  if (k === 'map') exMap(c, w, h); else if (k === 'sat') exSat(c, w, h); else if (k === 'circuit') exCircuit(c, w, h);
+  else { const name = cv.dataset.name; (FRAMES[name] || FRAMES['Toyo Brain'])(c, w, h, rng(name.length * 977 + name.charCodeAt(0))); }
+  const d = c.getImageData(0, 0, w, h).data, L = new Float32Array(w * h);
+  for (let i = 0; i < w * h; i++) L[i] = (.299 * d[i * 4] + .587 * d[i * 4 + 1] + .114 * d[i * 4 + 2]) / 255;
+  return L;
+}
+function atkinson(buf, w, h, img) {
+  const o = img.data;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const i = y * w + x, old = buf[i], nv = old > .5 ? 1 : 0, e = (old - nv) / 8, col = nv ? PAPER : INK;
+    o[i * 4] = col[0]; o[i * 4 + 1] = col[1]; o[i * 4 + 2] = col[2]; o[i * 4 + 3] = 255;
+    if (x + 1 < w) buf[i + 1] += e; if (x + 2 < w) buf[i + 2] += e;
+    if (y + 1 < h) { if (x > 0) buf[i + w - 1] += e; buf[i + w] += e; if (x + 1 < w) buf[i + w + 1] += e; }
+    if (y + 2 < h) buf[i + 2 * w] += e;
+  }
+}
+function develop(cv) {
+  if (cv._dev) return; cv._dev = true;
+  const w = cv.width, h = cv.height, c = cv.getContext('2d'), L = targetOf(cv), img = c.createImageData(w, h), buf = new Float32Array(w * h);
+  if (RM) { buf.set(L); atkinson(buf, w, h, img); c.putImageData(img, 0, 0); return; }
+  const order = new Float32Array(w * h); for (let i = 0; i < order.length; i++) order[i] = Math.random() * .7;
+  const t0 = performance.now(), dur = 1500;
+  const frame = now => {
+    const t = Math.min(1, (now - t0) / dur);
+    for (let i = 0; i < buf.length; i++) { let k = Math.max(0, Math.min(1, t * 1.7 - order[i])); k = 1 - Math.pow(1 - k, 3); buf[i] = L[i] * k + Math.random() * (1 - k); }
+    atkinson(buf, w, h, img); c.putImageData(img, 0, 0);
+    if (t < 1) requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+}
+function placeMapTags() {
+  const wrap = $('#map-wrap');
+  [['Frisco', C.frisco, 14, -6], ['Austin', C.austin, 16, -6], ['I-35', C.temple, 10, -4]].forEach(([t, p, dx, dy]) => {
+    const [x, y] = MAP.P(...p), s = document.createElement('span'); s.className = 'tag'; s.textContent = t; s.setAttribute('aria-hidden', 'true');
+    s.style.left = `calc(${x / MAP.w * 100}% + ${dx}px)`; s.style.top = `calc(${y / MAP.h * 100}% + ${dy}px)`; wrap.appendChild(s);
+  });
+}
+placeMapTags();
+const fontsReady = Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise(r => setTimeout(r, 1200))]);
+fontsReady.then(() => {
+  const cvs = document.querySelectorAll('canvas[data-ex]');
+  if (!('IntersectionObserver' in window)) { cvs.forEach(develop); return; }
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { develop(e.target); io.unobserve(e.target); } }), { threshold: .2 });
+  cvs.forEach(cv => io.observe(cv));
+});
+})();
+</script>
+</body>
+</html>

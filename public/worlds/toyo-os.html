@@ -1,0 +1,896 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Toyo OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600;700&family=Martian+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --desk:#AFC4B5; --porcelain:#F5F4EF; --bisque:#E8E4D9; --slip:#EEEBE3;
+  --cobalt:#1E3A7B; --cobalt-2:#3D5A9A; --ink:#172340; --ink-2:#47526C;
+  --seal:#B4322A; --line:rgba(30,58,123,.18);
+  --ui:"Geologica","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --mono:"Martian Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --ease:cubic-bezier(.16,1,.3,1);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden}
+body{background:var(--desk);color:var(--ink);font:400 14px/1.5 var(--ui);-webkit-font-smoothing:antialiased;cursor:default}
+::selection{background:var(--cobalt);color:var(--porcelain)}
+:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+a{color:var(--cobalt);text-underline-offset:3px;text-decoration-thickness:1px}
+a:hover{color:var(--seal)}
+*{scrollbar-width:thin;scrollbar-color:rgba(30,58,123,.35) transparent}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:rgba(30,58,123,.32);border-radius:10px;border:3px solid var(--porcelain)}
+::-webkit-scrollbar-track{background:transparent}
+.ic{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+#glaze{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block}
+
+/* boot */
+#boot{position:fixed;inset:0;z-index:10000;background:var(--porcelain);display:grid;place-items:center;padding:24px 16px;
+  clip-path:inset(0 0 0 0);transition:clip-path .7s var(--ease)}
+#boot.gone{clip-path:inset(0 0 100% 0)}
+.boot-in{width:min(560px,100%)}
+.boot-head{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.boot-head b{font:600 26px/1 var(--ui);letter-spacing:-.02em;color:var(--cobalt)}
+.boot-sub{margin:0 0 22px;color:var(--ink-2);max-width:46ch}
+#boot-log{list-style:none;margin:0 0 26px;padding:16px 0 0;border-top:2px solid var(--cobalt);font:400 11.5px/1.5 var(--mono)}
+#boot-log li{display:grid;grid-template-columns:96px 1fr 26px;gap:10px;padding:3px 0;opacity:0;transform:translateY(3px);transition:opacity .25s,transform .35s var(--ease)}
+#boot-log li.in{opacity:1;transform:none}
+#boot-log .m{color:var(--cobalt);font-weight:500}
+#boot-log .d{color:var(--ink-2)}
+#boot-log .ok{color:var(--seal);font-weight:500;text-align:right}
+#boot-skip{font-size:12.5px;color:var(--ink-2);border-bottom:1px solid var(--line);padding-bottom:1px}
+#boot-skip:hover{color:var(--seal)}
+.seal{width:34px;height:34px;flex:none}
+
+/* menu bar */
+#menubar{position:fixed;left:0;right:0;top:0;height:36px;z-index:9500;display:flex;align-items:center;gap:18px;padding:0 14px;
+  background:var(--bisque);border-bottom:1px solid rgba(30,58,123,.22);box-shadow:0 1px 0 rgba(255,255,255,.7) inset;font-size:13px}
+#menubar .brand{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--cobalt);letter-spacing:-.01em}
+#menubar .brand .seal{width:20px;height:20px}
+#mb-app{font-weight:500;color:var(--ink)}
+#mb-sp{flex:1}
+#mb-status{display:flex;align-items:center;gap:7px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+#mb-status i{width:7px;height:7px;border-radius:2px;background:var(--cobalt-2);display:block}
+body.working #mb-status i{background:var(--seal);animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+#mb-clock{font-variant-numeric:tabular-nums;color:var(--ink)}
+#mb-boards{color:var(--ink-2);text-decoration:none;font-size:12.5px}
+#mb-boards:hover{color:var(--seal)}
+.mb-contact{display:flex;align-items:center;gap:6px;color:var(--porcelain);background:var(--seal);border-radius:7px;padding:3px 10px 3px 8px;font-weight:500;font-size:12.5px}
+.mb-contact .ic{width:15px;height:15px}
+.mb-contact:hover{background:#9A2820}
+
+/* desktop */
+#desk{position:fixed;inset:0;z-index:1}
+#mark{position:absolute;left:56px;bottom:112px;max-width:min(760px,56vw);pointer-events:none}
+#mark h1{margin:0;font:650 clamp(42px,5.2vw,78px)/.95 var(--ui);letter-spacing:-.035em;color:#152B5E;text-wrap:balance}
+#mark p{margin:0;pointer-events:auto}
+#mark .now{margin-top:16px;font-size:16px;font-weight:500;color:var(--ink)}
+#mark .line{margin-top:4px;font-size:16px;color:#22304F;max-width:52ch}
+#mark .hint{margin-top:14px;font-size:13px;color:#26344F;max-width:52ch}
+#launcher{display:none}
+
+/* windows */
+.win{position:absolute;display:flex;flex-direction:column;min-width:280px;min-height:180px;background:var(--porcelain);border-radius:14px;
+  box-shadow:0 1px 0 rgba(255,255,255,.95) inset,0 0 0 1px rgba(30,58,123,.2),0 2px 4px rgba(32,56,44,.12),0 22px 46px -18px rgba(28,52,40,.5);
+  visibility:hidden;opacity:0;transform:translateY(12px) scale(.985);transform-origin:50% 100%;
+  transition:opacity .2s,transform .42s var(--ease),visibility 0s .42s}
+.win.is-open{visibility:visible;opacity:1;transform:none;transition:opacity .2s,transform .42s var(--ease),visibility 0s}
+.win.is-open.is-min{visibility:hidden;opacity:0;transform:translateY(70px) scale(.55);transition:opacity .25s,transform .42s var(--ease),visibility 0s .42s}
+.bar{position:relative;display:flex;align-items:center;gap:9px;height:38px;flex:none;padding:0 8px 0 13px;border-radius:14px 14px 0 0;
+  background:var(--bisque);color:var(--cobalt);border-bottom:2px solid var(--cobalt);cursor:grab;user-select:none;touch-action:none}
+.bar::after{content:"";position:absolute;left:12px;right:12px;bottom:-6px;height:1px;background:var(--cobalt);opacity:.45}
+.win.dragging .bar{cursor:grabbing}
+.win.is-front .bar{background:var(--cobalt);color:var(--porcelain)}
+.bar h2{margin:0;font:600 13px/1 var(--ui);letter-spacing:.005em}
+.bar .sp{flex:1}
+.wb{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;color:inherit;opacity:.85}
+.wb .ic{width:15px;height:15px;stroke-width:1.8}
+.wb:hover{opacity:1;background:rgba(255,255,255,.16)}
+.win:not(.is-front) .wb:hover{background:rgba(30,58,123,.1)}
+.body{flex:1;min-height:0;position:relative;margin-top:6px;overflow:hidden;border-radius:0 0 14px 14px}
+
+/* ask toyo */
+.ask{display:flex;flex-direction:column;height:100%}
+.ask-note{display:flex;gap:8px;align-items:flex-start;margin:0;padding:10px 16px 0;font-size:12px;color:var(--ink-2)}
+.ask-note svg{width:9px;height:9px;margin-top:4px;flex:none}
+.ask-qs{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px 12px;border-bottom:1px solid var(--line)}
+.q{font-size:12.5px;font-weight:500;padding:5px 11px;border-radius:999px;color:var(--cobalt);box-shadow:0 0 0 1px rgba(30,58,123,.4) inset;background:var(--porcelain)}
+.q:hover{background:var(--slip)}
+.q[aria-pressed="true"]{background:var(--cobalt);color:var(--porcelain);box-shadow:none}
+.ask-log{flex:1;overflow:auto;padding:14px 16px 18px;display:flex;flex-direction:column;gap:9px}
+.ask-log>*{flex:none}
+.you{align-self:flex-end;margin:0;background:var(--slip);border-radius:12px 12px 3px 12px;padding:6px 12px;font-weight:500;box-shadow:0 0 0 1px var(--line) inset}
+.plan{margin:0;font-size:12px;color:var(--ink-2)}
+.card{border-radius:10px;background:var(--slip);box-shadow:0 0 0 1px var(--line) inset;overflow:hidden;animation:rise .4s var(--ease) both}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}}
+.card header{display:flex;align-items:baseline;gap:8px;padding:7px 11px;font:400 11px/1.4 var(--mono);color:var(--cobalt)}
+.card header b{font-weight:500}
+.card header .args{color:var(--ink-2);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card .st{font:500 10.5px/1 var(--ui);letter-spacing:.02em;color:var(--seal);flex:none}
+.card.done .st{color:var(--cobalt-2)}
+.card ol{margin:0;padding:7px 11px 9px 30px;border-top:1px dashed rgba(30,58,123,.22);font:400 10.5px/1.6 var(--mono);color:var(--ink-2)}
+.card ol:empty{display:none}
+.ans{display:flex;gap:11px;margin-top:4px;animation:rise .4s var(--ease) both}
+.ans .seal{width:26px;height:26px;margin-top:2px}
+.ans-t{font-size:14.5px;line-height:1.55;color:var(--ink);max-width:62ch}
+.ans-t p{margin:0 0 8px}
+.srcs{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:2px;font-size:12px;color:var(--ink-2)}
+.srcs button{color:var(--cobalt);text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(30,58,123,.35);font:400 11px var(--mono)}
+.srcs button:hover{color:var(--seal)}
+
+/* terminal */
+.term{height:100%;display:flex;flex-direction:column;font:400 12px/1.65 var(--mono);color:var(--cobalt);padding:10px 14px 12px;cursor:text}
+.t-out{flex:none;white-space:pre-wrap;word-break:break-word}
+.t-scroll{flex:1;overflow:auto;min-height:0}
+.t-row{display:flex;gap:8px;align-items:baseline}
+.t-ps{color:var(--seal);flex:none}
+.t-in{flex:1;min-width:0;border:0;outline:0;background:transparent;font:inherit;color:var(--ink);caret-color:var(--seal);padding:0}
+.t-in:focus-visible{outline:0}
+.tl{min-height:1.65em}
+.tl.dim{color:var(--ink-2)}
+.tl.err{color:var(--seal)}
+.tl.echo{color:var(--ink)}
+.tl.echo span{color:var(--seal)}
+.tg{display:grid;grid-template-columns:minmax(120px,max-content) 1fr;gap:0 18px}
+.tg span:first-child{color:var(--ink)}
+.tg span:last-child{color:var(--ink-2)}
+
+/* memory graph */
+.graph{height:100%;display:flex;flex-direction:column}
+.gcv{flex:1;min-height:0;width:100%;display:block;touch-action:none;cursor:grab}
+.gcv:focus-visible{outline-offset:-4px}
+.g-foot{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:8px 14px 11px;border-top:1px solid var(--line);font-size:11.5px;color:var(--ink-2)}
+.g-foot span{display:flex;align-items:center;gap:5px}
+.g-foot svg{width:12px;height:12px}
+.g-foot .tip{margin-left:auto}
+
+/* files */
+.files{display:grid;grid-template-columns:236px 1fr;height:100%}
+.tree{overflow:auto;padding:10px 6px 14px 10px;border-right:1px solid var(--line);background:var(--slip);font-size:12.5px}
+.tree p{display:flex;align-items:center;gap:6px;margin:10px 0 2px;padding-left:4px;font-weight:600;color:var(--cobalt)}
+.tree p .ic{width:15px;height:15px}
+.tree ul{list-style:none;margin:0;padding:0}
+.tree ul.sub{padding-left:14px}
+.tree button{display:flex;align-items:center;gap:6px;width:100%;text-align:left;padding:3px 6px;border-radius:6px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tree button .ic{width:14px;height:14px;color:var(--cobalt-2)}
+.tree button:hover{background:rgba(30,58,123,.08)}
+.tree button[aria-current="true"]{background:var(--cobalt);color:var(--porcelain)}
+.tree button[aria-current="true"] .ic{color:var(--porcelain)}
+.doc{overflow:auto;padding:18px 24px 28px}
+.doc .path{font:400 10.5px var(--mono);color:var(--ink-2);margin:0 0 10px}
+.doc h3{margin:0;font:650 26px/1.1 var(--ui);letter-spacing:-.025em;color:var(--cobalt);text-wrap:balance}
+.doc .meta{margin:6px 0 0;color:var(--ink-2);font-weight:500}
+.doc p.b{margin:14px 0 0;font-size:15px;max-width:62ch}
+.doc table{margin-top:16px;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.doc td{padding:6px 18px 6px 0;border-top:1px solid var(--line);vertical-align:baseline}
+.doc td:first-child{font-weight:600;color:var(--cobalt);white-space:nowrap}
+.doc ul.l{margin:14px 0 0;padding-left:18px;max-width:62ch}
+.doc .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.doc .tags span{font:400 10.5px/1 var(--mono);padding:5px 8px;border-radius:6px;background:var(--slip);box-shadow:0 0 0 1px var(--line) inset;color:var(--cobalt)}
+.doc .dirlist{list-style:none;padding:0;margin:14px 0 0}
+.doc .dirlist button{color:var(--cobalt);text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(30,58,123,.35);padding:3px 0}
+
+/* dock */
+#dock{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:9000;display:flex;align-items:center;gap:4px;padding:7px 9px;
+  background:var(--porcelain);border-radius:18px;box-shadow:0 1px 0 #fff inset,0 0 0 1px rgba(30,58,123,.2),0 14px 30px -12px rgba(28,52,40,.55)}
+.dk{position:relative;width:48px;height:48px;border-radius:12px;display:grid;place-items:center;color:var(--cobalt)}
+.dk .ic{width:25px;height:25px;stroke-width:1.5}
+.dk:hover,.dk:focus-visible{background:var(--slip)}
+.dk::after{content:"";position:absolute;bottom:3px;left:50%;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:transparent}
+.dk.on::after{background:var(--seal)}
+.dk.min::after{box-shadow:0 0 0 1.3px var(--seal) inset}
+.dk .tt{position:absolute;bottom:58px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:12px;font-weight:500;background:var(--ink);color:var(--porcelain);padding:4px 8px;border-radius:6px;opacity:0;pointer-events:none;transition:opacity .15s}
+.dk .tt kbd{font:400 10.5px var(--mono);opacity:.7;margin-left:6px}
+.dk:hover .tt,.dk:focus-visible .tt{opacity:1}
+.dk-sep{width:1px;height:30px;background:var(--line);margin:0 5px}
+.dk.contact{color:var(--seal)}
+
+/* plain view */
+#plain{border:0;padding:0;border-radius:16px;width:min(640px,calc(100vw - 32px));max-height:calc(100dvh - 48px);background:var(--porcelain);color:var(--ink);
+  box-shadow:0 0 0 1px rgba(30,58,123,.2),0 30px 70px -20px rgba(20,40,30,.6)}
+#plain::backdrop{background:rgba(70,96,80,.55)}
+.pl{padding:26px 28px 28px}
+.pl-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.pl h2{margin:0;font:650 32px/1.05 var(--ui);letter-spacing:-.03em;color:var(--cobalt)}
+.pl-close{flex:none;font-size:12.5px;font-weight:500;color:var(--cobalt);box-shadow:0 0 0 1px rgba(30,58,123,.4) inset;border-radius:999px;padding:5px 12px}
+.pl-close:hover{background:var(--slip)}
+.pl .ln{margin:10px 0 0;font-size:16px}
+.pl .nw{margin:2px 0 0;color:var(--ink-2)}
+.pl-mail{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:20px;padding:12px 14px;border-radius:10px;background:var(--slip);box-shadow:0 0 0 1px var(--line) inset}
+.pl-mail span{font:500 14px var(--mono);color:var(--ink);user-select:all}
+.pl-copy{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;color:var(--porcelain);background:var(--cobalt);border-radius:7px;padding:5px 10px}
+.pl-copy .ic{width:14px;height:14px}
+.pl-copy:hover{background:#15295A}
+#pl-msg{font-size:12px;color:var(--ink-2)}
+.pl-links{display:flex;flex-wrap:wrap;gap:8px 22px;margin:16px 0 0;padding:0;list-style:none;font-weight:500}
+.pl h3{margin:24px 0 6px;font:600 14px var(--ui);color:var(--cobalt)}
+.pl ul.rows{list-style:none;margin:0;padding:0}
+.pl ul.rows li{display:flex;justify-content:space-between;gap:16px;padding:6px 0;border-top:1px solid var(--line);font-size:13.5px}
+.pl ul.rows li span:last-child{color:var(--ink-2);text-align:right}
+
+/* phone: one window at a time, launcher on the home screen */
+@media (max-width:720px){
+  #menubar{gap:12px;padding:0 12px}
+  #mb-app,#mb-status,#mb-clock{display:none}
+  #dock{display:none}
+  #mark{position:relative;left:auto;bottom:auto;max-width:none;padding:64px 16px 0}
+  #mark h1{font-size:44px}
+  #mark .now,#mark .line{font-size:15px}
+  #mark .hint{display:none}
+  #launcher{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:22px 16px 24px}
+  .tile{display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-align:left;padding:14px;border-radius:14px;background:var(--porcelain);color:var(--ink);
+    box-shadow:0 1px 0 #fff inset,0 0 0 1px rgba(30,58,123,.2),0 10px 22px -14px rgba(28,52,40,.6)}
+  .tile .ic{width:26px;height:26px;color:var(--cobalt);stroke-width:1.5}
+  .tile b{font-weight:600;color:var(--cobalt)}
+  .tile small{font-size:12px;color:var(--ink-2);line-height:1.35}
+  .tile.contact{grid-column:1/-1;flex-direction:row;align-items:center}
+  .tile.contact .ic{color:var(--seal)}
+  #desk{overflow:auto}
+  .win{position:fixed;left:0!important;top:44px!important;width:auto!important;height:auto!important;right:0;bottom:0;border-radius:16px 16px 0 0;min-width:0}
+  .win .wb[data-act="min"]{display:none}
+  .bar{cursor:default;height:44px}
+  .wb{width:32px;height:32px}
+  .files{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  .tree{border-right:0;border-bottom:1px solid var(--line);max-height:34vh}
+  .doc{padding:16px}
+  .g-foot .tip{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:0s!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-term" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="3"/><path d="M7 10l3 2.5L7 15M12.5 15H17"/></symbol>
+  <symbol id="i-ask" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8.5 9h7M12 9v7"/></symbol>
+  <symbol id="i-graph" viewBox="0 0 24 24"><circle cx="6" cy="7" r="2.2"/><circle cx="18" cy="6" r="2.2"/><circle cx="12" cy="17.5" r="2.4"/><circle cx="19" cy="15" r="1.4"/><path d="M7.9 8.3l3 7M16.5 7.6l-3.4 8M8.2 6.8l7.6-.6M14.3 16.9l3.4-1.3"/></symbol>
+  <symbol id="i-files" viewBox="0 0 24 24"><path d="M3 7.5a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 10.5h18"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="10.5" r="2"/><path d="M5.8 15.8c.8-1.5 1.9-2.1 3.2-2.1s2.4.6 3.2 2.1M14.5 10h3.5M14.5 13.5h3.5"/></symbol>
+  <symbol id="i-min" viewBox="0 0 24 24"><path d="M7 12.5h10"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M8 8l8 8M16 8l-8 8"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V20.5H6V3.5z"/><path d="M14 3.5V8h4M9 12.5h6M9 16h6"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="12" rx="2"/><path d="M5 15.5V6a2 2 0 0 1 2-2h7.5"/></symbol>
+  <symbol id="i-seal" viewBox="0 0 34 34"><rect x="1" y="1" width="32" height="32" rx="7" fill="#B4322A"/><rect x="4" y="4" width="26" height="26" rx="4.5" fill="none" stroke="#F5F4EF" stroke-width="1.3" opacity=".7"/><path d="M10 11.5h14M17 11.5v12" stroke="#F5F4EF" stroke-width="3" stroke-linecap="square" fill="none"/></symbol>
+</svg>
+
+<canvas id="glaze" aria-hidden="true"></canvas>
+
+<div id="boot" role="status">
+  <div class="boot-in">
+    <div class="boot-head"><svg class="seal" aria-hidden="true"><use href="#i-seal"/></svg><b>Toyo OS</b></div>
+    <p class="boot-sub">A desktop built on the shape of Toyo, the personal AI agent system Toyeshh runs his work through. Starting subsystems.</p>
+    <ol id="boot-log"></ol>
+    <button id="boot-skip" type="button">Skip. Any key works too.</button>
+  </div>
+</div>
+
+<header id="menubar">
+  <span class="brand"><svg class="seal" aria-hidden="true"><use href="#i-seal"/></svg>Toyo OS</span>
+  <span id="mb-app"></span>
+  <span id="mb-sp"></span>
+  <span id="mb-status" aria-live="polite"><i></i><span id="mb-status-t">Toyo idle</span></span>
+  <a id="mb-boards" href="index.html">← all boards</a>
+  <span id="mb-clock"></span>
+  <button class="mb-contact" type="button" data-open="contact" aria-keyshortcuts="c"><svg class="ic"><use href="#i-card"/></svg>Contact</button>
+</header>
+
+<main id="desk">
+  <div id="mark">
+    <h1 id="m-name"></h1>
+    <p class="now" id="m-now"></p>
+    <p class="line" id="m-line"></p>
+    <p class="hint">Toyo is his own AI agent system, and the resident here. Ask it something, drag the memory graph, or type <b>help</b> in the terminal.</p>
+  </div>
+  <nav id="launcher" aria-label="Apps"></nav>
+</main>
+
+<nav id="dock" aria-label="Dock"></nav>
+
+<dialog id="plain" aria-labelledby="pl-name">
+  <div class="pl">
+    <div class="pl-top"><h2 id="pl-name"></h2><button class="pl-close" type="button" id="pl-close">Back to desktop</button></div>
+    <p class="ln" id="pl-line"></p>
+    <p class="nw" id="pl-now"></p>
+    <div class="pl-mail"><span id="pl-mail"></span><button class="pl-copy" type="button" id="pl-copy"><svg class="ic"><use href="#i-copy"/></svg>Copy email</button><span id="pl-msg" aria-live="polite"></span></div>
+    <ul class="pl-links" id="pl-links"></ul>
+    <h3>Experience</h3><ul class="rows" id="pl-exp"></ul>
+    <h3>Wins</h3><ul class="rows" id="pl-wins"></ul>
+  </div>
+</dialog>
+
+<script src="data.js"></script>
+<script>
+(() => {
+"use strict";
+const D = window.TOYESHH;
+const NS = "http://www.w3.org/2000/svg";
+const $ = (s, r = document) => r.querySelector(s);
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const phoneQ = matchMedia("(max-width: 720px)");
+const phone = () => phoneQ.matches;
+const wait = ms => new Promise(r => setTimeout(r, reduce ? 0 : ms));
+const slug = s => s.toLowerCase().replace(/\(.*?\)/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const first = s => s.split(".")[0];
+
+function h(tag, props, ...kids) {
+  const n = document.createElement(tag);
+  if (props) for (const k in props) {
+    const v = props[k];
+    if (k === "class") n.className = v;
+    else if (k === "text") n.textContent = v;
+    else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+    else if (v != null && v !== false) n.setAttribute(k, v === true ? "" : v);
+  }
+  for (const c of kids.flat()) if (c != null) n.append(c);
+  return n;
+}
+function icon(id, cls = "ic") {
+  const s = document.createElementNS(NS, "svg"); s.setAttribute("class", cls); s.setAttribute("aria-hidden", "true");
+  const u = document.createElementNS(NS, "use"); u.setAttribute("href", "#" + id); s.append(u); return s;
+}
+
+/* ---------- file system, built from data.js ---------- */
+const FS = {};
+const P = { exp: e => `experience/${slug(e.org)}.md`, proj: p => `projects/${slug(p.name)}.md`, win: w => `wins/${slug(w.what)}.md` };
+FS["about.md"] = { title: D.name, meta: D.now, body: [D.line, `Based in ${D.place}.`], list: D.facts };
+FS["skills.md"] = { title: "Skills", rows: [["Languages", D.skills.languages.join(", ")], ["Areas", D.skills.areas.join(", ")]] };
+FS["contact.md"] = { title: "Contact", rows: [["Email", D.links.email], ["GitHub", D.links.github], ["LinkedIn", D.links.linkedin], ["Resume", D.links.resume]], links: true };
+D.experience.forEach(e => FS[P.exp(e)] = { title: e.org, meta: `${e.role} · ${e.when}`, body: [e.did], rows: e.numbers });
+D.projects.forEach(p => FS[P.proj(p)] = { title: p.name, meta: `Kind: ${p.kind}`, body: [p.one], tags: p.stack });
+D.wins.forEach(w => FS[P.win(w)] = { title: w.what, body: [w.detail] });
+const DIRS = ["experience", "projects", "wins"];
+const ROOT = ["about.md", "skills.md", "contact.md"];
+const inDir = d => Object.keys(FS).filter(k => k.startsWith(d + "/"));
+const norm = p => (p || "").replace(/^(\.\/|~\/|\/)+/, "").replace(/\/+$/, "");
+function resolve(p) {
+  p = norm(p);
+  if (DIRS.includes(p)) return { dir: p };
+  if (FS[p]) return { file: p };
+  if (FS[p + ".md"]) return { file: p + ".md" };
+  return null;
+}
+function docLines(path) {
+  const d = FS[path], L = [`# ${d.title}`];
+  if (d.meta) L.push(d.meta);
+  d.body && d.body.forEach(b => L.push("", b));
+  if (d.rows) { L.push(""); d.rows.forEach(([a, b]) => L.push(`  ${a.padEnd(12)} ${b}`)); }
+  if (d.tags) L.push("", "stack: " + d.tags.join(", "));
+  if (d.list) { L.push(""); d.list.forEach(x => L.push("- " + x)); }
+  return L;
+}
+
+/* ---------- window manager ---------- */
+const APPS = {
+  ask: { title: "Ask Toyo", icon: "i-ask", key: "a", tile: "Watch a recorded agent run" },
+  memory: { title: "Memory graph", icon: "i-graph", key: "m", tile: "Drag the graph of his work" },
+  term: { title: "Terminal", icon: "i-term", key: "t", tile: "Type help. It parses commands" },
+  files: { title: "Files", icon: "i-files", key: "f", tile: "Experience, projects, wins" }
+};
+const desk = $("#desk"), dock = $("#dock");
+const WM = { z: 20, front: null, w: {} };
+function makeWin(id) {
+  const a = APPS[id];
+  const el = h("section", { class: "win", id: "w-" + id, "aria-labelledby": "t-" + id });
+  const bar = h("header", { class: "bar", tabindex: "0", title: "Drag to move. Arrow keys move it too." },
+    icon(a.icon), h("h2", { id: "t-" + id, text: a.title }), h("span", { class: "sp" }),
+    h("button", { class: "wb", type: "button", "data-act": "min", "aria-label": "Minimize " + a.title }, icon("i-min")),
+    h("button", { class: "wb", type: "button", "data-act": "close", "aria-label": (phone() ? "Back to home from " : "Close ") + a.title }, icon("i-close")));
+  const body = h("div", { class: "body" });
+  el.append(bar, body); desk.append(el);
+  el.addEventListener("pointerdown", () => focusWin(id), true);
+  bar.addEventListener("click", e => {
+    const b = e.target.closest("[data-act]"); if (!b) return;
+    b.dataset.act === "min" ? minWin(id) : closeWin(id);
+  });
+  bar.addEventListener("pointerdown", e => {
+    if (e.target.closest("button") || phone() || e.button !== 0) return;
+    const sx = e.clientX, sy = e.clientY, ox = el.offsetLeft, oy = el.offsetTop;
+    bar.setPointerCapture(e.pointerId); el.classList.add("dragging");
+    const mv = ev => place(el, ox + ev.clientX - sx, oy + ev.clientY - sy);
+    const up = () => { el.classList.remove("dragging"); bar.removeEventListener("pointermove", mv); bar.removeEventListener("pointerup", up); bar.removeEventListener("pointercancel", up); };
+    bar.addEventListener("pointermove", mv); bar.addEventListener("pointerup", up); bar.addEventListener("pointercancel", up);
+  });
+  bar.addEventListener("keydown", e => {
+    const step = e.shiftKey ? 60 : 16, mv = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[e.key];
+    if (!mv || phone()) return;
+    e.preventDefault(); place(el, el.offsetLeft + mv[0], el.offsetTop + mv[1]);
+  });
+  WM.w[id] = { el, bar, body };
+  return body;
+}
+function place(el, x, y) {
+  const w = el.offsetWidth, vw = innerWidth, vh = innerHeight;
+  el.style.left = Math.round(Math.min(Math.max(x, 80 - w), vw - 80)) + "px";
+  el.style.top = Math.round(Math.min(Math.max(y, 42), vh - 60)) + "px";
+}
+const visible = id => { const c = WM.w[id].el.classList; return c.contains("is-open") && !c.contains("is-min"); };
+function focusWin(id) {
+  if (WM.front === id) return;
+  WM.front = id;
+  for (const k in WM.w) WM.w[k].el.classList.toggle("is-front", k === id);
+  WM.w[id].el.style.zIndex = ++WM.z;
+  sync();
+}
+function openWin(id, moveFocus) {
+  if (phone()) for (const k in WM.w) if (k !== id) WM.w[k].el.classList.remove("is-open", "is-min");
+  const el = WM.w[id].el;
+  el.classList.add("is-open"); el.classList.remove("is-min");
+  WM.front = null; focusWin(id); sync();
+  if (WM.w[id].onOpen) WM.w[id].onOpen();
+  if (moveFocus) (id === "term" ? $(".t-in", el) : WM.w[id].bar).focus({ preventScroll: true });
+}
+function topOther() {
+  let best = null, z = -1;
+  for (const k in WM.w) if (visible(k) && +WM.w[k].el.style.zIndex > z) { z = +WM.w[k].el.style.zIndex; best = k; }
+  WM.front = null; for (const k in WM.w) WM.w[k].el.classList.remove("is-front");
+  if (best) focusWin(best); else sync();
+}
+function minWin(id) { WM.w[id].el.classList.add("is-min"); dockBtn(id).focus({ preventScroll: true }); topOther(); }
+function closeWin(id) {
+  WM.w[id].el.classList.remove("is-open", "is-min");
+  if (phone()) $(".tile", $("#launcher")) && $(`#launcher [data-app="${id}"]`).focus({ preventScroll: true });
+  else dockBtn(id).focus({ preventScroll: true });
+  topOther();
+}
+function toggleWin(id) {
+  if (!visible(id)) openWin(id, true);
+  else if (WM.front !== id) { focusWin(id); WM.w[id].bar.focus({ preventScroll: true }); }
+  else minWin(id);
+}
+const dockBtn = id => $(`#dock [data-app="${id}"]`);
+function sync() {
+  for (const k in WM.w) {
+    const c = WM.w[k].el.classList, b = dockBtn(k);
+    b.classList.toggle("on", visible(k)); b.classList.toggle("min", c.contains("is-open") && c.contains("is-min"));
+  }
+  $("#mb-app").textContent = WM.front && visible(WM.front) ? APPS[WM.front].title : "Desktop";
+}
+function layout() {
+  if (phone()) return;
+  const vw = innerWidth, vh = innerHeight, g = 40;
+  const askW = Math.min(560, Math.max(380, (vw - 3 * g) * 0.45));
+  const memW = Math.min(560, vw - askW - 3 * g);
+  const set = (id, x, y, w, hh) => { const s = WM.w[id].el.style; s.width = w + "px"; s.height = hh + "px"; place(WM.w[id].el, x, y); };
+  // keep the painted name clear: Ask stops above it, Terminal sits right of it or starts in the dock
+  const m = $("#mark").getBoundingClientRect();
+  set("ask", g, 56, askW, Math.max(300, Math.min(500, m.top - 80)));
+  const memH = Math.min(420, vh * 0.48), ty = 56 + memH + 18, tw = Math.min(560, vw - askW - 3 * g, vw - g + 6 - (m.right + 20));
+  set("memory", g * 2 + askW, 56, memW, memH);
+  WM.termDocked = tw < 380;
+  set("term", vw - Math.max(tw, 380) - g + 6, ty, Math.max(tw, 380), Math.max(220, vh - ty - 104));
+  set("files", Math.round(vw / 2 - 360), 90, Math.min(720, vw - 2 * g), Math.min(520, vh - 200));
+}
+
+/* ---------- dock, launcher, menu ---------- */
+for (const id in APPS) {
+  const a = APPS[id];
+  dock.append(h("button", { class: "dk", type: "button", "data-app": id, "aria-label": a.title, "aria-keyshortcuts": a.key, onclick: () => toggleWin(id) },
+    icon(a.icon), h("span", { class: "tt", "aria-hidden": "true" }, a.title, h("kbd", { text: a.key.toUpperCase() }))));
+  $("#launcher").append(h("button", { class: "tile", type: "button", "data-app": id, onclick: () => openWin(id, true) }, icon(a.icon), h("b", { text: a.title }), h("small", { text: a.tile })));
+}
+dock.append(h("span", { class: "dk-sep", "aria-hidden": "true" }),
+  h("button", { class: "dk contact", type: "button", "aria-label": "Contact, plain view", "aria-keyshortcuts": "c", onclick: openPlain }, icon("i-card"), h("span", { class: "tt", "aria-hidden": "true" }, "Contact", h("kbd", { text: "C" }))));
+$("#launcher").append(h("button", { class: "tile contact", type: "button", onclick: openPlain }, icon("i-card"), h("span", null, h("b", { text: "Contact" }), h("br"), h("small", { text: "Email, GitHub, LinkedIn, resume" }))));
+document.querySelectorAll("[data-open=contact]").forEach(b => b.addEventListener("click", openPlain));
+$("#m-name").textContent = D.name; $("#m-now").textContent = D.now; $("#m-line").textContent = D.line;
+const clock = () => $("#mb-clock").textContent = new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+clock(); setInterval(clock, 20000);
+const status = t => { $("#mb-status-t").textContent = t; document.body.classList.toggle("working", t !== "Toyo idle"); };
+
+/* ---------- plain view ---------- */
+const plain = $("#plain");
+$("#pl-name").textContent = D.name; $("#pl-line").textContent = D.line; $("#pl-now").textContent = D.now; $("#pl-mail").textContent = D.links.email;
+[["GitHub", D.links.github], ["LinkedIn", D.links.linkedin], ["Resume", D.links.resume]].forEach(([t, u]) =>
+  $("#pl-links").append(h("li", null, h("a", { href: u, target: u.startsWith("#") ? null : "_blank", rel: "noopener", text: t }))));
+D.experience.forEach(e => $("#pl-exp").append(h("li", null, h("span", { text: `${e.org}, ${e.role}` }), h("span", { text: e.when }))));
+D.wins.forEach(w => $("#pl-wins").append(h("li", null, h("span", { text: w.what }), h("span", { text: first(w.detail) }))));
+function openPlain() { if (!plain.open) plain.showModal(); }
+$("#pl-close").addEventListener("click", () => plain.close());
+plain.addEventListener("click", e => { if (e.target === plain) plain.close(); });
+async function copyText(text, node, msgEl) {
+  let ok = false;
+  try { await navigator.clipboard.writeText(text); ok = true; } catch (err) {
+    const r = document.createRange(); r.selectNodeContents(node); const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    try { ok = document.execCommand("copy"); } catch (e2) { ok = false; }
+  }
+  msgEl.textContent = ok ? "Copied." : "Selected. Press Cmd+C or Ctrl+C.";
+}
+$("#pl-copy").addEventListener("click", () => copyText(D.links.email, $("#pl-mail"), $("#pl-msg")));
+
+/* ---------- files ---------- */
+const filesBody = makeWin("files");
+const tree = h("nav", { class: "tree", "aria-label": "Files" }), doc = h("article", { class: "doc", tabindex: "0", "aria-live": "polite" });
+filesBody.append(h("div", { class: "files" }, tree, doc));
+const fileBtn = (path, label) => h("li", null, h("button", { type: "button", "data-path": path, onclick: () => showDoc(path) }, icon("i-doc"), label || path.split("/").pop()));
+tree.append(h("ul", null, ROOT.map(p => fileBtn(p))));
+DIRS.forEach(d => tree.append(
+  h("p", null, h("button", { type: "button", "data-path": d, onclick: () => showDoc(d), style: "font-weight:600;color:inherit;padding:0" }, icon("i-files"), d + "/")),
+  h("ul", { class: "sub" }, inDir(d).map(p => fileBtn(p)))));
+function showDoc(path) {
+  tree.querySelectorAll("[data-path]").forEach(b => b.setAttribute("aria-current", b.dataset.path === path ? "true" : "false"));
+  doc.replaceChildren(h("p", { class: "path", text: "~/" + path }));
+  if (DIRS.includes(path)) {
+    doc.append(h("h3", { text: path + "/" }), h("p", { class: "meta", text: inDir(path).length + " files" }),
+      h("ul", { class: "dirlist" }, inDir(path).map(p => h("li", null, h("button", { type: "button", onclick: () => showDoc(p), text: FS[p].title })))));
+  } else {
+    const d = FS[path];
+    doc.append(h("h3", { text: d.title }));
+    if (d.meta) doc.append(h("p", { class: "meta", text: d.meta }));
+    (d.body || []).forEach(b => doc.append(h("p", { class: "b", text: b })));
+    if (d.rows) doc.append(h("table", null, h("tbody", null, d.rows.map(([a, b]) => h("tr", null, h("td", { text: a }),
+      h("td", null, d.links ? (a === "Email" ? h("span", { text: b, style: "user-select:all" }) : h("a", { href: b, target: b.startsWith("#") ? null : "_blank", rel: "noopener", text: b })) : b))))));
+    if (d.tags) doc.append(h("div", { class: "tags" }, d.tags.map(t => h("span", { text: t }))));
+    if (d.list) doc.append(h("ul", { class: "l" }, d.list.map(x => h("li", { text: x }))));
+  }
+  doc.scrollTop = 0;
+}
+function openFile(path) { const r = resolve(path); showDoc(r.file || r.dir); openWin("files", false); }
+showDoc("about.md");
+
+/* ---------- terminal ---------- */
+const termBody = makeWin("term");
+const tWrap = h("div", { class: "term" }), tScroll = h("div", { class: "t-scroll" }), tOut = h("div", { class: "t-out", role: "log" });
+const tIn = h("input", { class: "t-in", spellcheck: "false", autocomplete: "off", autocapitalize: "off", "aria-label": "Terminal command" });
+const PS = "visitor@toyo ~ %";
+tScroll.append(tOut, h("label", { class: "t-row" }, h("span", { class: "t-ps", text: PS }), tIn));
+tWrap.append(tScroll); termBody.append(tWrap);
+tWrap.addEventListener("click", () => { if (!getSelection().toString()) tIn.focus(); });
+const tl = (text, cls) => tOut.append(h("div", { class: "tl " + (cls || ""), text }));
+const tg = rows => tOut.append(h("div", { class: "tg" }, rows.flatMap(([a, b]) => [h("span", { text: a }), h("span", null, b)])));
+const link = (u, t) => h("a", { href: u, target: u.startsWith("#") ? null : "_blank", rel: "noopener", text: t || u });
+const OPEN = { terminal: "term", term: "term", ask: "ask", toyo: "ask", memory: "memory", graph: "memory", files: "files", contact: "contact" };
+const CMDS = {
+  help: ["this list", () => { tg(Object.entries(CMDS).map(([k, [d, , u]]) => [u || k, d])); tl("Tab completes. Up and down walk history.", "dim"); }],
+  whoami: ["who lives here", () => { tl(D.name); tl(D.now, "dim"); tl(D.line, "dim"); tl(D.place, "dim"); }],
+  ls: ["list files", a => {
+    const r = a[0] ? resolve(a[0]) : { dir: "" };
+    if (!r) return tl(`ls: ${a[0]}: no such file or directory`, "err");
+    if (r.file) return tl(r.file);
+    tl(r.dir ? inDir(r.dir).map(p => p.split("/").pop()).join("   ") : [...ROOT, ...DIRS.map(d => d + "/")].join("   "));
+  }, "ls [dir]"],
+  cat: ["print a file", a => {
+    if (!a[0]) return tl("cat: which file? Try cat about.md", "err");
+    const r = resolve(a[0]);
+    if (!r) return tl(`cat: ${a[0]}: no such file. Try ls`, "err");
+    if (r.dir) return tl(`cat: ${r.dir}: is a directory. Try ls ${r.dir}`, "err");
+    docLines(r.file).forEach(x => tl(x, x.startsWith("#") ? "" : "dim"));
+  }, "cat <file>"],
+  open: ["terminal, ask, memory, files, contact, or a file", a => {
+    const t = (a[0] || "").toLowerCase();
+    if (OPEN[t]) { tl("opening " + t, "dim"); return OPEN[t] === "contact" ? openPlain() : openWin(OPEN[t], OPEN[t] !== "term"); }
+    const r = resolve(a[0]);
+    if (r) { tl("opening " + (r.file || r.dir) + " in Files", "dim"); return openFile(a[0]); }
+    tl(`open: ${a[0] || "?"}: no app or file by that name`, "err");
+  }, "open <app|file>"],
+  projects: ["everything he has built", () => tg(D.projects.map(p => [p.name, p.one]))],
+  wins: ["competitions and results", () => tg(D.wins.map(w => [w.what, w.detail]))],
+  skills: ["languages and areas", () => tg([["languages", D.skills.languages.join(", ")], ["areas", D.skills.areas.join(", ")]])],
+  contact: ["email and links", () => {
+    tg([["email", h("span", { text: D.links.email, style: "user-select:all" })], ["github", link(D.links.github)], ["linkedin", link(D.links.linkedin)], ["resume", link(D.links.resume, "resume")]]);
+    tl("open contact shows the plain view.", "dim");
+  }],
+  toyo: ["what this OS is modeled on", () => {
+    const tb = D.projects.find(p => p.name === "Toyo Brain");
+    tl(tb.name); tl(tb.one, "dim"); tl("stack: " + tb.stack.join(", "), "dim");
+    tl("This desktop borrows its shape. Ask Toyo is a recorded demo, not a live model.", "dim");
+  }],
+  history: ["commands you ran", () => hist.forEach((c, i) => tl(`${String(i + 1).padStart(3)}  ${c}`, "dim"))],
+  clear: ["clear the screen", () => tOut.replaceChildren()]
+};
+const hist = []; let hi = 0;
+function run(line) {
+  const echo = h("div", { class: "tl echo" }, h("span", { text: PS + " " }), line); tOut.append(echo);
+  const parts = line.trim().split(/\s+/), cmd = (parts[0] || "").toLowerCase();
+  if (cmd) {
+    hist.push(line.trim()); hi = hist.length;
+    if (CMDS[cmd]) CMDS[cmd][1](parts.slice(1));
+    else tl(`toyo: command not found: ${parts[0]}. Type help.`, "err");
+  }
+  tScroll.scrollTop = tScroll.scrollHeight;
+}
+function complete() {
+  const v = tIn.value, parts = v.split(/\s+/), cur = parts[parts.length - 1], isCmd = parts.length === 1;
+  const paths = [...Object.keys(FS), ...DIRS.map(d => d + "/")];
+  const pool = isCmd ? Object.keys(CMDS) : parts[0] === "open" ? [...Object.keys(OPEN), ...paths] : parts[0] === "ls" ? DIRS.map(d => d + "/") : paths;
+  const m = pool.filter(p => p.startsWith(cur));
+  if (!m.length) return;
+  let pre = m[0]; for (const x of m) while (!x.startsWith(pre)) pre = pre.slice(0, -1);
+  const done = m.length === 1 && !pre.endsWith("/");
+  if (pre.length > cur.length || done) tIn.value = v.slice(0, v.length - cur.length) + pre + (done ? " " : "");
+  else { tOut.append(h("div", { class: "tl echo" }, h("span", { text: PS + " " }), v)); tl(m.map(x => x.replace(/^.*\/(?=.)/, "")).join("   "), "dim"); tScroll.scrollTop = tScroll.scrollHeight; }
+}
+tIn.addEventListener("keydown", e => {
+  if (e.key === "Enter") { run(tIn.value); tIn.value = ""; }
+  else if (e.key === "Tab") { e.preventDefault(); complete(); }
+  else if (e.key === "ArrowUp" && hist.length) { e.preventDefault(); hi = Math.max(0, hi - 1); tIn.value = hist[hi]; }
+  else if (e.key === "ArrowDown" && hist.length) { e.preventDefault(); hi = Math.min(hist.length, hi + 1); tIn.value = hist[hi] || ""; }
+  else if (e.key === "l" && e.ctrlKey) { e.preventDefault(); tOut.replaceChildren(); }
+});
+tl("Toyo OS terminal. Commands run here in your browser.", "dim");
+tl("Type help, or try: cat about.md, projects, open memory", "dim");
+
+/* ---------- ask toyo (recorded demo) ---------- */
+const ex = o => D.experience.find(e => e.org.startsWith(o));
+const wn = w => D.wins.find(x => x.what.startsWith(w));
+const pj = n => D.projects.find(p => p.name === n);
+const ultra = ex("Ultra"), nt = ex("Non-Trivial"), utd = ex("UT Dallas"), nyas = ex("New York"), usaco = wn("USACO"), m3 = wn("M3"), bpa = wn("BPA Nationals, Fin");
+const tb = pj("Toyo Brain"), st = pj("The Survivorship Tax"), sa = pj("StudyAtlas"), ln = pj("Lecture Notes"), lm = pj("Longhorn Macros"), yc = pj("YC Intel");
+const num = n => n.join(" ");
+const SCRIPTS = [
+  { q: "Why hire Toyeshh?", steps: [
+      { tool: "memory.search", args: '{"query":"roles with measured outcomes"}', out: D.experience.map(e => `${e.org}: ${e.numbers.map(num).join(", ")}`), src: D.experience.map(P.exp) },
+      { tool: "graph.query", args: '{"from":"Toyeshh","edge":"won","limit":3}', out: D.wins.slice(0, 3).map(w => `${w.what}: ${first(w.detail)}`), src: D.wins.slice(0, 3).map(P.win) },
+      { tool: "files.read", args: '{"path":"projects/toyo-brain.md"}', out: [tb.one], src: [P.proj(tb)] }],
+    answer: [
+      `He has shipped at startup speed. At ${ultra.org} he was a founding technical engineer and co-built a college-guidance platform that reached ${num(ultra.numbers[0])}.`,
+      `He competes at the top of hard fields: ${usaco.what}, and ${first(m3.detail)} at M3 Math Modeling.`,
+      `His research has measured results in three fields: ${num(nt.numbers[0])} in quantum ML, ${num(utd.numbers[1])} in NLP, ${num(nyas.numbers[0])} in air filtration.`,
+      `And he builds his own tools. ${tb.name}, the agent system this desktop is modeled on, handles his memory, scheduled jobs and model routing.`] },
+  { q: "What has he shipped?", steps: [
+      { tool: "graph.query", args: '{"kind":"experience","has":"users"}', out: [`${ultra.org}: ${ultra.did}`, ...ultra.numbers.map(num)], src: [P.exp(ultra)] },
+      { tool: "files.list", args: '{"path":"projects/"}', out: D.projects.map(p => `${p.name} (${p.kind})`), src: ["projects"] },
+      { tool: "files.read", args: '{"path":"projects/lecture-notes.md"}', out: [ln.one, "stack: " + ln.stack.join(", ")], src: [P.proj(ln)] }],
+    answer: [
+      `At ${ultra.org} he co-built the frontend and AI features of a platform that grew to ${num(ultra.numbers[0])}, while its Discord went from ${ultra.numbers[1][0]} members.`,
+      `On his own he has built ${D.projects.length} projects. ${sa.name} is a native iOS app in ${sa.stack.join(" and ")}. ${ln.name} transcribes lectures on the Mac's Neural Engine, so no audio leaves the machine. ${lm.name} is a phone-first food log for UT dining halls. ${yc.name} tracks 5,000+ Y Combinator startups.`,
+      `The rest are in projects/. The terminal's projects command lists them all.`] },
+  { q: "Is he any good at math?", steps: [
+      { tool: "memory.search", args: '{"query":"math, modeling, olympiad"}', out: [usaco, m3, bpa].map(w => `${w.what}: ${w.detail}`), src: [usaco, m3, bpa].map(P.win) },
+      { tool: "files.read", args: '{"path":"about.md"}', out: [D.now], src: ["about.md"] },
+      { tool: "files.read", args: '{"path":"projects/the-survivorship-tax.md"}', out: [st.one], src: [P.proj(st)] }],
+    answer: [
+      `Yes, and the record says so. He is an ${D.now.charAt(0).toLowerCase() + D.now.slice(1)}.`,
+      `He reached ${usaco.what}, the top division of the USA Computing Olympiad. At M3 Math Modeling his team finished ${first(m3.detail)}, and he presented at Jane Street, where he won Best Presenter and $5,500. At BPA Nationals he placed ${first(bpa.detail)} in Financial Portfolio Management.`,
+      `The math shows up in his projects too. ${st.name} rebuilds the same equity signals five times over a point-in-time S&P 500 universe and measures what each backtest shortcut is worth in Sharpe.`] },
+  { q: "What is Toyo?", steps: [
+      { tool: "files.read", args: '{"path":"projects/toyo-brain.md"}', out: [tb.one, "stack: " + tb.stack.join(", ")], src: [P.proj(tb)] },
+      { tool: "memory.search", args: '{"query":"this desktop"}', out: ["Ask Toyo: recorded demo, scripted tool calls", "Memory graph: force simulation over the site's data", "Terminal: a command parser running in the page"], src: [] }],
+    answer: [
+      `Toyo is ${D.short}'s personal AI agent system. It has ${tb.one.split(": ")[1].replace(/\.$/, "")}. It runs on ${tb.stack.slice(0, -1).join(", ")} and ${tb.stack.slice(-1)}.`,
+      `This desktop borrows its shape. The terminal and the memory graph are real code running in your browser. This window is a recorded demo, so nothing you see here was generated live.`] }
+];
+const askBody = makeWin("ask");
+const recDot = document.createElementNS(NS, "svg"); recDot.setAttribute("viewBox", "0 0 10 10"); recDot.setAttribute("aria-hidden", "true");
+recDot.innerHTML = '<circle cx="5" cy="5" r="4.5" fill="#B4322A"/>';
+const qs = h("div", { class: "ask-qs", role: "group", "aria-label": "Pick a question" });
+const log = h("div", { class: "ask-log", "aria-live": "polite" });
+askBody.append(h("div", { class: "ask" }, h("p", { class: "ask-note" }, recDot, "Recorded demo. The tool calls are scripted, and every answer uses only facts from this site."), qs, log));
+SCRIPTS.forEach((s, i) => qs.append(h("button", { class: "q", type: "button", "aria-pressed": "false", onclick: () => ask(i), text: s.q })));
+const sealSvg = () => { const s = document.createElementNS(NS, "svg"); s.setAttribute("class", "seal"); s.setAttribute("aria-hidden", "true"); const u = document.createElementNS(NS, "use"); u.setAttribute("href", "#i-seal"); s.append(u); return s; };
+let runId = 0;
+const down = () => { log.scrollTop = log.scrollHeight; };
+async function ask(i) {
+  const id = ++runId, s = SCRIPTS[i], live = () => id === runId;
+  qs.querySelectorAll(".q").forEach((b, j) => b.setAttribute("aria-pressed", String(i === j)));
+  log.replaceChildren(h("p", { class: "you", text: s.q }));
+  await wait(350); if (!live()) return;
+  log.append(h("p", { class: "plan", text: `Toyo plans ${s.steps.length} tool calls, then answers from what they return.` }));
+  for (const st of s.steps) {
+    status("Toyo running " + st.tool);
+    const ol = h("ol"), stEl = h("span", { class: "st", text: "running" });
+    const card = h("div", { class: "card" }, h("header", null, h("b", { text: st.tool }), h("span", { class: "args", text: st.args, title: st.args }), stEl), ol);
+    log.append(card); down();
+    await wait(620); if (!live()) return;
+    for (const line of st.out) { ol.append(h("li", { text: line })); down(); await wait(70); if (!live()) return; }
+    card.classList.add("done"); stEl.textContent = `done · ${st.out.length} result${st.out.length > 1 ? "s" : ""}`;
+    await wait(220); if (!live()) return;
+  }
+  status("Toyo writing");
+  const t = h("div", { class: "ans-t" });
+  log.append(h("div", { class: "ans" }, sealSvg(), t));
+  for (const para of s.answer) {
+    const p = h("p"); t.append(p);
+    if (reduce) { p.textContent = para; continue; }
+    for (const w of para.split(" ")) { p.append((p.textContent ? " " : "") + w); down(); await wait(24); if (!live()) return; }
+  }
+  const src = [...new Set(s.steps.flatMap(x => x.src))];
+  if (src.length) t.append(h("div", { class: "srcs" }, "Sources:", src.map(p => h("button", { type: "button", onclick: () => openFile(p), title: "Open " + p, text: p.replace(/\.md$/, "") }))));
+  down(); status("Toyo idle");
+}
+
+/* ---------- memory graph ---------- */
+const memBody = makeWin("memory");
+const cv = h("canvas", { class: "gcv", tabindex: "0", role: "img", "aria-label": "Memory graph of Toyeshh's roles, projects, wins and skills. Arrow keys pick a node, Enter opens its file." });
+const shape = (d) => { const s = document.createElementNS(NS, "svg"); s.setAttribute("viewBox", "0 0 12 12"); s.setAttribute("aria-hidden", "true"); s.innerHTML = d; return s; };
+const sel = h("span", { class: "tip", "aria-live": "polite", text: "Drag a node. Click it to open its file." });
+memBody.append(h("div", { class: "graph" }, cv, h("div", { class: "g-foot" },
+  h("span", null, shape('<rect x="2" y="2" width="8" height="8" fill="#F5F4EF" stroke="#1E3A7B" stroke-width="1.5"/>'), "Role"),
+  h("span", null, shape('<circle cx="6" cy="6" r="4" fill="#1E3A7B"/>'), "Project"),
+  h("span", null, shape('<path d="M6 1.5L10.5 6 6 10.5 1.5 6z" fill="#F5F4EF" stroke="#B4322A" stroke-width="1.5"/>'), "Win"),
+  h("span", null, shape('<circle cx="6" cy="6" r="2.6" fill="#3D5A9A"/>'), "Skill"), sel)));
+const ctx = cv.getContext("2d");
+const nodes = [], links = [], idx = {};
+const SHORT = { "BPA Nationals, Financial Portfolio Management": "BPA Portfolio", "BPA Nationals, Java Programming": "BPA Java", "M3 Math Modeling finalist": "M3 finalist", "New York Academy of Sciences": "NYAS", "The Survivorship Tax": "Survivorship Tax" };
+const add = (id, label, type, path) => { const n = { id, label: SHORT[label] || label.replace(/ \(.*\)/, ""), type, path, x: 0, y: 0, vx: 0, vy: 0 }; idx[id] = n; nodes.push(n); };
+const edge = (a, b, k) => { if (idx[a] && idx[b]) links.push({ a: idx[a], b: idx[b], k }); };
+add("me", D.short, "me", "about.md");
+[["experience", "Experience"], ["projects", "Projects"], ["wins", "Wins"], ["skills", "Skills"]].forEach(([id, l]) => { add("h:" + id, l, "hub", id === "skills" ? "skills.md" : id); edge("me", "h:" + id, "hub"); });
+D.experience.forEach(e => { add("e:" + e.org, e.org, "role", P.exp(e)); edge("h:experience", "e:" + e.org, "t"); });
+D.projects.forEach(p => { add("p:" + p.name, p.name, "project", P.proj(p)); edge("h:projects", "p:" + p.name, "t"); });
+D.wins.forEach(w => { add("w:" + w.what, w.what, "win", P.win(w)); edge("h:wins", "w:" + w.what, "t"); });
+[...D.skills.languages, ...D.skills.areas].forEach(s => { add("s:" + s, s, "skill", "skills.md"); edge("h:skills", "s:" + s, "t"); });
+// cross links: stack entries that name a language, plus kinds and roles that map to a listed area
+D.projects.forEach(p => p.stack.forEach(t => D.skills.languages.forEach(l => { if (t === l || t.startsWith(l + " ") || (l === "Swift" && t.startsWith("Swift"))) edge("p:" + p.name, "s:" + l, "x"); })));
+const KIND = { agents: "Agent systems", quant: "Quant modeling", ios: "iOS" };
+D.projects.forEach(p => KIND[p.kind] && edge("p:" + p.name, "s:" + KIND[p.kind], "x"));
+[["e:Ultra (YC W24)", "Frontend architecture"], ["e:Non-Trivial", "ML research"], ["e:UT Dallas", "NLP"], ["w:" + usaco.what, "Competitive programming"], ["w:" + m3.what, "Quant modeling"], ["w:BPA Nationals, Java Programming", "Java"]]
+  .forEach(([a, s]) => edge(a, "s:" + s, "x"));
+let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+// start each group in its own sector so clusters settle apart instead of tangling
+const SECT = { role: -2.3, project: -.6, win: .9, skill: 2.5 }, HUBA = { "h:experience": -2.3, "h:projects": -.6, "h:wins": .9, "h:skills": 2.5 };
+nodes.forEach(n => { const a = n.type === "hub" ? HUBA[n.id] : n.type === "me" ? 0 : SECT[n.type] + (rnd() - .5) * 1.3, r = n.type === "me" ? 0 : n.type === "hub" ? 90 : 160 + rnd() * 50;
+  n.x = Math.cos(a) * r * 1.3; n.y = Math.sin(a) * r * .8; });
+const REST = { hub: 105, t: 62, x: 140 };
+let alpha = 1, drag = null, hover = null, kSel = -1, W = 0, H = 0, S = 1, raf = 0, dpr = 1;
+function tick() {
+  const n = nodes.length;
+  for (let i = 0; i < n; i++) { const a = nodes[i];
+    for (let j = i + 1; j < n; j++) { const b = nodes[j]; // labels run sideways, so side-by-side nodes count as closer than stacked ones
+      let dx = a.x - b.x, dy = a.y - b.y; const d2 = Math.max(dx * dx * .55 + dy * dy, 30); if (d2 > 160000) continue;
+      const d = Math.sqrt(d2), f = 3600 / d2 * alpha; dx /= d; dy /= d; a.vx += dx * f; a.vy += dy * f; b.vx -= dx * f; b.vy -= dy * f; } }
+  for (const l of links) { let dx = l.b.x - l.a.x, dy = l.b.y - l.a.y; const d = Math.hypot(dx, dy) || .01, f = (d - REST[l.k]) * (l.k === "x" ? .012 : .05) * alpha; dx /= d; dy /= d; l.a.vx += dx * f; l.a.vy += dy * f; l.b.vx -= dx * f; l.b.vy -= dy * f; }
+  const hl = (W / 2 - OX) / S - 18, hr = (W / 2 + OX) / S - 116, hh = H / 2 / S - 16, ax = W > H ? .006 : .012, ay = W > H ? .012 : .006;
+  for (const p of nodes) {
+    p.vx -= p.x * ax * alpha; p.vy -= p.y * ay * alpha;
+    if (p === drag) { p.vx = p.vy = 0; continue; }
+    p.vx *= .8; p.vy *= .8; p.x = Math.max(-hl, Math.min(hr, p.x + p.vx)); p.y = Math.max(-hh, Math.min(hh, p.y + p.vy));
+  }
+  alpha = drag ? Math.max(alpha, .25) : alpha * .99;
+}
+const OX = 36, X = p => W / 2 - OX + p.x * S, Y = p => H / 2 + p.y * S;
+function neighbors(n) { const s = new Set([n]); if (n) links.forEach(l => { if (l.a === n) s.add(l.b); if (l.b === n) s.add(l.a); }); return s; }
+function draw() {
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+  const focus = hover || drag || nodes[kSel] || null, nb = focus ? neighbors(focus) : null;
+  for (const l of links) {
+    const hot = nb && nb.has(l.a) && nb.has(l.b) && (l.a === focus || l.b === focus);
+    ctx.strokeStyle = hot ? "rgba(180,50,42,.75)" : l.k === "x" ? "rgba(30,58,123,.16)" : "rgba(30,58,123,.3)";
+    ctx.lineWidth = hot ? 1.5 : 1; ctx.setLineDash(l.k === "x" && !hot ? [3, 4] : []);
+    ctx.beginPath(); ctx.moveTo(X(l.a), Y(l.a)); ctx.lineTo(X(l.b), Y(l.b)); ctx.stroke();
+  }
+  ctx.setLineDash([]);
+  for (const n of nodes) {
+    const x = X(n), y = Y(n), dim = nb && !nb.has(n);
+    ctx.globalAlpha = dim ? .35 : 1; ctx.lineWidth = 1.6; ctx.beginPath();
+    if (n.type === "me") { ctx.fillStyle = "#B4322A"; ctx.roundRect(x - 11, y - 11, 22, 22, 5); ctx.fill(); ctx.strokeStyle = "#F5F4EF"; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(x - 5, y - 4); ctx.lineTo(x + 5, y - 4); ctx.moveTo(x, y - 4); ctx.lineTo(x, y + 6); ctx.stroke(); }
+    else if (n.type === "hub") { ctx.fillStyle = "#F5F4EF"; ctx.strokeStyle = "#1E3A7B"; ctx.lineWidth = 2; ctx.arc(x, y, 8, 0, 6.283); ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.fillStyle = "#1E3A7B"; ctx.arc(x, y, 3, 0, 6.283); ctx.fill(); }
+    else if (n.type === "role") { ctx.fillStyle = "#F5F4EF"; ctx.strokeStyle = "#1E3A7B"; ctx.rect(x - 5.5, y - 5.5, 11, 11); ctx.fill(); ctx.stroke(); }
+    else if (n.type === "project") { ctx.fillStyle = "#1E3A7B"; ctx.arc(x, y, 5.5, 0, 6.283); ctx.fill(); }
+    else if (n.type === "win") { ctx.fillStyle = "#F5F4EF"; ctx.strokeStyle = "#B4322A"; ctx.moveTo(x, y - 6.5); ctx.lineTo(x + 6.5, y); ctx.lineTo(x, y + 6.5); ctx.lineTo(x - 6.5, y); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+    else { ctx.fillStyle = "#3D5A9A"; ctx.arc(x, y, 3.2, 0, 6.283); ctx.fill(); }
+    if (n === focus) { ctx.beginPath(); ctx.strokeStyle = "#B4322A"; ctx.lineWidth = 1.5; ctx.arc(x, y, 13, 0, 6.283); ctx.stroke(); }
+    const big = n.type === "me" || n.type === "hub", sk = n.type === "skill";
+    ctx.font = `${big ? 600 : sk ? 400 : 500} ${big ? 12 : sk ? 10 : 11}px Geologica, "Avenir Next", system-ui, sans-serif`;
+    const lx = x + (n.type === "me" ? 15 : 10), ly = y + 4;
+    ctx.lineWidth = 3.5; ctx.strokeStyle = "rgba(245,244,239,.92)"; ctx.lineJoin = "round"; ctx.strokeText(n.label, lx, ly);
+    ctx.fillStyle = sk ? "#47526C" : n.type === "win" ? "#8E2620" : "#172340"; ctx.fillText(n.label, lx, ly);
+  }
+  ctx.globalAlpha = 1;
+}
+function frame() { tick(); draw(); raf = alpha > .004 || drag ? requestAnimationFrame(frame) : 0; }
+function kick(a) { alpha = Math.max(alpha, a); if (!raf) raf = requestAnimationFrame(frame); }
+function resize() {
+  const r = cv.getBoundingClientRect(); if (!r.width || !r.height) return;
+  dpr = Math.min(2, devicePixelRatio || 1); W = r.width; H = r.height; S = Math.max(.6, Math.min(1.2, Math.sqrt(W * H) / 480));
+  cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  if (reduce) { for (let i = 0; i < 500; i++) tick(); draw(); } else kick(.5);
+}
+new ResizeObserver(resize).observe(cv);
+document.fonts && document.fonts.ready.then(() => draw());
+const pick = e => { const r = cv.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top; let best = null, bd = 18 * 18;
+  for (const n of nodes) { const d = (X(n) - mx) ** 2 + (Y(n) - my) ** 2; if (d < bd) { bd = d; best = n; } } return best; };
+let downAt = null;
+cv.addEventListener("pointerdown", e => { const n = pick(e); if (!n) return; drag = n; downAt = [e.clientX, e.clientY]; cv.setPointerCapture(e.pointerId); cv.style.cursor = "grabbing"; kick(.3); });
+cv.addEventListener("pointermove", e => {
+  if (drag) { const r = cv.getBoundingClientRect(); drag.x = (e.clientX - r.left - W / 2 + OX) / S; drag.y = (e.clientY - r.top - H / 2) / S; kick(.3); return; }
+  const n = pick(e); if (n !== hover) { hover = n; cv.style.cursor = n ? "pointer" : "grab"; if (n) sel.textContent = `${n.label}: opens ${n.path.includes(".") ? n.path : n.path + "/"}`; draw(); }
+});
+const release = e => { if (!drag) return; const n = drag; drag = null; cv.style.cursor = "grab";
+  if (downAt && Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) < 5) openFile(n.path); kick(.15); };
+cv.addEventListener("pointerup", release); cv.addEventListener("pointercancel", () => { drag = null; });
+cv.addEventListener("pointerleave", () => { if (!drag && hover) { hover = null; draw(); } });
+cv.addEventListener("keydown", e => {
+  if (e.key === "ArrowRight" || e.key === "ArrowDown") kSel = (kSel + 1) % nodes.length;
+  else if (e.key === "ArrowLeft" || e.key === "ArrowUp") kSel = (kSel - 1 + nodes.length) % nodes.length;
+  else if (e.key === "Enter" && kSel >= 0) return openFile(nodes[kSel].path);
+  else return;
+  e.preventDefault(); sel.textContent = `${nodes[kSel].label}. Enter opens it.`; draw();
+});
+cv.addEventListener("blur", () => { kSel = -1; draw(); });
+WM.w.memory.onOpen = () => requestAnimationFrame(resize);
+
+/* ---------- celadon glaze wallpaper: two layers of warped Voronoi crackle ---------- */
+function glaze() {
+  const c = $("#glaze"), k = .5, Wd = Math.ceil(innerWidth * k), Hd = Math.ceil(innerHeight * k);
+  c.width = Wd; c.height = Hd; const g = c.getContext("2d"), img = g.createImageData(Wd, Hd), px = img.data;
+  let s = 11; const r = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  const layer = (cell) => { const cols = Math.ceil(Wd / cell) + 2, rows = Math.ceil(Hd / cell) + 2, pts = new Float32Array(cols * rows * 2);
+    for (let i = 0; i < cols * rows; i++) { pts[i * 2] = ((i % cols) - 1 + .15 + r() * .7) * cell; pts[i * 2 + 1] = ((i / cols | 0) - 1 + .15 + r() * .7) * cell; }
+    return { cell, cols, rows, pts }; };
+  const big = layer(64), small = layer(21);
+  const edge = (L, x, y) => { const cx = (x / L.cell | 0) + 1, cy = (y / L.cell | 0) + 1; let d1 = 1e9, d2 = 1e9;
+    for (let j = cy - 1; j <= cy + 1; j++) for (let i = cx - 1; i <= cx + 1; i++) { if (i < 0 || j < 0 || i >= L.cols || j >= L.rows) continue;
+      const q = (j * L.cols + i) * 2, dx = L.pts[q] - x, dy = L.pts[q + 1] - y, d = dx * dx + dy * dy; if (d < d1) { d2 = d1; d1 = d; } else if (d < d2) d2 = d; }
+    return Math.sqrt(d2) - Math.sqrt(d1); };
+  for (let y = 0; y < Hd; y++) for (let x = 0; x < Wd; x++) {
+    const wx = x + 3.2 * Math.sin(y * .06 + x * .013) + 2 * Math.sin(x * .11), wy = y + 3.2 * Math.sin(x * .05 - y * .017) + 2 * Math.sin(y * .13);
+    const e1 = edge(big, wx, wy), e2 = edge(small, wx * 1.03 + 7, wy * 1.03 + 3);
+    const c1 = Math.max(0, 1 - e1 / 1.15), c2 = Math.max(0, 1 - e2 / .9) * .5;
+    const nx = x / Wd - .5, ny = y / Hd - .5, pool = .5 + .25 * Math.sin(x * .009 + 1.3) * Math.sin(y * .011 + .4) + .9 * (nx * nx + ny * ny);
+    const crack = Math.min(1, c1 * .55 + c2 * .32);
+    const i = (y * Wd + x) * 4;
+    px[i] = 186 - pool * 30 - crack * 52; px[i + 1] = 206 - pool * 24 - crack * 40; px[i + 2] = 192 - pool * 28 - crack * 42; px[i + 3] = 255;
+  }
+  for (let n = 0; n < Wd * Hd * .0006; n++) { const i = ((r() * Hd | 0) * Wd + (r() * Wd | 0)) * 4; px[i] -= 46; px[i + 1] -= 44; px[i + 2] -= 40; }
+  g.putImageData(img, 0, 0);
+}
+
+/* ---------- boot ---------- */
+const BOOT = [
+  ["core", "BRAIN.md loads identity, map, rules and coding standards"],
+  ["memory", "native memory: preferences and feedback, every session"],
+  ["graph", "gbrain search index over the Obsidian vault, ~1,900 notes"],
+  ["scheduler", "launchd jobs and scheduled tasks: nightly journal, daily digest"],
+  ["router", "Claude plans and reviews, Codex builds"],
+  ["guards", "secret scan on every commit, hook bypasses blocked"],
+  ["sync", "two Macs kept in step over git, hourly"],
+  ["desktop", "windows, dock, terminal, memory graph"]
+];
+const boot = $("#boot"), blog = $("#boot-log");
+let booted = false;
+function finishBoot() {
+  if (booted) return; booted = true;
+  boot.querySelectorAll("li").forEach(li => li.classList.add("in"));
+  boot.classList.add("gone");
+  setTimeout(() => { boot.hidden = true; }, reduce ? 0 : 750);
+  try { sessionStorage.setItem("toyo-booted", "1"); } catch (e) { /* storage blocked: boot plays again next load */ }
+  if (!phone()) setTimeout(() => ask(0), reduce ? 0 : 600);
+}
+async function runBoot() {
+  BOOT.forEach(([m, d]) => blog.append(h("li", null, h("span", { class: "m", text: m }), h("span", { class: "d", text: d }), h("span", { class: "ok", text: "ok" }))));
+  let seen = false; try { seen = sessionStorage.getItem("toyo-booted") === "1"; } catch (e) { seen = false; }
+  if (seen) { boot.style.transition = "none"; return finishBoot(); }
+  for (const li of blog.children) { await wait(135); if (booted) return; li.classList.add("in"); }
+  await wait(380); finishBoot();
+}
+$("#boot-skip").addEventListener("click", finishBoot);
+boot.addEventListener("pointerdown", e => { if (e.target.id !== "boot-skip") finishBoot(); });
+
+/* ---------- global keys ---------- */
+addEventListener("keydown", e => {
+  if (!booted) { if (!["Shift", "Meta", "Alt", "Control", "Tab"].includes(e.key)) { e.preventDefault(); finishBoot(); } return; }
+  if (plain.open || e.metaKey || e.ctrlKey || e.altKey) return;
+  const t = e.target; if (t.matches && t.matches("input,textarea,[contenteditable]")) return;
+  const k = e.key.toLowerCase();
+  if (k === "c") { e.preventDefault(); openPlain(); return; }
+  for (const id in APPS) if (APPS[id].key === k) { e.preventDefault(); toggleWin(id); return; }
+});
+
+/* ---------- start ---------- */
+function setMode() {
+  if (phone()) { for (const k in WM.w) WM.w[k].el.classList.remove("is-open", "is-min"); WM.front = null; sync(); }
+  else { layout(); ["term", "memory", "ask"].forEach(id => { WM.w[id].el.classList.add("is-open"); focusWin(id); });
+    WM.w.term.el.classList.toggle("is-min", WM.termDocked); sync(); }
+  for (const k in WM.w) $('[data-act="close"]', WM.w[k].bar).setAttribute("aria-label", (phone() ? "Back to home from " : "Close ") + APPS[k].title);
+}
+phoneQ.addEventListener("change", setMode);
+let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { glaze(); if (!phone()) for (const k in WM.w) place(WM.w[k].el, WM.w[k].el.offsetLeft, WM.w[k].el.offsetTop); }, 150); });
+glaze(); setMode(); runBoot();
+// web fonts change the name's width, so place the windows again once they land
+document.fonts && document.fonts.ready.then(() => { if (!phone() && !booted) setMode(); });
+})();
+</script>
+</body>
+</html>

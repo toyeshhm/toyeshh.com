@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Toyeshh Medikonda</title>
+<meta name="description" content="Toyeshh Medikonda. A plain page with four small things you can play with.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap">
+<script src="data.js"></script>
+<script src="voice.js"></script>
+<style>
+:root {
+  --bg: #f7f8f9;
+  --ink: #15171b;
+  --muted: #646a74;
+  --rule: #dde0e5;
+  --soft: #c6cbd2;
+  --accent: #3358d4;
+  --tint: rgba(51, 88, 212, 0.14);
+  --sans: "Geist", ui-sans-serif, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111214; --ink: #eceef1; --muted: #979ca6; --rule: #2a2d33; --soft: #41454d;
+    --accent: #84a0ff; --tint: rgba(132, 160, 255, 0.2); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111214; --ink: #eceef1; --muted: #979ca6; --rule: #2a2d33; --soft: #41454d;
+  --accent: #84a0ff; --tint: rgba(132, 160, 255, 0.2); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 400 15.5px/1.6 var(--sans); font-feature-settings: "ss01";
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+::selection { background: var(--tint); color: var(--ink); }
+:focus-visible { outline: 1.5px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+
+.page {
+  display: grid;
+  grid-template-columns: minmax(0, 33rem) minmax(0, 35rem);
+  grid-template-areas: "text stage" "foot stage";
+  grid-template-rows: auto 1fr;
+  column-gap: clamp(48px, 7vw, 112px);
+  justify-content: center;
+  padding: clamp(40px, 9vh, 104px) max(16px, env(safe-area-inset-right)) 72px max(16px, env(safe-area-inset-left));
+  max-width: 1320px; margin: 0 auto;
+}
+.text { grid-area: text; min-width: 0; }
+.foot { grid-area: foot; min-width: 0; }
+.stage { grid-area: stage; min-width: 0; position: sticky; top: clamp(40px, 9vh, 104px); align-self: start; }
+
+.back { display: inline-block; color: var(--muted); font-size: 13px; text-decoration: none; margin-bottom: 40px; transition: color .3s var(--ease); }
+.back:hover { color: var(--ink); }
+h1 { font-size: 1.5rem; font-weight: 600; letter-spacing: -0.022em; line-height: 1.2; margin: 0 0 10px; }
+.lede { margin: 0; max-width: 34em; }
+.origin { margin: 6px 0 0; color: var(--muted); max-width: 34em; }
+
+section { margin-top: 36px; }
+h2 { font-size: 15.5px; font-weight: 500; margin: 0 0 8px; letter-spacing: -0.005em; }
+ul { list-style: none; margin: 0; padding: 0 0 0 22px; }
+li { position: relative; margin: 0 0 7px; max-width: 34em; text-wrap: pretty; }
+li::before { content: ""; position: absolute; left: -14px; top: 0.8em; width: 5px; height: 1px; background: var(--muted); }
+.yr { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; margin-left: 4px; }
+.dim { color: var(--muted); }
+
+/* the underline: a quiet rule that an ink line draws across on hover */
+a.u, button.u {
+  color: inherit; text-decoration: none;
+  background-image: linear-gradient(var(--ink), var(--ink)), linear-gradient(var(--soft), var(--soft));
+  background-size: 0% 1px, 100% 1px; background-position: 0 100%, 0 100%; background-repeat: no-repeat;
+  padding-bottom: 1px; -webkit-box-decoration-break: clone; box-decoration-break: clone;
+  transition: background-size .55s var(--ease);
+}
+a.u:hover, button.u:hover, a.u:focus-visible, button.u:focus-visible { background-size: 100% 1px, 100% 1px; }
+button.try { color: var(--accent); font-size: 13px; margin-left: 6px; white-space: nowrap;
+  background-image: linear-gradient(var(--accent), var(--accent)), linear-gradient(var(--tint), var(--tint)); }
+
+/* stage */
+.stage-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 12px; min-height: 4.8em; }
+.cap { margin: 0; max-width: 28em; transition: opacity .22s var(--ease), filter .22s var(--ease); }
+.cap.out { opacity: 0; filter: blur(4px); }
+.cap b { font-weight: 500; }
+.cap span { color: var(--muted); }
+.nav { display: flex; align-items: center; gap: 2px; flex: none; color: var(--muted); font-variant-numeric: tabular-nums; font-size: 13px; }
+.nav button { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; color: var(--ink); transition: background-color .25s var(--ease); }
+.nav button:hover { background: var(--rule); }
+.nav svg { width: 14px; height: 14px; }
+.count { min-width: 3.4em; text-align: center; }
+.viewport { overflow: hidden; border-radius: 12px; touch-action: pan-y; }
+.track { display: flex; gap: 32px; transition: transform .75s var(--ease); will-change: transform; }
+.slide { flex: 0 0 100%; min-width: 0; margin: 0; transition: opacity .75s var(--ease), filter .75s var(--ease); }
+.slide[aria-hidden="true"] { opacity: 0; filter: blur(3px); }
+.board { position: relative; aspect-ratio: 5 / 4; border: 1px solid var(--rule); border-radius: 12px; background: var(--bg); overflow: hidden; }
+canvas { display: block; width: 100%; height: 100%; touch-action: pan-y; }
+canvas[data-touch="none"] { touch-action: none; cursor: none; }
+canvas.pointer { cursor: pointer; }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; margin-top: 12px; min-height: 30px; font-size: 13.5px; }
+.controls .meter { margin-left: auto; color: var(--muted); font-variant-numeric: tabular-nums; }
+.controls .meter b { color: var(--ink); font-weight: 500; }
+.note { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+/* contact */
+.foot { margin-top: 48px; padding-top: 22px; border-top: 1px solid var(--rule); max-width: 33rem; }
+.foot p { margin: 0 0 8px; }
+.mail { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.mail span.addr { user-select: all; font-variant-numeric: tabular-nums; }
+.copy { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 7px; color: var(--muted); transition: color .25s var(--ease), background-color .25s var(--ease); }
+.copy:hover { color: var(--ink); background: var(--rule); }
+.copy svg { width: 15px; height: 15px; grid-area: 1 / 1; transition: opacity .25s var(--ease), transform .35s var(--ease); }
+.copy .ok { opacity: 0; transform: scale(.6); color: var(--accent); }
+.copy.done .ok { opacity: 1; transform: none; }
+.copy.done .sheet { opacity: 0; transform: scale(.6); }
+.copied { color: var(--muted); font-size: 13px; opacity: 0; transition: opacity .3s var(--ease); }
+.copied.on { opacity: 1; }
+.links { display: flex; gap: 20px; flex-wrap: wrap; }
+
+/* the one moment: lines settle in from soft to sharp, top to bottom */
+.rise { animation: rise .9s var(--ease) both; animation-delay: calc(var(--i, 0) * 55ms); }
+@keyframes rise { from { opacity: 0; filter: blur(6px); transform: translateY(6px); } }
+
+@media (max-width: 900px) {
+  .page { grid-template-columns: minmax(0, 1fr); grid-template-areas: "text" "stage" "foot"; grid-template-rows: auto; padding-top: 36px; }
+  .stage { position: static; margin-top: 48px; }
+  .back { margin-bottom: 28px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rise { animation: none; }
+  .track, .slide, .cap, a.u, button.u { transition: none; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <main class="text" id="text">
+    <a class="back rise" href="index.html">← all boards</a>
+    <h1 class="rise" id="name"></h1>
+    <p class="lede rise" id="line"></p>
+    <p class="origin rise" id="origin"></p>
+    <div id="lists"></div>
+  </main>
+
+  <aside class="stage rise" id="stage" aria-roledescription="carousel" aria-label="Four small things to play with" style="--i:3">
+    <div class="stage-head">
+      <p class="cap" id="cap" aria-live="polite"></p>
+      <div class="nav">
+        <button id="prev" aria-label="Previous"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3.5 5.5 8l4.5 4.5"/></svg></button>
+        <span class="count" id="count">1 / 4</span>
+        <button id="next" aria-label="Next"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.5 10.5 8 6 12.5"/></svg></button>
+      </div>
+    </div>
+    <div class="viewport" id="viewport">
+      <div class="track" id="track">
+        <figure class="slide" id="s-sort" aria-roledescription="slide" aria-label="learnDSA">
+          <div class="board"><canvas aria-label="Bubble sort you step through by hand"></canvas></div>
+          <div class="controls">
+            <button class="u" data-act="step">step</button>
+            <button class="u" data-act="play">play</button>
+            <button class="u" data-act="shuffle">shuffle</button>
+            <span class="meter">comparisons <b data-out="cmp">0</b> · swaps <b data-out="swp">0</b></span>
+          </div>
+        </figure>
+        <figure class="slide" id="s-tax" aria-roledescription="slide" aria-label="The Survivorship Tax">
+          <div class="board"><canvas aria-label="One equity curve redrawn five times, illustration only"></canvas></div>
+          <div class="controls">
+            <button class="u" data-act="next">remove a shortcut</button>
+            <span class="meter">rebuild <b data-out="k">1</b> of 5</span>
+          </div>
+          <p class="note">Illustration, not real backtest data.</p>
+        </figure>
+        <figure class="slide" id="s-doe" aria-roledescription="slide" aria-label="Doe Clicker">
+          <div class="board"><canvas class="pointer" tabindex="0" aria-label="The Doe. Click or press space to feed it"></canvas></div>
+          <div class="controls">
+            <button class="u" data-act="feed">feed</button>
+            <span class="meter">fed <b data-out="fed">0</b></span>
+          </div>
+        </figure>
+        <figure class="slide" id="s-tt" aria-roledescription="slide" aria-label="Table tennis">
+          <div class="board"><canvas data-touch="none" tabindex="0" aria-label="Table tennis against the computer. Move with the mouse or arrow keys, click or space to serve"></canvas></div>
+          <div class="controls">
+            <span class="dim">mouse or arrow keys to move, click to serve</span>
+            <span class="meter">best rally <b data-out="best">0</b></span>
+          </div>
+        </figure>
+      </div>
+    </div>
+  </aside>
+
+  <footer class="foot rise" id="foot">
+    <p class="dim" id="contactLine"></p>
+    <p class="mail">
+      <span class="addr" id="addr"></span>
+      <button class="copy" id="copy" aria-label="Copy email address">
+        <svg class="sheet" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><rect x="5.5" y="5.5" width="8" height="8" rx="1.6"/><path d="M10.5 3.2V3.1A1.6 1.6 0 0 0 8.9 1.5H4.1A1.6 1.6 0 0 0 2.5 3.1v4.8a1.6 1.6 0 0 0 1.6 1.6h.1"/></svg>
+        <svg class="ok" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m3.5 8.5 3 3 6-7"/></svg>
+      </button>
+      <span class="copied" id="copied" aria-live="polite"></span>
+    </p>
+    <p class="links" id="links"></p>
+  </footer>
+</div>
+
+<script>
+(() => {
+const V = window.TOYESHH_VOICE;
+const L = V.links;
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const $ = (s, r = document) => r.querySelector(s);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const link = (href, text) => { const a = el("a", "u", text); a.href = href; if (/^https?:/.test(href)) { a.target = "_blank"; a.rel = "noopener"; } return a; };
+
+/* ---------- copy ---------- */
+$("#name").textContent = V.name;
+$("#line").textContent = V.line;
+$("#origin").textContent = V.origin;
+$("#contactLine").textContent = V.contactLine;
+$("#addr").textContent = L.email.replace("@", " [at] ");
+const links = $("#links");
+links.append(link(L.github, "github"), link(L.linkedin, "linkedin"));
+const resume = link(L.resume, "resume");
+const rs = el("span"); rs.append(resume, el("span", "dim", " (pdf soon)"));
+links.append(rs);
+
+const DEMO = { learnDSA: 0, "The Survivorship Tax": 1, "Doe Clicker": 2 };
+const tryBtn = (i, label) => { const b = el("button", "u try", "try it"); b.setAttribute("aria-label", "Try " + label + " on the right"); b.addEventListener("click", () => { go(i); if (matchMedia("(max-width: 900px)").matches) $("#stage").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }); }); return b; };
+const lists = $("#lists");
+let n = 4;
+const section = (title, rows) => {
+  const s = el("section", "rise"); s.style.setProperty("--i", n++);
+  s.append(el("h2", null, title));
+  const ul = el("ul"); rows.forEach(r => { const li = el("li"); r(li); ul.append(li); });
+  s.append(ul); lists.append(s);
+};
+section("now", V.now.map(t => li => li.append(t)));
+section("past", V.past.map(p => li => { li.append(p.what, " "); li.append(el("span", "yr", p.when)); }));
+section("built", V.projects.map(p => li => {
+  li.append(link(L.github, p.name), el("span", "dim", " " + p.one));
+  if (p.name in DEMO) li.append(tryBtn(DEMO[p.name], p.name));
+}));
+section("won", V.wins.map(w => li => li.append(w.what)));
+section("off hours", V.offHours.map(t => li => { li.append(t); if (/table tennis/.test(t)) li.append(tryBtn(3, "table tennis")); }));
+$("#foot").style.setProperty("--i", n);
+
+/* email copy: clipboard API, with a selection fallback */
+const copyBtn = $("#copy"), copied = $("#copied");
+let copyT;
+copyBtn.addEventListener("click", async () => {
+  let ok = false;
+  try { await navigator.clipboard.writeText(L.email); ok = true; }
+  catch (err) {
+    const r = document.createRange(); r.selectNodeContents($("#addr"));
+    const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+  }
+  copyBtn.classList.toggle("done", ok);
+  copied.textContent = ok ? "copied " + L.email : "selected, press ⌘C";
+  copied.classList.add("on");
+  clearTimeout(copyT); copyT = setTimeout(() => { copyBtn.classList.remove("done"); copied.classList.remove("on"); }, 1800);
+});
+
+/* ---------- canvas plumbing ---------- */
+const C = {};
+const FONT = (w, px) => `${w} ${px}px Geist, ui-sans-serif, -apple-system, "Helvetica Neue", Arial, sans-serif`;
+function readColors() {
+  const cs = getComputedStyle(document.documentElement);
+  for (const k of ["bg", "ink", "muted", "rule", "soft", "accent", "tint"]) C[k] = cs.getPropertyValue("--" + k).trim();
+}
+readColors();
+function surface(cv) {
+  const s = { cv, ctx: cv.getContext("2d"), w: 1, h: 1, dirty: true };
+  new ResizeObserver(() => {
+    const r = cv.getBoundingClientRect(); if (!r.width) return;
+    const d = Math.min(window.devicePixelRatio || 1, 3);
+    cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d);
+    s.w = r.width; s.h = r.height; s.ctx.setTransform(d, 0, 0, d, 0, 0); s.dirty = true;
+  }).observe(cv);
+  return s;
+}
+const easeOut = t => 1 - Math.pow(1 - t, 4);
+const approach = (v, t, rate, dt) => t + (v - t) * Math.exp(-rate * dt);
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function shuffle(a, r = Math.random) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* private mode: the doe forgets */ } } };
+
+/* ---------- 1. learnDSA: bubble sort by hand ---------- */
+function sortDemo(root) {
+  const s = surface($("canvas", root));
+  const out = k => $(`[data-out="${k}"]`, root);
+  const playBtn = $('[data-act="play"]', root);
+  let items, a, gen, step, cmp, swp, sortedFrom, playing = false, acc = 0;
+  function* bubble() {
+    for (let end = a.length - 1; end > 0; end--) {
+      let swapped = false;
+      for (let j = 0; j < end; j++) {
+        yield { t: "cmp", j };
+        if (a[j].v > a[j + 1].v) { [a[j], a[j + 1]] = [a[j + 1], a[j]]; swapped = true; yield { t: "swap", j }; }
+      }
+      sortedFrom = end;
+      if (!swapped) break;
+    }
+    sortedFrom = 0;
+    yield { t: "done" };
+  }
+  function setPlaying(p) { playing = p; playBtn.textContent = p ? "pause" : "play"; }
+  function reset() {
+    items = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]).map((v, i) => ({ v, x: i }));
+    a = items.slice(); gen = bubble(); step = null; cmp = 0; swp = 0; sortedFrom = a.length;
+    setPlaying(false); sync();
+  }
+  function advance() {
+    if (step && step.t === "done") { setPlaying(false); return; }
+    step = gen.next().value;
+    if (step.t === "cmp") cmp++;
+    if (step.t === "swap") swp++;
+    if (step.t === "done") setPlaying(false);
+    if (reduce) a.forEach((it, i) => { it.x = i; });
+    sync();
+  }
+  function sync() { out("cmp").textContent = cmp; out("swp").textContent = swp; s.dirty = true; }
+  root.addEventListener("click", e => {
+    const act = e.target.closest("[data-act]")?.dataset.act;
+    if (act === "step") { setPlaying(false); advance(); }
+    if (act === "play") { if (step && step.t === "done") reset(); setPlaying(!playing); acc = 1; }
+    if (act === "shuffle") reset();
+  });
+  $("canvas", root).addEventListener("click", () => { setPlaying(false); advance(); });
+  $("canvas", root).classList.add("pointer");
+  reset();
+  return {
+    s,
+    tick(dt) {
+      let moving = false;
+      a.forEach((it, i) => { const nx = approach(it.x, i, 13, dt); if (Math.abs(nx - i) > 0.002) moving = true; else if (it.x !== i) moving = true; it.x = Math.abs(nx - i) < 0.002 ? i : nx; });
+      if (playing) { acc += dt; if (acc > 0.42) { acc = 0; advance(); } }
+      return moving || playing;
+    },
+    draw() {
+      const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+      const padX = Math.max(20, w * 0.07), top = 64, bottom = 44;
+      const slot = (w - padX * 2) / a.length, bw = Math.min(34, slot * 0.62), H = h - top - bottom;
+      const hot = step && (step.t === "cmp" || step.t === "swap") ? [a[step.j], a[step.j + 1]] : [];
+      ctx.font = FONT(500, 12.5); ctx.textBaseline = "alphabetic"; ctx.fillStyle = C.muted; ctx.textAlign = "left";
+      let msg = "press step, or tap the bars";
+      if (step && step.t === "cmp") msg = `is ${a[step.j].v} bigger than ${a[step.j + 1].v}?`;
+      if (step && step.t === "swap") msg = `yes, so they swap`;
+      if (step && step.t === "done") msg = `sorted in ${cmp} comparisons`;
+      ctx.fillStyle = step ? C.ink : C.muted; ctx.fillText(msg, padX, 34);
+      items.forEach(it => {
+        const cx = padX + slot * (it.x + 0.5), bh = Math.max(6, H * it.v / 9), x = cx - bw / 2, y = top + H - bh;
+        const idx = a.indexOf(it), isHot = hot.includes(it), done = idx >= sortedFrom;
+        ctx.fillStyle = isHot ? C.accent : done ? C.ink : C.soft;
+        ctx.beginPath(); ctx.roundRect(x, y, bw, bh, [4, 4, 1, 1]); ctx.fill();
+        ctx.fillStyle = isHot ? C.accent : C.muted; ctx.textAlign = "center";
+        ctx.fillText(it.v, cx, top + H + 22);
+      });
+      if (hot.length && step.t === "cmp") {
+        const x1 = padX + slot * (step.j + 0.5), x2 = padX + slot * (step.j + 1.5), y = top + H + 32;
+        ctx.strokeStyle = C.accent; ctx.lineWidth = 1; ctx.beginPath();
+        ctx.moveTo(x1, y - 3); ctx.lineTo(x1, y); ctx.lineTo(x2, y); ctx.lineTo(x2, y - 3); ctx.stroke();
+      }
+    }
+  };
+}
+
+/* ---------- 2. The Survivorship Tax: one curve, five rebuilds (illustration) ---------- */
+function taxDemo(root) {
+  const s = surface($("canvas", root));
+  const r = rng(20120101), N = 174;
+  const z = Array.from({ length: N }, () => { let u = 0; for (let i = 0; i < 6; i++) u += r(); return (u - 3) * Math.SQRT2; });
+  const curves = [0.0112, 0.0082, 0.0064, 0.0047, 0.003].map(mu => {
+    const ret = z.map(x => mu + 0.041 * x);
+    const eq = [1]; ret.forEach(v => eq.push(eq[eq.length - 1] * (1 + v)));
+    const m = ret.reduce((p, v) => p + v, 0) / N;
+    const sd = Math.sqrt(ret.reduce((p, v) => p + (v - m) ** 2, 0) / (N - 1));
+    return { eq, sharpe: (m / sd) * Math.sqrt(12) };
+  });
+  const yMax = Math.max(...curves.flatMap(c => c.eq)) * 1.06, yMin = Math.min(0.85, ...curves.flatMap(c => c.eq)) * 0.96;
+  let k = 0, prog = 0, started = false;
+  const btn = $('[data-act="next"]', root), outK = $('[data-out="k"]', root);
+  btn.addEventListener("click", () => {
+    if (k === 4 && prog >= 1) { k = 0; } else if (prog < 1) { prog = 1; return; } else k++;
+    prog = reduce ? 1 : 0; sync();
+  });
+  function sync() { outK.textContent = k + 1; btn.textContent = k === 4 ? "start over" : "remove a shortcut"; s.dirty = true; }
+  return {
+    s,
+    enter() { if (!started) { started = true; prog = reduce ? 1 : 0; } },
+    tick(dt) { if (started && prog < 1) { prog = Math.min(1, prog + dt / 1.3); return true; } return false; },
+    draw() {
+      const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+      const l = 20, rt = Math.min(118, w * 0.27), t = 50, b = 34, W = w - l - rt, H = h - t - b;
+      const X = i => l + W * i / N, Y = v => t + H * (1 - (v - yMin) / (yMax - yMin));
+      ctx.font = FONT(500, 12); ctx.textAlign = "left"; ctx.fillStyle = C.muted;
+      ctx.fillText("illustration, not real backtest data", l, 30);
+      ctx.fillText("174 months", l, h - 12);
+      ctx.strokeStyle = C.rule; ctx.lineWidth = 1; ctx.setLineDash([3, 4]);
+      ctx.beginPath(); ctx.moveTo(l, Y(1)); ctx.lineTo(l + W, Y(1)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillText("$1", l + W + 8, Y(1) + 4);
+      const labels = [];
+      for (let i = 0; i <= k; i++) {
+        const c = curves[i], latest = i === k, p = latest ? easeOut(prog) : 1, upto = Math.max(1, Math.floor(N * p));
+        ctx.strokeStyle = latest ? C.ink : C.soft; ctx.lineWidth = latest ? 1.6 : 1; ctx.lineJoin = "round";
+        ctx.beginPath(); for (let j = 0; j <= upto; j++) { const fn = j ? "lineTo" : "moveTo"; ctx[fn](X(j), Y(c.eq[j])); } ctx.stroke();
+        if (p >= 1 || !latest) labels.push({ y: Y(c.eq[N]), x: X(N), txt: `Sharpe ${c.sharpe.toFixed(2)}`, latest, i });
+        else { ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(X(upto), Y(c.eq[upto]), 2.5, 0, 7); ctx.fill(); }
+      }
+      labels.sort((p, q) => p.y - q.y);
+      for (let i = 1; i < labels.length; i++) labels[i].y = Math.max(labels[i].y, labels[i - 1].y + 16);
+      labels.forEach(lb => {
+        ctx.fillStyle = lb.latest ? C.accent : C.soft; ctx.beginPath(); ctx.arc(lb.x, Y(curves[lb.i].eq[N]), 2.5, 0, 7); ctx.fill();
+        ctx.fillStyle = lb.latest ? C.ink : C.muted; ctx.font = FONT(lb.latest ? 500 : 400, 12);
+        ctx.fillText(lb.txt, lb.x + 9, lb.y + 4);
+      });
+    }
+  };
+}
+
+/* ---------- 3. Doe Clicker ---------- */
+function doeDemo(root) {
+  const cv = $("canvas", root), s = surface(cv), outFed = $('[data-out="fed"]', root);
+  const saved = parseInt(store.get("notes-doe-fed") || "0", 10);
+  let fed = Number.isFinite(saved) && saved > 0 ? saved : 0, came = fed > 0;
+  // eyes: x, y in head units, size, how much feeding opens them
+  const EYES = [[-.33, -.1, .15, 1], [.33, -.1, .15, 1], [0, -.5, .11, 25], [-1.0, -.88, .07, 50], [1.0, -.88, .07, 50],
+    [-.26, .34, .075, 75], [.26, .34, .075, 75], [0, .62, .065, 100], [-.2, -.7, .06, 150], [.2, -.7, .06, 150], [-.5, -.42, .055, 200], [.5, -.42, .055, 200]]
+    .map(([x, y, r, at]) => ({ x, y, r, at, open: 0, blink: 0, next: 1 + Math.random() * 4 }));
+  const pellets = [];
+  let pointer = null, wiggle = 0, selfT = 0, msgA = 0, lastMsg = "";
+  const msgFor = f => f >= 100 ? "it remembers you" : f >= 50 ? "it feeds itself now" : f >= 25 ? "something else opened" : f >= 10 ? "it is watching you" : f >= 1 ? (came ? "you came back" : "it noticed") : "feed the doe";
+  const geo = () => { const S = Math.min(s.w, s.h) * 0.27; return { S, cx: s.w / 2, cy: s.h * 0.47 }; };
+  const P = (g, x, y) => [g.cx + x * g.S, g.cy + y * g.S];
+  function feed(px, py) {
+    const g = geo();
+    if (px == null) { px = s.w * (0.2 + Math.random() * 0.6); py = 14; }
+    const [tx, ty] = P(g, 0, 1.0);
+    pellets.push({ sx: px, sy: py, tx, ty, t: 0 });
+  }
+  cv.addEventListener("click", e => { const r = cv.getBoundingClientRect(); feed(e.clientX - r.left, e.clientY - r.top); });
+  cv.addEventListener("keydown", e => { if (e.key === " " || e.key === "Enter") { e.preventDefault(); feed(); } });
+  $('[data-act="feed"]', root).addEventListener("click", () => feed());
+  addEventListener("pointermove", e => { pointer = [e.clientX, e.clientY]; }, { passive: true });
+  outFed.textContent = fed;
+  function path(ctx, g, pts) { ctx.beginPath(); ctx.moveTo(...P(g, pts[0], pts[1])); for (let i = 2; i < pts.length; i += 6) ctx.bezierCurveTo(...P(g, pts[i], pts[i + 1]), ...P(g, pts[i + 2], pts[i + 3]), ...P(g, pts[i + 4], pts[i + 5])); ctx.closePath(); }
+  const HEAD = [0, -.78, .38, -.8, .62, -.62, .62, -.3, .62, .1, .45, .4, .3, .7, .2, .95, .12, 1.08, 0, 1.08,
+    -.12, 1.08, -.2, .95, -.3, .7, -.45, .4, -.62, .1, -.62, -.3, -.62, -.62, -.38, -.8, 0, -.78];
+  const ear = sx => [sx * .38, -.62, sx * .7, -1.06, sx * 1.2, -1.16, sx * 1.4, -.95, sx * 1.22, -.7, sx * .86, -.44, sx * .58, -.4, sx * .5, -.5, sx * .44, -.56, sx * .38, -.62];
+  return {
+    s,
+    tick(dt) {
+      for (let i = pellets.length - 1; i >= 0; i--) {
+        const p = pellets[i]; p.t += dt / (reduce ? 0.15 : 0.5);
+        if (p.t >= 1) { pellets.splice(i, 1); fed++; wiggle = 1; outFed.textContent = fed; store.set("notes-doe-fed", fed); }
+      }
+      if (fed >= 50) { selfT += dt; if (selfT > 1.6) { selfT = 0; feed(Math.random() < .5 ? -6 : s.w + 6, s.h * (0.15 + Math.random() * 0.6)); } }
+      wiggle = Math.max(0, wiggle - dt * 3);
+      EYES.forEach(e => {
+        e.open = approach(e.open, fed >= e.at ? 1 : 0, fed >= e.at ? 2.2 : 8, dt);
+        e.next -= dt; if (e.next < 0) { e.blink = 1; e.next = 2 + Math.random() * 5; }
+        e.blink = Math.max(0, e.blink - dt * 7);
+      });
+      const m = msgFor(fed); if (m !== lastMsg) { lastMsg = m; msgA = 0; } msgA = Math.min(1, msgA + dt * 1.5);
+      return true;
+    },
+    draw() {
+      const { ctx, w, h } = s; ctx.clearRect(0, 0, w, h);
+      const g = geo(), rect = cv.getBoundingClientRect();
+      ctx.lineWidth = 1.4; ctx.lineJoin = "round"; ctx.lineCap = "round";
+      [-1, 1].forEach(sx => { path(ctx, g, ear(sx)); ctx.fillStyle = C.bg; ctx.fill(); ctx.strokeStyle = C.ink; ctx.stroke();
+        ctx.strokeStyle = C.soft; ctx.beginPath(); ctx.moveTo(...P(g, sx * .56, -.56)); ctx.quadraticCurveTo(...P(g, sx * .95, -.92), ...P(g, sx * 1.24, -.94)); ctx.stroke(); });
+      path(ctx, g, HEAD); ctx.fillStyle = C.bg; ctx.fill(); ctx.strokeStyle = C.ink; ctx.stroke();
+      const nb = 1 + wiggle * 0.18; const [nx, ny] = P(g, 0, .95);
+      ctx.fillStyle = C.ink; ctx.beginPath(); ctx.ellipse(nx, ny, g.S * .12 * nb, g.S * .075 * nb, 0, 0, 7); ctx.fill();
+      ctx.strokeStyle = C.soft; ctx.beginPath(); ctx.moveTo(...P(g, 0, .2)); ctx.lineTo(...P(g, 0, .82)); ctx.stroke();
+      // where the eyes look: the cursor once it has eaten enough, page-wide after 100
+      let look = null;
+      if (pointer && fed >= 10) {
+        const lx = pointer[0] - rect.left, ly = pointer[1] - rect.top, inside = lx >= 0 && ly >= 0 && lx <= w && ly <= h;
+        if (inside || fed >= 100) look = [lx, ly];
+      }
+      if (!look && pellets.length) look = [pellets[0].sx + (pellets[0].tx - pellets[0].sx) * easeOut(pellets[0].t), pellets[0].sy + (pellets[0].ty - pellets[0].sy) * easeOut(pellets[0].t)];
+      EYES.forEach(e => {
+        const [ex, ey] = P(g, e.x, e.y), rw = e.r * g.S, o = e.open * (1 - e.blink), rh = rw * 0.62 * o;
+        if (e.open < 0.02 && fed < e.at && e.at > 1) return;
+        ctx.beginPath(); ctx.moveTo(ex - rw, ey);
+        ctx.quadraticCurveTo(ex, ey - rh * 2, ex + rw, ey); ctx.quadraticCurveTo(ex, ey + rh * 2, ex - rw, ey); ctx.closePath();
+        ctx.fillStyle = C.bg; ctx.fill(); ctx.strokeStyle = C.ink; ctx.lineWidth = 1.3; ctx.stroke();
+        if (o > 0.08) {
+          let dx = 0, dy = 0;
+          if (look) { const vx = look[0] - ex, vy = look[1] - ey, d = Math.hypot(vx, vy) || 1, m = Math.min(1, d / 160); dx = vx / d * rw * .42 * m; dy = vy / d * rh * .5 * m; }
+          ctx.save(); ctx.clip();
+          ctx.fillStyle = fed >= 100 ? C.accent : C.ink; ctx.beginPath(); ctx.arc(ex + dx, ey + dy, rw * .42, 0, 7); ctx.fill();
+          ctx.restore();
+        }
+      });
+      pellets.forEach(p => { const k = easeOut(Math.min(1, p.t)); ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(p.sx + (p.tx - p.sx) * k, p.sy + (p.ty - p.sy) * k, 3.2 * (1 - k * .6), 0, 7); ctx.fill(); });
+      ctx.globalAlpha = msgA; ctx.fillStyle = C.muted; ctx.font = FONT(500, 12.5); ctx.textAlign = "center";
+      ctx.fillText(lastMsg, w / 2, h - 22); ctx.globalAlpha = 1;
+    }
+  };
+}
+
+/* ---------- 4. Table tennis vs a simple AI ---------- */
+function ttDemo(root) {
+  const cv = $("canvas", root), s = surface(cv), outBest = $('[data-out="best"]', root);
+  const keys = {};
+  let py = 0.5, ay = 0.5, target = null, ball = null, score = [0, 0], rally = 0, best = 0, server = 0, wait = 0, flash = "", flashT = 0, aiErr = 0, over = false, trail = [];
+  const table = () => { const m = 14; return { x0: m, y0: m, x1: s.w - m, y1: s.h - m, W: s.w - 2 * m, H: s.h - 2 * m }; };
+  const PL = () => Math.max(40, s.h * 0.17);
+  function placeServe() {
+    const T = table(); ball = null; rally = 0; trail = [];
+    server = Math.floor((score[0] + score[1]) / 2) % 2; wait = server === 1 ? 0.9 : Infinity;
+  }
+  function serve() {
+    if (over) { score = [0, 0]; over = false; placeServe(); }
+    if (ball || server !== 0) return;
+    launch(1);
+  }
+  function launch(dir) {
+    const T = table(), sp = T.W * 0.62, side = dir > 0 ? 0 : 1, y = T.y0 + T.H * (side ? ay : py);
+    ball = { x: dir > 0 ? T.x0 + 26 : T.x1 - 26, y, vx: dir * sp, vy: (Math.random() - .5) * sp * .6, sp };
+    aiErr = (Math.random() - .5) * PL() * 1.3;
+  }
+  function point(who) {
+    score[who]++; best = Math.max(best, rally); outBest.textContent = best;
+    const [a, b] = score;
+    if ((a >= 11 || b >= 11) && Math.abs(a - b) >= 2) { over = true; flash = a > b ? `you win, ${a} to ${b}` : `cpu wins, ${b} to ${a}`; flashT = Infinity; }
+    else { flash = who === 0 ? "point, you" : "point, cpu"; flashT = 1.1; }
+    placeServe();
+  }
+  cv.addEventListener("pointermove", e => { const r = cv.getBoundingClientRect(), T = table(); target = Math.min(1, Math.max(0, (e.clientY - r.top - T.y0) / T.H)); });
+  cv.addEventListener("pointerdown", e => { cv.focus({ preventScroll: true }); if (e.pointerType !== "touch") serve(); else { const r = cv.getBoundingClientRect(), T = table(); target = Math.min(1, Math.max(0, (e.clientY - r.top - T.y0) / T.H)); serve(); } });
+  cv.addEventListener("pointerleave", () => { target = null; });
+  cv.addEventListener("keydown", e => {
+    if (["ArrowUp", "ArrowDown", "w", "s", " "].includes(e.key)) e.preventDefault();
+    if (e.key === " " || e.key === "Enter") serve();
+    keys[e.key] = true; target = null;
+  });
+  cv.addEventListener("keyup", e => { keys[e.key] = false; });
+  cv.addEventListener("blur", () => { for (const k in keys) keys[k] = false; });
+  placeServe();
+  return {
+    s,
+    tick(dt) {
+      const T = table(), half = PL() / 2 / T.H;
+      const kv = (keys.ArrowDown || keys.s ? 1 : 0) - (keys.ArrowUp || keys.w ? 1 : 0);
+      if (kv) py += kv * 1.5 * dt; else if (target != null) py = approach(py, target, 18, dt);
+      py = Math.min(1 - half, Math.max(half, py));
+      const ballY = ball ? (ball.y - T.y0) / T.H : 0.5;
+      const aiGoal = ball && ball.vx > 0 ? ballY + aiErr / T.H : 0.5;
+      const aiStep = 0.95 * dt; ay += Math.max(-aiStep, Math.min(aiStep, aiGoal - ay));
+      ay = Math.min(1 - half, Math.max(half, ay));
+      if (!ball && wait !== Infinity) { wait -= dt; if (wait <= 0 && !over) launch(-1); }
+      if (flashT !== Infinity) flashT -= dt;
+      if (ball) {
+        const r = 4, L = PL();
+        ball.x += ball.vx * dt; ball.y += ball.vy * dt;
+        if (ball.y < T.y0 + r) { ball.y = T.y0 + r; ball.vy = Math.abs(ball.vy); }
+        if (ball.y > T.y1 - r) { ball.y = T.y1 - r; ball.vy = -Math.abs(ball.vy); }
+        const pX = T.x0 + 12, aX = T.x1 - 12, pY = T.y0 + py * T.H, aY = T.y0 + ay * T.H;
+        const hit = (pyy, dir) => { ball.sp = Math.min(ball.sp * 1.06, T.W * 1.6); const off = (ball.y - pyy) / (L / 2); ball.vx = dir * ball.sp * Math.sqrt(1 - Math.min(.5, off * off * .35)); ball.vy = off * ball.sp * .7; rally++; aiErr = (Math.random() - .5) * L * (1.1 + rally * .06); };
+        if (ball.vx < 0 && ball.x - r <= pX + 3 && ball.x > pX - 10 && Math.abs(ball.y - pY) <= L / 2 + r) { ball.x = pX + 3 + r; hit(pY, 1); }
+        if (ball.vx > 0 && ball.x + r >= aX - 3 && ball.x < aX + 10 && Math.abs(ball.y - aY) <= L / 2 + r) { ball.x = aX - 3 - r; hit(aY, -1); }
+        trail.push([ball.x, ball.y]); if (trail.length > 7) trail.shift();
+        if (ball.x < -10) point(1); else if (ball && ball.x > s.w + 10) point(0);
+      }
+      return true;
+    },
+    draw() {
+      const { ctx, w, h } = s, T = table(), L = PL(); ctx.clearRect(0, 0, w, h);
+      ctx.strokeStyle = C.rule; ctx.lineWidth = 1;
+      ctx.strokeRect(T.x0 + .5, T.y0 + .5, T.W - 1, T.H - 1);
+      ctx.beginPath(); ctx.moveTo(T.x0, T.y0 + T.H / 2 + .5); ctx.lineTo(T.x1, T.y0 + T.H / 2 + .5); ctx.stroke();
+      ctx.strokeStyle = C.soft; ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.moveTo(w / 2 + .5, T.y0 - 6); ctx.lineTo(w / 2 + .5, T.y1 + 6); ctx.stroke(); ctx.setLineDash([]);
+      ctx.font = FONT(500, 12.5); ctx.fillStyle = C.muted; ctx.textAlign = "right"; ctx.fillText(`you  ${score[0]}`, w / 2 - 14, T.y0 + 24);
+      ctx.textAlign = "left"; ctx.fillText(`${score[1]}  cpu`, w / 2 + 14, T.y0 + 24);
+      ctx.lineCap = "round"; ctx.lineWidth = 6;
+      const pX = T.x0 + 12, aX = T.x1 - 12, pY = T.y0 + py * T.H, aY = T.y0 + ay * T.H;
+      ctx.strokeStyle = C.ink; ctx.beginPath(); ctx.moveTo(pX, pY - L / 2 + 3); ctx.lineTo(pX, pY + L / 2 - 3); ctx.stroke();
+      ctx.strokeStyle = C.muted; ctx.beginPath(); ctx.moveTo(aX, aY - L / 2 + 3); ctx.lineTo(aX, aY + L / 2 - 3); ctx.stroke();
+      const b = ball || (server === 0 ? { x: pX + 16, y: pY } : { x: aX - 16, y: aY });
+      trail.forEach(([x, y], i) => { ctx.globalAlpha = (i + 1) / trail.length * .25; ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(x, y, 3, 0, 7); ctx.fill(); });
+      ctx.globalAlpha = 1; ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(b.x, b.y, 4, 0, 7); ctx.fill();
+      ctx.textAlign = "center"; ctx.font = FONT(500, 12.5);
+      const label = (txt, y, col) => { const tw = ctx.measureText(txt).width; ctx.fillStyle = C.bg; ctx.fillRect(w / 2 - tw / 2 - 8, y - 14, tw + 16, 20); ctx.fillStyle = col; ctx.fillText(txt, w / 2, y); };
+      if (rally > 1 && ball) { ctx.fillStyle = C.muted; ctx.fillText(`rally ${rally}`, w / 2, T.y1 - 14); }
+      if (flashT > 0) label(flash, h / 2 - 14, C.ink);
+      if (!ball && server === 0 && !(flashT > 0 && !over)) label(over ? "click to play again" : "click or press space to serve", h / 2 + (over ? 12 : -14), C.muted);
+    }
+  };
+}
+
+/* ---------- carousel ---------- */
+const slides = [...document.querySelectorAll(".slide")];
+const demos = [sortDemo(slides[0]), taxDemo(slides[1]), doeDemo(slides[2]), ttDemo(slides[3])];
+const CAPS = [
+  ["learnDSA", V.projects.find(p => p.name === "learnDSA").one],
+  ["The Survivorship Tax", V.projects.find(p => p.name === "The Survivorship Tax").one],
+  ["Doe Clicker", V.projects.find(p => p.name === "Doe Clicker").one],
+  ["Table tennis", V.offHours.find(t => /table tennis/.test(t))]
+];
+const track = $("#track"), cap = $("#cap"), count = $("#count");
+let cur = -1, capT;
+function setCap(i) { cap.replaceChildren(el("b", null, CAPS[i][0] + ". "), el("span", null, CAPS[i][1])); }
+function go(i) {
+  i = (i + slides.length) % slides.length; if (i === cur) return;
+  const first = cur < 0; cur = i;
+  track.style.transform = `translateX(calc(${-cur} * (100% + 32px)))`;
+  slides.forEach((sl, k) => { const off = k !== cur; sl.inert = off; sl.setAttribute("aria-hidden", off); });
+  count.textContent = `${cur + 1} / ${slides.length}`;
+  if (first || reduce) setCap(cur);
+  else { cap.classList.add("out"); clearTimeout(capT); capT = setTimeout(() => { setCap(cur); cap.classList.remove("out"); }, 220); }
+  demos[cur].enter?.(); demos[cur].s.dirty = true;
+}
+$("#prev").addEventListener("click", () => go(cur - 1));
+$("#next").addEventListener("click", () => go(cur + 1));
+$("#stage").addEventListener("keydown", e => {
+  if (e.key === "ArrowLeft") { e.preventDefault(); go(cur - 1); }
+  if (e.key === "ArrowRight") { e.preventDefault(); go(cur + 1); }
+});
+let sx = null;
+const vp = $("#viewport");
+vp.addEventListener("pointerdown", e => { if (e.pointerType === "touch") sx = [e.clientX, e.clientY]; });
+vp.addEventListener("pointerup", e => {
+  if (!sx) return; const dx = e.clientX - sx[0], dy = e.clientY - sx[1]; sx = null;
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) go(cur + (dx < 0 ? 1 : -1));
+});
+vp.addEventListener("pointercancel", () => { sx = null; });
+go(0);
+
+const rescheme = () => { readColors(); demos.forEach(d => { d.s.dirty = true; }); };
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", rescheme);
+new MutationObserver(rescheme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+document.fonts && document.fonts.ready.then(rescheme);
+
+let last = performance.now();
+function frame(t) {
+  const dt = Math.min(0.05, (t - last) / 1000); last = t;
+  demos.forEach((d, k) => { const live = k === cur && d.tick(dt); if (live || d.s.dirty) { d.s.dirty = false; d.draw(); } });
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
